@@ -1,0 +1,92 @@
+-- This file has been generated from package.yaml by hpack version 0.20.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: f890efc6b0045192cf4c0ad3eac28d97955c6c0d729472203b71ac00d99d89b4
+
+name:           gtsim
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/gtsim#readme>
+homepage:       https://github.com/githubuser/gtsim#readme
+bug-reports:    https://github.com/githubuser/gtsim/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2018 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/gtsim
+
+library
+  hs-source-dirs:
+      src
+  build-depends:
+    base >=4.7 && <5
+    , containers
+    , Decimal
+    , QuickCheck
+    , mtl
+
+  exposed-modules:
+      Gtsim.Types
+      Gtsim.Simulator
+      Gtsim.Invariants
+  other-modules:
+--      Paths_gtsim
+  default-language: Haskell2010
+  ghc-options:         -Wall
+
+
+executable gtsim-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , gtsim
+    , containers
+    , Decimal
+    , mtl
+    , QuickCheck
+    , HUnit
+    , monad-logger
+
+  other-modules:
+      Paths_gtsim
+  default-language: Haskell2010
+
+
+test-suite gtsim-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , gtsim
+    , containers
+    , HUnit
+    , QuickCheck
+    , test-framework
+    , test-framework-hunit
+    , test-framework-quickcheck2
+
+  other-modules:
+      Paths_gtsim
+      Test.Gtsim.Simulator
+  default-language: Haskell2010
+  ghc-options:         -Wall
+
+
+
+
