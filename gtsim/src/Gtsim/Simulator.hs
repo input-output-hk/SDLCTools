@@ -20,12 +20,14 @@ import Gtsim.Types
 -- - I would somewhat prefer to have a different
 -- type / newtype for durations (time deltas) than for absolute
 -- times.
+-- J-C : I don't see clear benefits here. But why not, I'll see how it looks like.
 --
 -- - There are quite a few situations again where mapM / foldM
 -- is being used and streaming might be somewhat better. But
 -- here, at least, the lists this is being run on are typically
 -- bounded by the problem size, so it's probably still ok in
 -- practice.
+-- J-C : yes I think so.
 
 -- TODO: Needs documentation as to what the arguments mean.
 -- I will try to guess and add comments myself.
@@ -36,18 +38,21 @@ import Gtsim.Types
 -- There should probably be a type synonym such as
 --
 -- 'type Invariant = (Bool, String)'
+-- J-C : ok added in Type.hs
 --
 -- so that we can make the first two arguments more readable.
 --
-runSimulation :: (SimState -> [(Bool, [Char])]) -- ^ Should be explained better
-                 -> (ProblemDefinition -> SimState -> [(Bool, [Char])]) -- ^ Should be explained better
+-- J-C : BTW you see how invariants are checked inside the algo. It is quite useful when testing but I
+-- wonder whether there is a better way to achieve it.
+runSimulation :: (SimState -> [(InvariantResult)]) -- ^ Checks transient invariants (at the end of each time step)
+                 -> (ProblemDefinition -> SimState -> [InvariantResult]) -- ^ Checks final invariants (at the end of the simulation)
                  -> ProblemDefinition -- ^ actual problem definition
                  -> Day -- ^ time granularity
-                 -> SimState -- ^ current state
-                 -> Gen (Either [[Char]] SimState)
+                 -> SimState -- ^ initial state
+                 -> Gen (Either [String] SimState) -- ^ The final simulation state or errors if the simulation failed (i.e invariants not respected).
 runSimulation inv finalInv problemDefinition deltaTime = go
   where
-  go :: SimState -> Gen (Either [[Char]] SimState)
+  go :: SimState -> Gen (Either [String] SimState)
   go simState0 = do
     let nextTime = sstCurrentTime simState0 + deltaTime
 
@@ -73,12 +78,32 @@ runSimulation inv finalInv problemDefinition deltaTime = go
     -- correct our computed time for the next step if a task ends early.
     -- This is to enable the resource to pick up a new task as early
     -- as possible, of course.
+    -- J-C : yes the reason is explained in the specs.
     --
     -- But it seems problematic, not just for efficiency reasons. It means
     -- that the number of times certain probability distributions get
     -- samples depends not just on the granularity, but also on the
     -- number of times we need to do these correction steps.
-    --
+
+    --J-C :
+    -- * efficiency:
+    -- The cost has basically 2 components:
+    -- 1) update the remaining effort for each running assignments + end time.
+    -- 2) update of the sim state
+    -- In case the list of end times is empty, there is not loss of efficiency.
+    -- In case that list is not empty, it is less efficient not because we have to redo the computation
+    -- with a smaller time (tmin) but because we do not take advantage of the knowledge about the Assignments which are just finished.
+    -- These will be recomputed once again.
+    -- REM: due to lazyness, I am not even sure that the simulation state is updated in that case.
+    -- Now, in a real situation, I don't think this is a real problem because:
+    -- 1) most of the time, only 1 assignment is finished at t=tmin.
+    -- 2) deltaTime (about a day) <<< elapsed time to complete a task. So the list of end times will often be empty.
+
+    -- Dependency between timeSteps and distribution:
+    -- Waiting/Running distr: no impact.
+    -- Nb of tasks assigned to a resource: yes there is one but we have it anyway, independently of this little time
+    -- adjustment. I discussed that in the specs, in my answser to one of your previous questions. And there is a solution to it.
+
     case uniqueEndTimes of
       [] -> do
         -- no task completed during this step, we are done with the update
@@ -91,13 +116,14 @@ runSimulation inv finalInv problemDefinition deltaTime = go
         -- REMARK: This actually *relies* on updateActiveAssignments not
         -- using 'Gen' to even be correct. One more reason to turn it into
         -- a pure function.
+        -- J-C : sure, you are right. I did it in haste.
         (simState1'', _) <- updateActiveAssignments problemDefinition minNextTime simState0'
         return $ simState1'' {sstCurrentTime = minNextTime}
 
 -- REMARK: Should be global, so I changed it.
 --
 -- TODO: This should be pure.
---
+-- J-C: indeed!
 checkInv :: [(Bool, String)] -> Gen (Either [String] a) -> Gen (Either [String] a)
 checkInv invR k
  | L.all fst invR = k
@@ -125,6 +151,7 @@ chooseNewActiveAssignmentsForResource MkProblemDefinition{..} simState@MkSimStat
   nca <- rNbActiveAssignmentsGen
 
   -- REMARK: Personally, I find if-then-else more idiomatic than case of True/False.
+  -- J-C : fine with me, I always ask myself the question. If find the 'case' construct more beautiful, but... It is me.
   case nca > naa of
     True -> do
       -- Yes, we can choose (nca - naa) new tasks amongst the available ones
@@ -139,6 +166,7 @@ chooseNewActiveAssignmentsForResource MkProblemDefinition{..} simState@MkSimStat
             ) (L.take (nca - naa) compatibleTaskIds)
       -- MINOR REMARK: forM might be better here than mapM. and also, consider
       -- extracting 'activateAssignment' into its own function.
+      -- J-C : Oops: I don't understand this remark.
 
       -- update the state with these new Active Assignments.
       -- and we are done with this resource
@@ -151,6 +179,9 @@ chooseNewActiveAssignmentsForResource MkProblemDefinition{..} simState@MkSimStat
 -- usable in GHCi. If locality is desired from an abstraction viewpoint, then
 -- the module system should be used to hide internal definitions at some point.
 --
+-- J-C : Good to know. I always hesitate between local and global function.
+-- I am not a big fan of complex local function, though.
+-- My criterion here is that it was only used locally.
 selectCompatibleTasksForResource ::
   [(ResourceId, TaskId)] -> [TaskId] -> ResourceId -> [TaskId]
 selectCompatibleTasksForResource taskPerResource taskIds resourceId =
@@ -164,6 +195,8 @@ Step 3
 -- temporary information needed, so it should be computed and passed
 -- directly, rather than as part of the simulation state.
 --
+-- J-C : Yes (see my remark about that field in Type.hs). it was done in haste...
+-- In fact, I noticed the need for this little go-back-time step while I was testing the code.
 selectRunningAssignments :: ProblemDefinition -> SimState -> Gen SimState
 selectRunningAssignments MkProblemDefinition{..}  simState@MkSimState{..} = do
   activeAssignments <- mapM go sstActiveAssignments
@@ -182,6 +215,11 @@ Step 4
 --
 -- Also, I think this should be a pure function.
 -- Nothing in here seems to need sampling.
+
+-- J-C : pure function: yes.
+-- The initial version included the selection of  running assignments.
+-- That last minute refactoring was done in haste (you have guessed it by now...)
+
 updateActiveAssignments :: ProblemDefinition -> Day -> SimState -> Gen (SimState, [Day])
 updateActiveAssignments problemDefinition nextTime simState@MkSimState{..} =
   foldM
@@ -191,6 +229,7 @@ updateActiveAssignments problemDefinition nextTime simState@MkSimState{..} =
 
 
 -- TODO: This should be a pure function.
+-- J-C : yes (see my comment above)
 updateActiveAssignmentsForResource :: ProblemDefinition -> Day -> (SimState, [Day]) -> Resource -> Gen (SimState, [Day])
 updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@MkSimState{..}, endTimes) MkResource{..} = do
   let (activeAssignments, others) = partitionActiveAssignmentsByResource rId sstActiveAssignments
@@ -199,6 +238,12 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
   -- simply let that function compute the per-resource running assignments
   -- and then pass these as an input here, we would have to do less work
   -- in taking the SimState apart again.
+
+  -- J-C: yes, I am sure there is a more elegant solution here.
+  -- To be honest, I am not really satisfied with this part of the code.
+  -- And moreover, I had to move from `Double` to `Rational` to make the algo terminate due to rounding issue.
+  -- So although it is correct on paper, it is not a robust implementation.
+  -- That could be a good exercice for Deepak.
   let activeAssignmentsToWorkOn = L.filter aaRunning activeAssignments
   -- determine the efficiency
   let eff = rEfficiency $ L.length activeAssignmentsToWorkOn
@@ -208,6 +253,9 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
   --
   -- TODO: strictness indeed looks problematic, because we're
   -- accumulating over a lazy triple.
+  -- J-C: could Deepak look at it?
+  -- Now, given my remark above about the "back to the future" trick, I think we need some degree of laziness for 'newActiveAssignments' and 'newCompletedAssignments'.
+
   let (newActiveAssignments, newCompletedAssignments, endTimes') =
         L.foldl'
           (updateProc eff)
@@ -229,13 +277,18 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
   -- assignments (with their new remaining time). Then turn some
   -- of the active assignments into completed assignments.
   --
+  -- J-C : Ok so:
+  -- 1) a map to update remaing mandays.
+  -- 2) a fold to turn Active Assignments into Complete one, based on the predicate 'aaRemainingMandays==0'
+  -- 3) Not forgetting to maintain the list of end times.
+  -- Fine with me.
   updateProc ::
        ManDaysPerDay
     -> ([ActiveAssignment], [CompletedAssignment], [Day])
     -> ActiveAssignment
     -> ([ActiveAssignment], [CompletedAssignment], [Day])
   updateProc eff (aas, cas, endTimes') activeAssignment@MkActiveAssignment{..} =
-    case remainingMandays' <= 0 of -- TODO: more idiomatic using guards
+    case remainingMandays' <= 0 of -- TODO: more idiomatic using guards. J-C : ok
     True ->
       let
         -- Assignment is complete.
@@ -246,6 +299,7 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
           -- TODO: the above line I would extract into a helper function, simply because it is
           -- so conceptually expected to have a function called
           -- 'completeAssignment :: ActiveAssignment -> EndTime -> CompletedAssignment'
+          -- J-C : ok
       in
         (aas, newCompletedAssignment : cas, te : endTimes')
     False ->
@@ -267,6 +321,13 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
 -- list of tasks still to do directly as part of the
 -- simulation state.
 --
+-- J-C : isn't there any clever "functional pearl"-like technique to speed it up?
+-- or there could be another solution such as
+-- data AvailableTaskProvider :: MkAvailableTaskProvider
+--        {unfct :: [CompletedAssignment] -> [ActiveAssignment] -> ([TaskId], AvailableTaskProvider)}
+
+-- But of course, it boils down to maintaining a state but that state will be separated form SimState (somewhat).
+-- Anyway, just an idea. Feel free to find something adequate here.
 getAvailableTaskIds :: [CompletedAssignment] -> [ActiveAssignment] -> M.Map TaskId [TaskId] -> [TaskId]
 getAvailableTaskIds completedAssignments activeAssignments dependencies =
   availableTaskIds
@@ -282,7 +343,7 @@ getAvailableTaskIds completedAssignments activeAssignments dependencies =
 --
 -- I had to look up what this function means, and it would
 -- have cost me less time if this had just been inlined.
---
+-- J-C : inlined? You mean: not put into a separate function?
 partitionActiveAssignmentsByResource :: ResourceId
                                         -> [ActiveAssignment]
                                         -> ([ActiveAssignment], [ActiveAssignment])
@@ -316,6 +377,8 @@ initialize tasks resources dependencies runningAssignmentGen =
 -}
 
 -- assume the list of pre-requisite is sorted
+
+-- J-C could also be improved.
 possibleTasks :: Ord t => [t] -> M.Map t [t] -> [t]
 possibleTasks completedTasks dependencies =
   S.toList $ M.foldrWithKey' proc S.empty dependencies
