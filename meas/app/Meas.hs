@@ -70,7 +70,7 @@ data StateValue =
   |InProgress
   |Review
   |Done
-  deriving (Show, Generic, NFData)
+  deriving (Eq, Show, Generic, NFData)
 
 instance IsString StateValue where
   fromString "Backlog"      = Backlog
@@ -162,6 +162,7 @@ instance IsString WaitValue where
 instance FromText WaitValue where
   fromText "Running"    = Running
   fromText "Waiting"   = Waiting
+  fromText "No wait"  = Running
   fromText   s         = error $ ("Unknow Wait: "++ T.unpack s)
 
 
@@ -226,8 +227,8 @@ instance FromText ROMMandaysValue where
 data ValueChange =
   UpdateTime Int
   | Updater T.Text
-  | StateChange StateValue
-  | WaitChange WaitValue
+  | StateChange StateValue StateValue
+  | WaitChange WaitValue WaitValue
   deriving (Show, Generic, NFData)
 
 data GenericIssues = GenericIssues [GenericIssue]
@@ -339,7 +340,7 @@ data YtIssue = MkYtIssue
   , _ytiOwner           :: Maybe T.Text
   , _ytiPotentialSquad  :: [T.Text]
   , _ytiLinks           :: [(LinkType, T.Text)]
-  , _ytiChanges         :: [ValueChange]
+  , _ytiChanges         :: [(Int, [ValueChange])]
   }
   deriving (Show, Generic, NFData)
 
@@ -355,7 +356,7 @@ data YtTask = MkYtTask
   , _ytt3D              :: ThreeDValue
   , _yttAssignees       :: [T.Text]
   , _yttLinks           :: [(LinkType, T.Text)]
-  , _yttChanges         :: [ValueChange]
+  , _yttChanges         :: [(Int, [ValueChange])]
   }
   deriving (Show, Generic, NFData)
 
@@ -466,43 +467,94 @@ extractIssue issue =
   updater _ = id
 
 --extractSubTasks [GenericIssue] =
-{-}
-data StateTransition =
-  |STCanonical [(Int, StateValue)] [String]   -- ^ set of InProgress/Review/Done + warning/errors
-  |DoneAndNoWip Int Int  [String] -- ^last transition before done, time of done transition
-  |
 
-computeTransitions l =
+
+
+data StateTransitions =
+  STCanonical [(Int, StateValue)] [String]   -- ^ set of InProgress/Review + time done + warning/errors
+  |STDoneAndNoWip Int  [String] -- ^last transition before done, time of done transition
+--  |STUndetermined
+  deriving Show
+
+extractStateTransitions :: Int -> [ValueChange] -> (StateTransitions, [(Int, StateValue)])
+extractStateTransitions created changes =
+  computeTransitions stateChanges
+  where
+  stateChanges = createStateChanges created changes
+
+createStateChanges :: Int -> [ValueChange] -> [(Int, StateValue)]
+createStateChanges created l =
+  waitUpdate l
 
   where
-  goWaitEnterWIP tp [] = STCanonical [] []
-  goWaitEnterWIP tp ((t, s):rest) | s == InProgress || s == Review = goFoundWip [(t, s)] rest
-  goWaitEnterWIP tp ((t, s):[]) | s == Done = DoneAndNoWip tp t []
-  goWaitEnterWIP tp ((t, s):rest) | s == Done = DoneAndNoWip tp t ["State transition(s) after Done state"]
-  goWaitEnterWIP tp ((t, s):rest) = goWaitEnterWIP t rest
+  waitUpdate [] = []
+  waitUpdate (UpdateTime t:rest) = foundFirstUpdate t rest
+  waitUpdate (_:rest) = waitUpdate rest
 
+  foundFirstUpdate t [] = []
+  foundFirstUpdate t (StateChange ov nv : rest) = (created, ov) : (t, nv) : foundNextUpdate t rest
+  foundFirstUpdate _ (UpdateTime t : rest) = foundFirstUpdate t rest
+  foundFirstUpdate t (_:rest) = foundFirstUpdate t rest
 
-  goFoundWip trs [] = STCanonical trs []
-  goFoundWip trs ((t, s):rest) = | s == InProgress || s == Review = goFoundWip ((t, s):trs) rest
+  foundNextUpdate t [] = []
+  foundNextUpdate t (StateChange ov nv : rest) = (t, nv) : foundNextUpdate t rest
+  foundNextUpdate _ (UpdateTime t : rest) = foundNextUpdate t rest
+  foundNextUpdate t (_:rest) = foundNextUpdate t rest
 
-
-  goWaitDone
-
-  goFoundDoneNoWip
+{-
+data ValueChange =
+  UpdateTime Int
+  | Updater T.Text
+  | StateChange StateValue
+  | WaitChange WaitValue
+  deriving (Show, Generic, NFData)
 -}
 
-main = return ()
+computeTransitions :: [(Int, StateValue)] -> (StateTransitions, [(Int, StateValue)])
+computeTransitions l =
+  (goWaitEnterWIP l, l)
+  where
+  goWaitEnterWIP [] = STCanonical [] []
+  goWaitEnterWIP ((t, s):rest) | s == InProgress || s == Review = goFoundWip [] [(t, s)] rest
+  goWaitEnterWIP ((t, s):[]) | s == Done = STDoneAndNoWip t []
+  goWaitEnterWIP ((t, s):rest) | s == Done = STDoneAndNoWip t ["State transition(s) after Done state"]
+  goWaitEnterWIP ((t, s):rest) = goWaitEnterWIP rest
+
+
+  goFoundWip errs trs [] = STCanonical trs errs
+  goFoundWip errs trs ((t, s):rest) | s == InProgress || s == Review = goFoundWip errs ((t, s):trs) rest
+  goFoundWip errs trs ((t, s):[]) | s == Done = STCanonical (L.reverse $ (t, s):trs) errs
+  goFoundWip errs trs ((t, s):rest)  | s == Done = STCanonical (L.reverse $ (t, s):trs) ("State transition(s) after Done state":errs)
+  goFoundWip errs trs ((t, s):rest) = goFoundWip ("Spurious State Transition":errs) trs rest
+
+
+
+main = run authorization
+
+e = changesForIssueJson authorization "CHW-110"
 
 run authorization = do
 --  hist <- allChangesForIssue "CDEC-10"
-  res <- getAll authorization ["PB"]
+  res <- getAll authorization ["CHW"]
   mapM showIt res
   where
   showIt (projectId, tasks, issues, errors) = do
     print ("projectId: ", projectId)
-    print tasks
-    print issues
+--    print tasks
+--    print issues
+
     mapM print errors
+
+    mapM go tasks
+
+    where
+    go task = do
+      let (trs, changes) = extractStateTransitions (_yttCreated task) (_yttChanges task)
+      print (_yttTaskId task, _yttCreated task)
+      print trs
+      print changes
+      putStrLn ""
+
 
 --  print hist
 
@@ -553,6 +605,12 @@ getAll authorization projectIds = do
     putStrLn $ "History for Issue: " ++ T.unpack (_ytiIssueId issue)
     (Hist _ changes) <- allChangesForIssue authorization (_ytiIssueId issue)
     return $ issue {_ytiChanges = L.concat changes}
+
+mergeChanges :: [ValueChange] -> [(Int, [ValueChange])]
+mergeChanges l =
+
+  where
+
 
 {-}
 mai
@@ -720,18 +778,18 @@ parseUpdateTime = do
           Just n -> return n
           Nothing -> fail "not a number"
 
-parseFieldChange :: (T.Text -> ValueChange) -> Value -> Parser ValueChange
+parseFieldChange :: (T.Text -> T.Text -> ValueChange) -> Value -> Parser ValueChange
 parseFieldChange ctor value = do
-    res <- withArray "changes" (mapM p . V.toList) value
-    let [res'] = catMaybes res
-    return $ ctor res'
+    [Left oldVal, Right newVal] <- withArray "changes" (mapM p . V.toList) value
+    return $ ctor oldVal newVal
   where
   p = withObject "kind of value" $ \o -> do
     name <- o .: "name"
     case T.unpack name of
-      "newValue" -> (o .: "items") >>= parseSingletonArray (withText "updater name" pure) >>= (return . Just)
-      "value" -> (o .: "items") >>= parseSingletonArray (withText "updater name" pure) >>= (return . Just)
-      _ -> return Nothing
+      "oldValue" -> (o .: "items") >>= parseSingletonArray (withText "old value" pure) >>= (return . Left)
+      "newValue" -> (o .: "items") >>= parseSingletonArray (withText "new value" pure) >>= (return . Right)
+     -- "value" -> (o .: "items") >>= parseSingletonArray (withText "updater name" pure) >>= (return . Just)
+--      _ -> return Nothing
 
 parseUpdaterName :: Value -> Parser ValueChange
 parseUpdaterName  = do
@@ -759,8 +817,8 @@ parseChangeGroup value = do
           case T.unpack name of
             "updaterName" -> parseSingletonArray parseUpdaterName itemsVal >>= (return . Just)
             "updated" -> parseSingletonArray parseUpdateTime itemsVal >>= (return . Just)
-            "State" -> (parseFieldChange (StateChange . fromString . T.unpack)) itemsVal >>= (return . Just)
-            "Wait" -> (parseFieldChange (WaitChange . fromString . T.unpack)) itemsVal >>= (return . Just)
+            "State" -> (parseFieldChange (\o n -> StateChange (fromText o) (fromText n)) itemsVal) >>= (return . Just)
+            "Wait" -> (parseFieldChange (\o n -> WaitChange (fromText o) (fromText n)) itemsVal) >>= (return . Just)
             _ -> return Nothing
         _ -> return Nothing
 
