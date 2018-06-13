@@ -192,7 +192,7 @@ So the solution is:
 That way, we never go "to far" in time and we are sure that we stop as soon as a event that globally impacts the system occurs.
 
 
-### Step 4: Iterate or Stop
+### Step 5: Iterate or Stop
 
 The simulation terminates when:
 * the number of completed Tasks is equal to the number of initial Tasks.
