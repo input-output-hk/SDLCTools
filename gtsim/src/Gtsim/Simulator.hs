@@ -21,6 +21,7 @@ import Gtsim.Types
 -- type / newtype for durations (time deltas) than for absolute
 -- times.
 -- J-C : I don't see clear benefits here. But why not, I'll see how it looks like.
+-- ANDRES: The benefit is that types are more self-documenting.
 --
 -- - There are quite a few situations again where mapM / foldM
 -- is being used and streaming might be somewhat better. But
@@ -44,6 +45,11 @@ import Gtsim.Types
 --
 -- J-C : BTW you see how invariants are checked inside the algo. It is quite useful when testing but I
 -- wonder whether there is a better way to achieve it.
+-- ANDRES: I think optionally passing in invariants to check
+-- is fine. The only other option I can think of is to hardcode
+-- the invariants to check in the algorithm, but have a flag
+-- to the algorithm that determines whether they're run.
+--
 runSimulation :: (SimState -> [(InvariantResult)]) -- ^ Checks transient invariants (at the end of each time step)
                  -> (ProblemDefinition -> SimState -> [InvariantResult]) -- ^ Checks final invariants (at the end of the simulation)
                  -> ProblemDefinition -- ^ actual problem definition
@@ -344,6 +350,7 @@ getAvailableTaskIds completedAssignments activeAssignments dependencies =
 -- I had to look up what this function means, and it would
 -- have cost me less time if this had just been inlined.
 -- J-C : inlined? You mean: not put into a separate function?
+-- ANDRES: yes
 partitionActiveAssignmentsByResource :: ResourceId
                                         -> [ActiveAssignment]
                                         -> ([ActiveAssignment], [ActiveAssignment])

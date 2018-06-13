@@ -53,6 +53,12 @@ data ProblemDefinition = MkProblemDefinition
 -- TODO: Needs documentation as to why the tasks are not
 -- included here.
 -- J-C : Tasks are part of the problem definition.
+-- ANDRES: I don't mean the tasks themselves, but
+-- information about which tasks have not yet been
+-- started. This info is currently recomputed on the
+-- fly, and it's certainly possible to do that via
+-- the assignments. But I'm not convinced that doing
+-- so actually makes things clearer.
 data SimState = MkSimState
   { sstCurrentTime            :: Day                      -- ^ Reference Time (Tc in the specs)
   , sstActiveAssignments      :: [ActiveAssignment]       -- ^ Active Assignements
@@ -77,6 +83,7 @@ data Task = MkTask
 -- class for showing things in such a way that the resulting
 -- values could be used in a Haskell program again.
 -- J-C:what do you suggest? a Task specific show function such as `showTask`?
+-- ANDRES: Either that or a dedicated class different from 'Show'.
 instance Show Task where
   show (MkTask{..}) = tId
 
@@ -92,6 +99,9 @@ instance Show Resource where
 
 -- J-C : Type synonym and not newtype.
 -- In this kind of problems, when do you use type synomyms and when do you use newtype?
+-- ANDRES: I'd almost always use newtypes. If that for some
+-- reason is not possible or wanted, then type synonyms are
+-- still an option.
 type InvariantResult = (Bool, String)
 
 -- TODO: This should be a newtype.
