@@ -47,6 +47,7 @@ executable meas
       base >=4.7 && <5
     , aeson
     , bytestring
+    , cassava
     , containers
     , Decimal
     , deepseq
@@ -59,11 +60,13 @@ executable meas
     , monad-logger
     , QuickCheck
     , split
+    , old-locale
     , test-framework
     , test-framework-hunit
     , test-framework-quickcheck2
     , text
     , text-conversions
+    , time
     , vector
     , xml-to-json-fast
 

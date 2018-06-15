@@ -59,7 +59,13 @@ import qualified Data.ByteString.Char8 as BS8
 
 import GHC.Generics (Generic)
 import Control.DeepSeq
+import Data.Time.Clock.POSIX
+import Data.Time.Format
+--import System.Locale
+--import Data.Csv.Builder
+import Data.Csv.Incremental
 
+d = print $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSecondsToUTCTime 1525111273
 
 
 
@@ -471,62 +477,116 @@ extractIssue issue =
 
 
 data StateTransitions =
-  STCanonical [(Int, StateValue)] [String]   -- ^ set of InProgress/Review + time done + warning/errors
+  STCanonical [(Int, StateValue)] Int [String]   -- ^ set of InProgress/Review + time done + warning/errors
   |STDoneAndNoWip Int  [String] -- ^last transition before done, time of done transition
---  |STUndetermined
+  |STUnfinished
   deriving Show
 
-extractStateTransitions :: Int -> [ValueChange] -> (StateTransitions, [(Int, StateValue)])
-extractStateTransitions created changes =
+data CFDStateTransition = CFDStateTransition
+  { cfdCreated    :: Int -- ^ when the issue is created
+  , cfdInProgress :: Int
+  , cfdReview     :: Int
+  , cfdDone       :: Int
+  }
+  deriving Show
+
+mergeWipStates :: Int -> StateTransitions -> Maybe CFDStateTransition
+mergeWipStates tCreated (STCanonical trs tDone _) =
+  Just $ CFDStateTransition tCreated inProgressTime (inProgressTime + sumInProgress) tDone
+  where
+  go :: [(Int, StateValue)] -> [(Int, Int, StateValue)]
+  go [] = []
+  go ((t1, v1) : []) =  [(t1, tDone, v1)]
+  go ((t1, v1) : (t2, v2) : rest) =  (t1, t2, v1) : go ((t2, v2) : rest)
+
+  inProgressTime = fst $ head trs
+
+  valuesLifeSpans = go trs
+  sumInProgress = sumPeriods valuesLifeSpans InProgress
+--  sumReview = sumPeriods valuesLifeSpans Review
+
+  sumPeriods :: [(Int, Int, StateValue)] -> StateValue -> Int
+  sumPeriods valuesLifeSpans val =
+    L.foldl' (\acc (tb, te, v) -> acc + te - tb) 0 l
+    where
+    l = L.filter (\(_,_,v) -> v == val) valuesLifeSpans
+
+mergeWipStates _ _ = Nothing
+
+
+
+
+extractStateTransitions :: Int -> [(Int, [ValueChange])] -> StateTransitions
+extractStateTransitions created allChanges =
   computeTransitions stateChanges
   where
-  stateChanges = createStateChanges created changes
+  stateChanges :: [(Int, StateValue)]
+  stateChanges = createStateChanges created allChanges
 
-createStateChanges :: Int -> [ValueChange] -> [(Int, StateValue)]
-createStateChanges created l =
-  waitUpdate l
 
+computeTransitions :: [(Int, StateValue)] -> StateTransitions
+computeTransitions changes =
+  goWaitEnterWIP changes
   where
-  waitUpdate [] = []
-  waitUpdate (UpdateTime t:rest) = foundFirstUpdate t rest
-  waitUpdate (_:rest) = waitUpdate rest
 
-  foundFirstUpdate t [] = []
-  foundFirstUpdate t (StateChange ov nv : rest) = (created, ov) : (t, nv) : foundNextUpdate t rest
-  foundFirstUpdate _ (UpdateTime t : rest) = foundFirstUpdate t rest
-  foundFirstUpdate t (_:rest) = foundFirstUpdate t rest
-
-  foundNextUpdate t [] = []
-  foundNextUpdate t (StateChange ov nv : rest) = (t, nv) : foundNextUpdate t rest
-  foundNextUpdate _ (UpdateTime t : rest) = foundNextUpdate t rest
-  foundNextUpdate t (_:rest) = foundNextUpdate t rest
-
-{-
-data ValueChange =
-  UpdateTime Int
-  | Updater T.Text
-  | StateChange StateValue
-  | WaitChange WaitValue
-  deriving (Show, Generic, NFData)
--}
-
-computeTransitions :: [(Int, StateValue)] -> (StateTransitions, [(Int, StateValue)])
-computeTransitions l =
-  (goWaitEnterWIP l, l)
-  where
-  goWaitEnterWIP [] = STCanonical [] []
+  goWaitEnterWIP [] = STUnfinished
   goWaitEnterWIP ((t, s):rest) | s == InProgress || s == Review = goFoundWip [] [(t, s)] rest
   goWaitEnterWIP ((t, s):[]) | s == Done = STDoneAndNoWip t []
   goWaitEnterWIP ((t, s):rest) | s == Done = STDoneAndNoWip t ["State transition(s) after Done state"]
   goWaitEnterWIP ((t, s):rest) = goWaitEnterWIP rest
 
 
-  goFoundWip errs trs [] = STCanonical trs errs
+  goFoundWip errs trs [] = STUnfinished -- STCanonical (L.reverse trs) errs
   goFoundWip errs trs ((t, s):rest) | s == InProgress || s == Review = goFoundWip errs ((t, s):trs) rest
-  goFoundWip errs trs ((t, s):[]) | s == Done = STCanonical (L.reverse $ (t, s):trs) errs
-  goFoundWip errs trs ((t, s):rest)  | s == Done = STCanonical (L.reverse $ (t, s):trs) ("State transition(s) after Done state":errs)
+  goFoundWip errs trs ((t, s):[]) | s == Done = STCanonical (L.reverse trs) t errs
+  goFoundWip errs trs ((t, s):rest)  | s == Done = STCanonical (L.reverse $ trs) t ("State transition(s) after Done state":errs)
   goFoundWip errs trs ((t, s):rest) = goFoundWip ("Spurious State Transition":errs) trs rest
 
+
+
+createStateChanges :: Int -> [(Int, [ValueChange])] -> [(Int, StateValue)]
+createStateChanges created allChanges =
+  case stateChanges of
+  [] ->[]
+  (t, ov, nv):rest -> L.map (\(t, _, nv) -> (t, nv)) $ (created, ov, ov) : stateChanges
+  where
+  getStateChange :: ValueChange -> Maybe (StateValue, StateValue)
+  getStateChange (StateChange ov nv) = Just (ov, nv)
+  getStateChange _ = Nothing
+
+  selectStateChange :: (Int, [ValueChange]) -> Maybe (Int, StateValue, StateValue)
+  selectStateChange (t, changes) =
+    case mapMaybe getStateChange changes of
+    [] -> Nothing
+    [(ov, nv)] -> Just (t, ov, nv)
+    _ -> error "wrong YouTrack changes response"
+
+  stateChanges :: [(Int, StateValue, StateValue)]
+  stateChanges = mapMaybe selectStateChange allChanges
+
+
+data MeasRecord = MkMeasRecord
+  { mrIssueId     :: T.Text
+  , mrBacklog     :: Int
+  , mrInProgress  :: Int
+  , mrReview      :: Int
+  , mrDone        :: Int
+  }
+
+intToDate n = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSecondsToUTCTime n
+
+
+instance ToNamedRecord MeasRecord where
+    toNamedRecord (MeasRecord{..} = namedRecord
+        [ "IssueId" .= mrIssueId,
+        , "Backlog" .= intToDate mrBacklog , "InProgress" .= intToDate mrInProgress
+        , "Review" .= intToDate mrReview, "Done" .= intToDate mrDone
+        ]
+
+instance DefaultOrdered MeasRecord where
+    headerOrder _ = header ["IssueId", "Backlog", "InProgress", "Review", "Done"]
+
+createCsv =
 
 
 main = run authorization
@@ -535,7 +595,7 @@ e = changesForIssueJson authorization "CHW-110"
 
 run authorization = do
 --  hist <- allChangesForIssue "CDEC-10"
-  res <- getAll authorization ["CHW"]
+  res <- getAll authorization ["CDEC"] --, "CBR", "CO", "TSD", "PB"]
   mapM showIt res
   where
   showIt (projectId, tasks, issues, errors) = do
@@ -549,11 +609,17 @@ run authorization = do
 
     where
     go task = do
-      let (trs, changes) = extractStateTransitions (_yttCreated task) (_yttChanges task)
+      let (trs) = extractStateTransitions (_yttCreated task) (_yttChanges task)
       print (_yttTaskId task, _yttCreated task)
       print trs
-      print changes
+
+      let cfdStateTransitions = mergeWipStates (_yttCreated task) trs
+      print cfdStateTransitions
+
+      print $ createStateChanges (_yttCreated task) (_yttChanges task)
       putStrLn ""
+
+
 
 
 --  print hist
@@ -599,81 +665,24 @@ getAll authorization projectIds = do
 
     (Hist _ changes) <- allChangesForIssue authorization (_yttTaskId task)
     let !evChanges = force changes
-    return $ task {_yttChanges = L.concat evChanges}
+    return $ task {_yttChanges = mergeChanges evChanges}
 
   getHistoryForIssue issue = do
     putStrLn $ "History for Issue: " ++ T.unpack (_ytiIssueId issue)
     (Hist _ changes) <- allChangesForIssue authorization (_ytiIssueId issue)
-    return $ issue {_ytiChanges = L.concat changes}
+    return $ issue {_ytiChanges = mergeChanges changes}
 
-mergeChanges :: [ValueChange] -> [(Int, [ValueChange])]
-mergeChanges l =
-
+mergeChanges :: [[ValueChange]] -> [(Int, [ValueChange])]
+mergeChanges allChanges =
+  L.sortOn fst $ L.map go allChanges
   where
+  go l =
+    case L.foldl proc (Nothing, []) l of
+    (Just t, changes) -> (t, changes)
+    _ -> error "Bad YouTrack changes"
+  proc (_, changes) (UpdateTime t) = (Just t, changes)
+  proc (time, changes) change = (time, change:changes)
 
-
-{-}
-mai
-main2 = do
-  let (tasks, issues, errors) = allIssues
-  print $ L.length tasks
-  print $ L.length issues
-  print errors
-
-allChangesForIssue issueId = do
-  jsonBs <- allChangesForIssue issueId
-  let (d :: Either String Hist) = eitherDecode jsonBs
-  case d of
-    Left err -> error err
-    Right hist -> hist
--}
---      let (tasks, issues, errors)  = extractAllIssues gIssues
---      print $ L.length tasks
---      print $ L.length issues
---      print errors
---  return ()
-
-
-{-
-data YtIssue = MkYtIssue
-  { _ytiIssueId         :: T.Text
-  , _ytiCreated         :: Int
-  , _ytiProject         :: T.Text
-  , _ytiNumber          :: Int
-  , _ytiState           :: StateValue
-  , _ytiWait            :: WaitValue
-  , _ytiROMManday       :: Maybe ROMMandaysValue
-  , _ytiPPriorities     :: (Int, Int, Int)
-  , _ytiSquad           :: Maybe T.Text
-  , _ytiOwner           :: Maybe T.Text
-  , _ytiPotentialSquad  :: [T.Text]
-  , _ytiChanges         :: [ValueChange]
-  }
-
-data GenericIssue = MkGenericIssue
-  { issueId :: T.Text
-  , issueFields :: [GenericIssueField]
-  }
-
-
-  GProjectField T.Text
-  |GTypeField T.Text
-  |GCreatedField T.Text
-  |GNumberField T.Text
-  |GStateField T.Text
-  |GWaitField T.Text
-  |GThreeDField T.Text
-  |GDescriptionField T.Text
-  |GRomManDaysField T.Text
-  |GSquadField T.Text
-  |GOwnerField T.Text
-  |GPEasyField T.Text
-  |GPBenefitsField T.Text
-  |GPUrgencyField T.Text
-  |GPLinkField [(T.Text, T.Text)]
-  |GPPotentialSquadField T.Text
---  updater (GProjectField s)  = set yttProject
--}
 
 
 issueParser =
