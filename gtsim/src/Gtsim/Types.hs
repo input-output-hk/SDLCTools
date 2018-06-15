@@ -1,4 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Gtsim.Types
 
@@ -6,6 +7,10 @@ where
 
 import qualified Data.Map.Strict as M
 import Test.QuickCheck.Gen (Gen)
+
+-- | our own class like Show but simple
+class TextRepresentation a where
+  textRepresentation :: a -> String
 
 
 data CompletedAssignment = MkCompletedAssignment
@@ -48,11 +53,10 @@ data Task = MkTask
   { tId               :: TaskId         -- ^ Identifier of the Task
   , tProjectId        :: ProjectId      -- ^ Project the Task belongs to
   , tManDaysGen       :: Gen ManDays    -- ^ Generator of effort in man.days for this Task
-  , tCanBeDoneBy      :: [ResourceId]   -- ^ Resources that can work on this Task
   }
 
-instance Show Task where
-  show (MkTask{..}) = tId
+instance TextRepresentation Task where
+  textRepresentation (MkTask{..}) = show tId
 
 data Resource = MkResource
   { rId                       :: ResourceId           -- ^ Identifier of the Resource
@@ -60,16 +64,23 @@ data Resource = MkResource
   , rNbActiveAssignmentsGen   :: Gen Int              -- ^ Generator for the number of concurrent Active Assignments for this Resource.
   }
 
-instance Show Resource where
-  show (MkResource{..}) = rId
+instance TextRepresentation Resource where
+  textRepresentation (MkResource{..}) = show rId
 
 
-type ProjectId = String
+type InvariantResult = (Bool, String)
 
-type TaskId = String
+newtype ProjectId = MkProjectId String
+ deriving (Show, Eq, Ord)
+
+newtype TaskId = MkTaskId String
+ deriving (Show, Eq, Ord)
+
+newtype ResourceId = MkResourceId String
+ deriving (Show, Eq, Ord)
+
 type ManDays = Rational
 
-type ResourceId = String
 type ManDaysPerDay = Rational
 
 type Day = Rational
