@@ -17,7 +17,7 @@ import Data.Decimal
 import Data.Maybe (mapMaybe)
 import Debug.Trace(trace)
 import Control.Monad.State
-import Control.Lens hiding (element)
+import Control.Lens hiding (element, (.=))
 
 import Test.QuickCheck (forAll, elements, quickCheck)
 import Test.QuickCheck.Gen (generate, Gen, shuffle, sublistOf, choose, vectorOf)
@@ -63,7 +63,11 @@ import Data.Time.Clock.POSIX
 import Data.Time.Format
 --import System.Locale
 --import Data.Csv.Builder
-import Data.Csv.Incremental
+--import Data.Csv.Incremental
+import qualified Data.Csv as CSV
+
+
+import Types
 
 d = print $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSecondsToUTCTime 1525111273
 
@@ -109,6 +113,12 @@ instance IsString StateValue where
   fromString "Submitted"    = Backlog
   fromString "Can't Reproduce"    = Done
   fromString "Blocking"    = Done
+  fromString "Postponed"    = Done
+  fromString "Waiting for test" = InProgress
+  fromString "Waiting to be merged into `master`" = InProgress
+  fromString "To be deployed to staging" = InProgress
+  fromString "To be deployed to production" = InProgress
+
 
 
   fromString   s         = error $ ("Unknow State: "++ s)
@@ -147,8 +157,11 @@ instance FromText StateValue where
   fromText "Submitted"    = Backlog
   fromText "Can't Reproduce"    = Done
   fromText "Blocking"    = Done
-
-
+  fromText "Postponed"    = Backlog
+  fromText "Waiting for test" = InProgress
+  fromText "Waiting to be merged into `master`" = InProgress
+  fromText "To be deployed to staging" = InProgress
+  fromText "To be deployed to production" = InProgress
 
   fromText s                  = error $ ("Unknow State: "++T.unpack s)
 
@@ -156,20 +169,23 @@ instance FromText StateValue where
 data WaitValue =
   Running
   |Waiting
-  deriving (Show, Generic, NFData)
+  deriving (Eq, Show, Generic, NFData)
 
 instance IsString WaitValue where
   fromString "Running"  = Running
   fromString "Waiting"  = Waiting
+  fromString "<lost change>"  = Running
+
 
   fromString "No wait"  = Running
   fromString   s         = error $ ("Unknow Wait: "++ s)
 
 instance FromText WaitValue where
-  fromText "Running"    = Running
-  fromText "Waiting"   = Waiting
+  fromText "Running"  = Running
+  fromText "Waiting"  = Waiting
   fromText "No wait"  = Running
-  fromText   s         = error $ ("Unknow Wait: "++ T.unpack s)
+  fromText "<lost change>"  = Running
+  fromText s          = error $ ("Unknow Wait: "++ T.unpack s)
 
 
 data TypeValue =
@@ -247,15 +263,19 @@ allIssuesForProjectJson authorization projectName = do
   let req' =  ((HTTP.setRequestHeaders
                 [("Authorization", BS8.pack authorization)])
               . (HTTP.setRequestQueryString
-                  [ ("max", Just "2000")
-                  , ("filter", Just "Type: Task #{User Story} #Bug")
+                  [ ("max", Just "4000")
+--                  , ("filter", Just "issue id: DEVOPS-82")
+                  , ("filter", Just "Type:Task or Bug or {User Story} sort by: {issue id}  desc")
                   ])
               ) req
   resp <- httpBS req'
+--  print req
+--  print resp
   let xmlBs = getResponseBody resp
---  BS.writeFile "tall" xmlBs
+  BS.writeFile "tall" xmlBs
   let st = L.concat $ xmlStreamToJSON (BS8.unpack xmlBs)
   let jsonBs = LBS.fromStrict $ BS8.pack $ st
+  LBS.writeFile "t.json" jsonBs
   return jsonBs
 
 
@@ -380,16 +400,6 @@ data Issue = Issue T.Text
   deriving (Show, Generic, NFData)
 
 
---checkGenericIssue :: GenericIssue -> [String]
---checkGenericIssue issue =
---  if isTask issue
---  then L.foldl checkTask [] (issueFields issue)
---  else
---    if isIssue issue
---    then L.foldl checkIssue [] (issueFields issue)
---    else []
---  where
-
 isTask issue = L.any (\i ->
   case i of
   GTypeField "Task"  -> True
@@ -478,21 +488,23 @@ extractIssue issue =
 
 data StateTransitions =
   STCanonical [(Int, StateValue)] Int [String]   -- ^ set of InProgress/Review + time done + warning/errors
+  |STInProgress Int [String]
+  |STInReview Int Int [String]
   |STDoneAndNoWip Int  [String] -- ^last transition before done, time of done transition
   |STUnfinished
   deriving Show
 
-data CFDStateTransition = CFDStateTransition
+data CFDStateTransition = MkCFDStateTransition
   { cfdCreated    :: Int -- ^ when the issue is created
   , cfdInProgress :: Int
-  , cfdReview     :: Int
-  , cfdDone       :: Int
+  , cfdReview     :: Maybe Int
+  , cfdDone       :: Maybe Int
   }
   deriving Show
 
 mergeWipStates :: Int -> StateTransitions -> Maybe CFDStateTransition
 mergeWipStates tCreated (STCanonical trs tDone _) =
-  Just $ CFDStateTransition tCreated inProgressTime (inProgressTime + sumInProgress) tDone
+  Just $ MkCFDStateTransition tCreated inProgressTime (Just (inProgressTime + sumInProgress)) (Just tDone)
   where
   go :: [(Int, StateValue)] -> [(Int, Int, StateValue)]
   go [] = []
@@ -511,8 +523,59 @@ mergeWipStates tCreated (STCanonical trs tDone _) =
     where
     l = L.filter (\(_,_,v) -> v == val) valuesLifeSpans
 
+mergeWipStates tCreated (STInProgress tip _) = Just $ MkCFDStateTransition tCreated tip Nothing Nothing
+mergeWipStates tCreated (STInReview tip tr _) = Just $ MkCFDStateTransition tCreated tip (Just tr) Nothing
 mergeWipStates _ _ = Nothing
 
+
+computeWaits waits record =
+  goInReview $ goInProgress record
+  where
+  goInProgress r@(MkMeasRecord _ _ _ ip _ (Just rv) _ _) =
+    r {mrInProgressDone = Just $ computeWaitRatio waits ip rv}
+  goInProgress r = r
+
+  goInReview r@(MkMeasRecord _ _ _ _ _ (Just rv) _ (Just done)) =
+    r {mrReviewDone = Just $ computeWaitRatio waits rv done}
+  goInReview r = r
+
+{-
+
+data MeasRecord = MkMeasRecord
+  { mrIssueId         :: T.Text
+  , mrProject         :: T.Text
+  , mrBacklog         :: Int
+  , mrInProgress      :: Int
+  , mrInProgressDone  :: Maybe Int
+  , mrReview          :: Maybe Int
+  , mrReviewDone      :: Maybe Int
+  , mrDone            :: Maybe Int
+  }
+
+    -}
+
+
+computeWaitRatio :: [(Int, WaitValue)] -> Int -> Int -> Int
+computeWaitRatio waits ti te =
+  let waits0 = L.sortOn fst $ (0, Running):waits
+      !g10 = trace (show ("==== waits0", ti, te, waits0))  ()
+      waits1 = L.takeWhile (\(t,_) -> t < te) waits0 -- we know (te, _) is not included
+     -- !g11 = trace (show ("==== waits1", ti, te, waits1))  ()
+      waits2 = waits1 ++ [(te, Running)]
+      periods1 =  L.zipWith (\(t0, s) (t1, _) -> (t0, t1, s)) waits2 (L.tail waits2)
+    --  !g1 = trace (show ("====periods1 ", ti, te, periods1))  ()
+
+      -- ensure there is a wait value at t = ti
+      periods2 = L.map (\a@(t0, t1, s) -> if t0 < ti && ti < t1 then (ti, t1, s) else a) periods1
+      -- ensure it starts at t = ti
+      periods3  = L.filter (\(t0, _, _) -> ti <= t0) periods2
+    --  !g = trace (show ("==== periods3", ti, te, periods3))  ()
+      timeRunning = L.foldl' (go Running) 0 periods3
+--        timeWaiting = L.foldl' (go Waiting) 0 periods3
+  in ti + timeRunning
+  where
+  go ew acc (t0, t1, w) | w == ew = acc + (t1-t0)
+  go ew acc (t0, t1, w) = acc
 
 
 
@@ -536,11 +599,27 @@ computeTransitions changes =
   goWaitEnterWIP ((t, s):rest) = goWaitEnterWIP rest
 
 
-  goFoundWip errs trs [] = STUnfinished -- STCanonical (L.reverse trs) errs
+  goFoundWip errs trs [] = kindWip trs errs -- STCanonical (L.reverse trs) errs
   goFoundWip errs trs ((t, s):rest) | s == InProgress || s == Review = goFoundWip errs ((t, s):trs) rest
   goFoundWip errs trs ((t, s):[]) | s == Done = STCanonical (L.reverse trs) t errs
   goFoundWip errs trs ((t, s):rest)  | s == Done = STCanonical (L.reverse $ trs) t ("State transition(s) after Done state":errs)
   goFoundWip errs trs ((t, s):rest) = goFoundWip ("Spurious State Transition":errs) trs rest
+
+  kindWip :: [(Int, StateValue)] -> [String] -> StateTransitions
+  kindWip trs errors =
+    case (inProgress, inReview) of
+      (((tip, _):_), ((tr, _):_)) | tip <= tr -> STInReview tip tr errors
+      (((tip, _):_), ((tr, _):_)) | tr < tip -> STInReview tr tr errors
+
+      (((tip, _):_), []) -> STInProgress tip errors
+      ([], ((tr, _):_)) -> STInReview tr tr errors
+
+    where
+    inProgress = L.filter isInProgress trs
+    inReview  = L.filter isInReview trs
+
+    isInProgress (t, s) = s == InProgress
+    isInReview (t, s) = s == Review
 
 
 
@@ -565,29 +644,6 @@ createStateChanges created allChanges =
   stateChanges = mapMaybe selectStateChange allChanges
 
 
-data MeasRecord = MkMeasRecord
-  { mrIssueId     :: T.Text
-  , mrBacklog     :: Int
-  , mrInProgress  :: Int
-  , mrReview      :: Int
-  , mrDone        :: Int
-  }
-
-intToDate n = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSecondsToUTCTime n
-
-
-instance ToNamedRecord MeasRecord where
-    toNamedRecord (MeasRecord{..} = namedRecord
-        [ "IssueId" .= mrIssueId,
-        , "Backlog" .= intToDate mrBacklog , "InProgress" .= intToDate mrInProgress
-        , "Review" .= intToDate mrReview, "Done" .= intToDate mrDone
-        ]
-
-instance DefaultOrdered MeasRecord where
-    headerOrder _ = header ["IssueId", "Backlog", "InProgress", "Review", "Done"]
-
-createCsv =
-
 
 main = run authorization
 
@@ -595,19 +651,59 @@ e = changesForIssueJson authorization "CHW-110"
 
 run authorization = do
 --  hist <- allChangesForIssue "CDEC-10"
-  res <- getAll authorization ["CDEC"] --, "CBR", "CO", "TSD", "PB"]
+ -- res <- getAll authorization ["DEVOPS", "TSD", "PB", "DDW", "CDEC", "CBR", "CHW", "CO"]
+--  res <- getAll authorization ["CSL"]
+--  res <- getAll authorization ["CDEC"]
+--  res <- getAll authorization ["DEVOPS"]
+--  res <- getAll authorization ["DDW"]
+--  res <- getAll authorization ["CHW"]
+  res <- getAll authorization ["CBR"]
+  LBS.writeFile "cfd.csv" LBS.empty
+  print "empty file"
   mapM showIt res
   where
   showIt (projectId, tasks, issues, errors) = do
     print ("projectId: ", projectId)
---    print tasks
+    print tasks
 --    print issues
 
     mapM print errors
 
     mapM go tasks
 
+    mapM (\task -> do
+      let cs = _yttChanges task
+      let css = map (\(t, l) -> (t, length l)) cs
+      print (_yttTaskId task, css))
+      tasks
+
+    let records = mapMaybe createRecords tasks -- $ L.take 40 tasks
+
+    let header = CSV.header ["IssueId", "Backlog", "InProgress", "InProgressDone", "Review", "ReviewDone", "Done", "Project"]
+    let csvLBS = CSV.encodeByName header records
+    print "append file"
+    LBS.appendFile "cfd.csv" csvLBS
     where
+
+    createRecords task = do
+      record <- createTaskCFDdata task
+      let waitChanges = catMaybes $ findWaitTransitions (_yttChanges task)
+      let !j = trace (show (_yttTaskId task)) ()
+      let record' = computeWaits waitChanges record
+      return record'
+      where
+      findWaitTransitions allChanges = do
+        (t, changes) <- allChanges
+        let changes' = do
+              change <- changes
+              case change of
+                WaitChange _ nv -> return $ Just nv
+                _ -> return Nothing
+        case catMaybes changes' of
+          [] -> return Nothing
+          (h:_) -> return $ Just (t, h)
+
+
     go task = do
       let (trs) = extractStateTransitions (_yttCreated task) (_yttChanges task)
       print (_yttTaskId task, _yttCreated task)
@@ -620,17 +716,12 @@ run authorization = do
       putStrLn ""
 
 
+createTaskCFDdata :: YtTask -> Maybe MeasRecord
+createTaskCFDdata MkYtTask{..} = do
+  let trs = extractStateTransitions _yttCreated _yttChanges
+  MkCFDStateTransition{..} <- mergeWipStates _yttCreated trs
+  return $ MkMeasRecord _yttTaskId _yttProject cfdCreated cfdInProgress Nothing cfdReview Nothing cfdDone
 
-
---  print hist
-
---main2 = do
---  res <- allIssues "CDEC"
---  where
---  showIt (projectId, tasks, issues, errors) = do
---    print $ L.length tasks
---    print $ L.length issues
---    print errors
 
 
 allIssues authorization projectId = do
@@ -638,9 +729,8 @@ allIssues authorization projectId = do
   let (d :: Either String GenericIssues) = eitherDecode jsonBs
   case d of
     Left err -> error err
-    Right (GenericIssues gIssues) -> return $ extractAllIssues gIssues
-
-
+    Right (GenericIssues gIssues) -> do
+      return $ extractAllIssues gIssues
 
 
 allChangesForIssue authorization issueId = do
@@ -721,11 +811,13 @@ issueFieldParser =
       "field" -> do
         attrs <- (o .: "attrs")
         name <- attrs .: "name"
+        let !r = trace (show (name)) ()
+--        let !r = trace (show (name, o)) ()
         case T.unpack name of
           "projectShortName" -> issueSimpleFieldParser GProjectField o
           "numberInProject" -> issueSimpleFieldParser GNumberField o
           "created" -> issueSimpleFieldParser GCreatedField o
-          "Type" -> issueSimpleFieldParser GTypeField o
+          "Type" -> trace (show ("GTypeField", o)) $ issueSimpleFieldParser GTypeField o
           "State" -> issueEnumFieldParser GStateField o
           "Wait" -> issueEnumFieldParser GWaitField o
          -- "description" -> issueSimpleFieldParser DescriptionField o
@@ -740,14 +832,26 @@ issueFieldParser =
           _ -> return Nothing
       _ -> return Nothing
 
+{-
+
+parseSingletonArray :: (Value -> Parser a) -> Value -> Parser a
+parseSingletonArray p value =
+  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head)
+  -}
+
 issueSimpleFieldParser ctor o = do
   itemsVal <- o .: "items"
-  value <- parseSingletonArray p itemsVal
+  value <- parseNamedSingletonArray p itemsVal
   return $ Just $ ctor value
   where
   p = withObject "" $ \o -> do
-        itemsVal <- o .: "items"
-        parseSingletonArray (withText "field value" pure) itemsVal
+        (name::T.Text) <- o .: "name"
+        case name of
+          "value" -> do
+            itemsVal <- o .: "items"
+            let !r = trace (show ("issueSimpleFieldParser.item", itemsVal)) ()
+            parseSingletonArray (withText "field value" pure) itemsVal >>= (return . Just)
+          _ -> return Nothing
 
 issueEnumFieldParser ctor o = do
   itemsVal <- o .: "items"
@@ -769,10 +873,15 @@ instance FromJSON GenericIssues where
 
 
 
-
+-- improve
 parseSingletonArray :: (Value -> Parser a) -> Value -> Parser a
 parseSingletonArray p value =
   withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head)
+
+
+parseNamedSingletonArray :: (Value -> Parser (Maybe a)) -> Value -> Parser a
+parseNamedSingletonArray p value =
+  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head . catMaybes)
 
 
 parseUpdateTime :: Value -> Parser ValueChange
