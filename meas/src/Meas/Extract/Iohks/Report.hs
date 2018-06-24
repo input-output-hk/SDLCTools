@@ -38,7 +38,17 @@ defaultIohksReportHeader = header
   , "Iohks Exchange"
   , "Iohks Resolution"
   , "Iohks Platform"
-  ] <> defaultIssueReportHeader
+
+  -- dev issue
+  , "IssueId"
+  , "Project"
+  , "State"
+  , "Age"
+  , "Squad"
+  , "Owner"
+  , "Target Version"
+  ]
+
 
 
 

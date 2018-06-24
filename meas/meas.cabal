@@ -46,16 +46,11 @@ library
     , aeson
     , bytestring
     , cassava
---    , containers
---    , Decimal
     , deepseq
     , http-client
     , http-conduit
     , lens
---    , mtl
---    , old-locale
     , optparse-applicative
---    , split
     , text
     , text-conversions
     , time
