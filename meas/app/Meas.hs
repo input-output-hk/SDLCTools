@@ -18,27 +18,32 @@ import            Data.Time.Clock
 
 import Meas.Extract.Types
 import Meas.Extractor
+import Meas.Extract.Misc
 import Meas.Extract.Report
 
 
 main :: IO ()
-main = run defAuthorization
+main = do
+  (MkOptions {..}) <- parseCliArgs
+  run optAuth
 
 
 run :: String -> IO ()
 run authorization = do
   res <- getAll authorization
           [
-         -- ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
-         -- , ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-         -- , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          ("CSL", "Type:Task #Bug sort by: {issue id} desc")
+--         ("DDW", "issue id: DDW-10")
+--         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+
+         --   ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
+         --   , ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+         --   , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           ]
 
   let allTasks = do

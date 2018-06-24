@@ -64,6 +64,24 @@ changesForIssueJson authorization issueId = do
 
 
 
+singleIssueJson :: String -> String -> IO LBS.ByteString
+singleIssueJson authorization issueId = do
+  req <- HTTP.parseRequest ("https://iohk.myjetbrains.com/youtrack/rest/issue/" ++ issueId)
+  let req' =  ((HTTP.setRequestHeaders
+                [("Authorization", BS8.pack authorization)])
+--              . (HTTP.setRequestQueryString
+--                  [ ("max", Just "4000")
+--                  , ("filter", Just $ BS8.pack query)
+--                  ])
+              ) req
+  resp <- httpBS req'
+  let xmlBs = getResponseBody resp
+  BS.writeFile "tall" xmlBs
+  let st = L.concat $ xmlStreamToJSON (BS8.unpack xmlBs)
+  let jsonBs = LBS.fromStrict $ BS8.pack $ st
+  return jsonBs
+
+
 allIssues :: String -> String -> String -> IO [GenericIssue]
 allIssues authorization projectId query = do
   jsonBs <- allIssuesForProjectJson authorization projectId query

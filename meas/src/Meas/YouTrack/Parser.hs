@@ -64,6 +64,13 @@ data GenericIssueField =
   |GLinkField [(LinkType, T.Text)]
   |GAssigneeField T.Text
   |GPotentialSquadField T.Text
+  |GPriorityField T.Text
+  |GSubSystemField T.Text
+  |GFixVerionsField T.Text
+  |GAffectedVerionsField T.Text
+  |GExchangeField T.Text
+  |GResolutionField T.Text
+  |GPlatformField T.Text
   |GTargetVersions T.Text
 
   deriving (Show, Generic, NFData)
@@ -88,22 +95,36 @@ instance FromJSON Hist where
     return $ Hist issue valueChanges
 
 instance FromJSON GenericIssues where
-  parseJSON = issueParser
+  parseJSON = genericIssuesParser
 
-issueParser :: Value -> Parser GenericIssues
-issueParser =
+
+instance FromJSON GenericIssue where
+  parseJSON = genericIssueParser
+
+genericIssuesParser :: Value -> Parser GenericIssues
+genericIssuesParser =
   withObject "Issues" $ \o -> do
     issueListVal <- o .: "items"
-    issues <- withArray "Issue List" (mapM p . V.toList) issueListVal
+    issues <- withArray "Issue List" (mapM genericIssueParser . V.toList) issueListVal
     return $ GenericIssues issues
-  where
-  p = withObject "Issue" $ \o -> do
-        attrs <- o .: "attrs"
-        issueId <- attrs .: "id"
-        fieldsVal <- o .: "items"
-        fields <- issueFieldsParser fieldsVal
-        let !evFields = force fields
-        return $ MkGenericIssue issueId evFields
+--  where
+--  p = withObject "Issue" $ \o -> do
+--        attrs <- o .: "attrs"
+--        issueId <- attrs .: "id"
+--        fieldsVal <- o .: "items"
+--        fields <- issueFieldsParser fieldsVal
+--        let !evFields = force fields
+--        return $ MkGenericIssue issueId evFields
+
+genericIssueParser :: Value -> Parser GenericIssue
+genericIssueParser =
+  withObject "Issue" $ \o -> do
+    attrs <- o .: "attrs"
+    issueId <- attrs .: "id"
+    fieldsVal <- o .: "items"
+    fields <- issueFieldsParser fieldsVal
+    let !evFields = force fields
+    return $ MkGenericIssue issueId evFields
 
 issueFieldsParser :: Value -> Parser [GenericIssueField]
 issueFieldsParser value = do
@@ -146,6 +167,15 @@ issueFieldParser =
           "p_benefits"        -> issueEnumFieldParser GPBenefitsField o
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
           "Target versions"   -> issueSimpleFieldParser GTargetVersions o
+
+          --IOHKS
+          "Subsystem"         -> issueSimpleFieldParser GSubSystemField o
+          "Fix versions"      -> issueSimpleFieldParser GFixVerionsField o
+          "Affected versions" -> issueSimpleFieldParser GAffectedVerionsField o
+          "Exchange"          -> issueSimpleFieldParser GExchangeField o
+          "Resolution"        -> issueSimpleFieldParser GResolutionField o
+          "Platform"          -> issueSimpleFieldParser GPlatformField o
+
           "links"             -> issueLinkParser o
           _                   -> return Nothing
       _ -> return Nothing

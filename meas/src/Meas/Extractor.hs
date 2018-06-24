@@ -33,7 +33,9 @@ getAll authorization projects = do
   where
   getOneproject (projectId, query) = do
     print $ "Extracting project: "++ projectId
-    (tasks, issues) <- allIssues authorization projectId query >>= (return . extractAllIssues)
+    gissues <- allIssues authorization projectId query
+    print ("Found # issues: " ++ (show $ length gissues))
+    let (tasks, issues) = extractAllIssues gissues
     tasks'  <- mapM (getHistoryForTask  authorization) tasks
     issues' <- mapM (getHistoryForIssue authorization) issues
     return (projectId, tasks', issues')

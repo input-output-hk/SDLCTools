@@ -107,15 +107,29 @@ getType issue = L.head $ mapMaybe (\i ->
   proc t = (t, Nothing)
 
 findParent :: GenericIssue -> Maybe T.Text
-findParent issue =
-  case parent of
-  [] -> Nothing
-  (p:_) -> Just p
+findParent issue = do
+  links <- findLinkField issue
+  let elems = findLinkedIssues SubTaskOf links
+  case elems of
+    [] -> Nothing
+    (p:_) -> Just p
+
+
+findLinkField :: GenericIssue -> Maybe [(LinkType, T.Text)]
+findLinkField issue =
+  go $ issueFields issue
   where
-  parent = mapMaybe (\i ->
-      case i of
-      GLinkField links  -> snd <$> L.find (\(lt, _) -> lt == SubTaskOf) links
-      _ -> Nothing) (issueFields issue)
+  go [] = Nothing
+  go (h:t) =
+    case h of
+    GLinkField links  -> Just links
+    _ -> go t
+
+
+findLinkedIssues :: LinkType -> [(LinkType, T.Text)] -> [T.Text]
+findLinkedIssues linkType links =
+  L.foldl (\acc (lt, t) -> if lt == linkType then t:acc else acc) [] links
+
 
 
 -- GLinkField [(T.Text, T.Text)]

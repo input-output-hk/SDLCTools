@@ -43,28 +43,19 @@ library
   build-depends:
     base >=4.7 && <5
     , containers
-    , Decimal
-    , QuickCheck
-    , mtl
     , aeson
     , bytestring
     , cassava
-    , containers
-    , Decimal
+--    , containers
+--    , Decimal
     , deepseq
-    , lens
-    , mtl
-    , QuickCheck
-    , HUnit
     , http-client
     , http-conduit
-    , monad-logger
-    , QuickCheck
-    , split
-    , old-locale
-    , test-framework
-    , test-framework-hunit
-    , test-framework-quickcheck2
+    , lens
+--    , mtl
+--    , old-locale
+    , optparse-applicative
+--    , split
     , text
     , text-conversions
     , time
@@ -72,6 +63,10 @@ library
     , xml-to-json-fast
   exposed-modules:
       Meas.Extract.Efficiency
+      Meas.Extract.Iohks.Extractor
+      Meas.Extract.Iohks.Issue
+      Meas.Extract.Iohks.Report
+      Meas.Extract.Iohks.Types
       Meas.Extract.Issue
       Meas.Extract.Misc
       Meas.Extract.Report
@@ -93,32 +88,30 @@ executable meas
   build-depends:
       base >=4.7 && <5
     , meas
-    , aeson
     , bytestring
     , cassava
-    , containers
-    , Decimal
-    , deepseq
-    , lens
-    , mtl
-    , QuickCheck
-    , HUnit
-    , http-client
-    , http-conduit
-    , monad-logger
-    , QuickCheck
-    , split
-    , old-locale
-    , test-framework
-    , test-framework-hunit
-    , test-framework-quickcheck2
-    , text
-    , text-conversions
     , time
-    , vector
-    , xml-to-json-fast
 
   other-modules:
       Paths_meas
+  default-language: Haskell2010
+  ghc-options:         -Wall
+
+
+
+executable iohks
+  main-is: Iohks.hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , meas
+    , bytestring
+    , cassava
+    , time
+
+--  other-modules:
+--      Paths_iohks
   default-language: Haskell2010
   ghc-options:         -Wall

@@ -27,6 +27,23 @@ import            GHC.Generics (Generic)
 
 import Meas.Extract.Misc
 
+
+data PriorityValue =
+  ShowStopper
+  |Critical
+  |Major
+  |Normal
+  |Minor
+  deriving (Eq, Show, Generic, NFData)
+
+data IohksStateValue =
+   IohksSubmitted
+  |IohksReadyToSolve
+  |IohksFixed
+  |IohksDone
+  deriving (Eq, Generic, NFData)
+
+
 data StateValue =
   Backlog
   |Planning
@@ -158,7 +175,7 @@ instance FromText StateValue where
   fromText "No State"                           = Backlog
   fromText "No state"                           = Backlog
   fromText "Open"                               = Backlog
-  fromText "Assigned"                           = Backlog
+  fromText "Assigned"                           = Selected
   fromText "No value"                           = Backlog
   fromText "Waiting for review"                 = Review
   fromText "DONT-USE-1"                         = Backlog
@@ -209,6 +226,7 @@ instance FromText TypeValue where
   fromText "User Story" = IssueType
   fromText "Bug"        = IssueType
   fromText "Task"       = TaskType
+  fromText "Issue"      = IssueType
   fromText _            = OtherType
 
 
@@ -232,8 +250,29 @@ instance FromText LinkType where
   fromText "relates to"             = RelatesTo
   fromText "is duplicated by"       = IsDuplicatedBy
   fromText "is required for"        = IsRequiredFor
-  fromText s                        = error ("unknow link role:"++T.unpack s)
+  fromText s                        = error ("unknow link role: "++T.unpack s)
 
+
+instance FromText PriorityValue where
+  fromText "Show-stopper" = ShowStopper
+  fromText "Critical"     = Critical
+  fromText "Major"        = Major
+  fromText "Normal"       = Normal
+  fromText "Minor"        = Minor
+  fromText s              = error ("unknow Priority :"++T.unpack s)
+
+instance FromText IohksStateValue where
+  fromText "Submitted"      = IohksSubmitted
+  fromText "Ready to Solve" = IohksReadyToSolve
+  fromText "Fixed"          = IohksFixed
+  fromText "Done"           = IohksDone
+  fromText s                = error ("unknow Iohks State: "++T.unpack s)
+
+instance Show IohksStateValue where
+  show IohksSubmitted     = "Submitted"
+  show IohksReadyToSolve  = "Ready to Solve"
+  show IohksFixed         = "Fixed"
+  show IohksDone          = "Done"
 
 -- Misc functions
 
@@ -297,16 +336,6 @@ defaultTaskHeader = header
   ]
 
 
-defaultIssueHeader :: Header
-defaultIssueHeader = header
-  [ "IssueId", "Backlog", "Selected"
-  , "InProgress", "Review", "Done"
-  , "Blocked Days"
-  , "Project"
-  , "Squad", "Owner"
-  , "Target Version"
-  , "State"
-  ]
 
 
 instance ToNamedRecord YtTask where
@@ -331,6 +360,19 @@ instance ToNamedRecord YtTask where
 
 instance DefaultOrdered YtTask where
     headerOrder _ = defaultTaskHeader
+
+
+
+defaultIssueHeader :: Header
+defaultIssueHeader = header
+  [ "IssueId", "Backlog", "Selected"
+  , "InProgress", "Review", "Done"
+  , "Blocked Days"
+  , "Project"
+  , "Squad", "Owner"
+  , "Target Version"
+  , "State"
+  ]
 
 instance ToNamedRecord YtIssue where
     toNamedRecord (MkYtIssue{..}) = namedRecord
