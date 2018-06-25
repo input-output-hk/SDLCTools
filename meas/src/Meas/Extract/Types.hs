@@ -117,6 +117,7 @@ data YtIssue = MkYtIssue
   , _ytiNumber            :: Int
   , _ytiState             :: StateValue
   , _ytiWait              :: WaitValue
+  , _ytiDueDate           :: Int
   , _ytiROMManday         :: Maybe ROMMandaysValue
   , _ytiPPriorities       :: (Int, Int, Int)
   , _ytiSquad             :: Maybe T.Text
@@ -135,7 +136,7 @@ makeLenses ''YtIssue
 
 defaultIssue :: YtIssue
 defaultIssue = MkYtIssue
-  "" 0 T.empty 0 Backlog Running Nothing (0, 0, 0)
+  "" 0 T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
   Nothing Nothing [] [] [] [] STIllegalStateTransitions 0 []
 
 

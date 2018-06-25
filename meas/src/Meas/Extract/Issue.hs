@@ -66,6 +66,7 @@ extractIssue genericIssue =
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIssue {_ytiIssueId = issueId genericIssue}
   updater (GCreatedField s)     = set ytiCreated (read $ T.unpack s)
+  updater (GDueDateField s)     = set ytiDueDate (read $ T.unpack s)
   updater (GProjectField s)     = set ytiProject s
   updater (GNumberField s)      = set ytiNumber (read $ T.unpack s)
   updater (GStateField s)       = set ytiState (T.fromText s)

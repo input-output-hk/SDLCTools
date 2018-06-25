@@ -18,6 +18,7 @@ import            Data.Csv
 import qualified  Data.List as L
 import            Data.Time.Calendar
 
+import            Meas.Extract.Misc
 import            Meas.Extract.State
 import            Meas.Extract.Types
 
@@ -74,6 +75,7 @@ defaultIssueReportHeader = header
   , "Squad"
   , "Owner"
   , "Target Version"
+  , "Due Date"
   ]
 
 instance ToNamedRecord IssueReport where
@@ -87,6 +89,7 @@ instance ToNamedRecord IssueReport where
         , "Squad"           .= _ytiSquad
         , "Owner"           .= _ytiOwner
         , "Target Version"  .= tv
+        , "Due Date"        .= intToStdDateText _ytiDueDate
         ]
         where
         (tv:_) = _ytiTargetVersions ++ L.repeat ""

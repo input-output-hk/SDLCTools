@@ -12,7 +12,7 @@
 module Meas.YouTrack.Parser
 where
 
---import Debug.Trace (trace)
+import Debug.Trace (trace)
 
 import            Control.DeepSeq
 
@@ -55,6 +55,7 @@ data GenericIssueField =
   |GWaitField T.Text
   |GThreeDField T.Text
   |GDescriptionField T.Text
+  |GDueDateField T.Text
   |GRomManDaysField T.Text
   |GSquadField T.Text
   |GOwnerField T.Text
@@ -163,6 +164,7 @@ issueFieldParser =
           "ROM Mandays"       -> issueEnumFieldParser GRomManDaysField o
           "Squad"             -> issueEnumFieldParser GSquadField o
           "Owner"             -> issueSimpleFieldParser GOwnerField o
+          "Due Date"          -> trace (show o) $ issueSimpleFieldParser GDueDateField o
           "p_easy"            -> issueEnumFieldParser GPEasyField o
           "p_benefits"        -> issueEnumFieldParser GPBenefitsField o
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
