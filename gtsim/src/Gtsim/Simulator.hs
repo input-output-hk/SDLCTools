@@ -8,10 +8,15 @@ where
 --import Debug.Trace (trace)
 
 import            Control.Monad
+import            Control.Monad.Par
+import            Data.Either (rights)
 import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
 import qualified  Data.Set as S
 import            Test.QuickCheck (Gen, shuffle)
+import            Test.QuickCheck.Gen (unGen)
+import            Test.QuickCheck.Random
+import            System.Random.TF.Gen
 
 import Gtsim.Types
 
@@ -50,6 +55,28 @@ import Gtsim.Types
 -- the invariants to check in the algorithm, but have a flag
 -- to the algorithm that determines whether they're run.
 --
+
+runSimulations :: NFData a =>
+  (SimState -> [(InvariantResult)]) -- ^ Checks transient invariants (at the end of each time step)
+  -> (ProblemDefinition -> SimState -> [InvariantResult]) -- ^ Checks final invariants (at the end of the simulation)
+  -> ProblemDefinition -- ^ actual problem definition
+  -> Day       -- ^ time granularity
+  -> SimState  -- ^ initial state
+  -> (SimState -> a) -- ^ Partial result from a simulation
+  -> ([a] -> b)   -- ^ Aggregation function that computes the final results of the simulations
+  -> Int       -- ^ seed
+  -> Int       -- ^ the number of simulations
+  -> b -- ^ The final simulation state or errors if the simulation failed (i.e invariants not respected).
+runSimulations inv finalInv problemDefinition deltaTime simState partial aggregator seed nbSims =
+  aggregator partials
+  where
+  partials = rights $ runPar $ parMap oneSim qcGens
+  thGen = mkTheGen seed
+  -- Create one generator per simulation
+  qcGens = map (QCGen . splitn thGen 24) [1..(fromIntegral nbSims)]
+  oneSim qcGen = unGen (runSimulation inv finalInv problemDefinition deltaTime simState) qcGen 30 >>= (return . partial)
+
+
 runSimulation :: (SimState -> [(InvariantResult)]) -- ^ Checks transient invariants (at the end of each time step)
                  -> (ProblemDefinition -> SimState -> [InvariantResult]) -- ^ Checks final invariants (at the end of the simulation)
                  -> ProblemDefinition -- ^ actual problem definition

@@ -33,7 +33,10 @@ library
     , containers
     , Decimal
     , QuickCheck
+    , monad-par
+    , monad-par-extras
     , mtl
+    , tf-random
 
   exposed-modules:
       Gtsim.Types

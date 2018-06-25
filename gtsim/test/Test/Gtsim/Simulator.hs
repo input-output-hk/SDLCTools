@@ -31,7 +31,8 @@ import Gtsim.Simulator
 
 tests :: [Test]
 tests = [
-   testProperty "testInvariantsOnly"                  testInvariantsOnly
+   testProperty "testInvariantsOnlyManySims"            testInvariantsOnlyManySims
+   , testProperty "testInvariantsOnly"                  testInvariantsOnly
    , testProperty "testOneResource"                     testOneResource
    , testProperty "testMultipleResources"               testMultipleResources
    , testProperty "testMultipleResourcesWithParallism"  testMultipleResourcesWithParallism
@@ -57,6 +58,36 @@ finalInv = finalSimStateAdditionalInv
 
 --inv _ = []
 --finalInv _ _ = []
+
+testInvariantsOnlyManySims :: Property
+testInvariantsOnlyManySims =
+  forAll gen prop
+  where
+  gen = do
+    let deltaTime = 1
+    nbResources <- choose (1::Int, 5)
+    resources <- mapM (\rId -> do
+      maxNbParallelTasks <- choose (1, 4)
+      resEffsMap <- vectorOf maxNbParallelTasks (choose (0.5, 2.0::Float))
+                    >>= (return . M.fromList . L.zip [1 .. maxNbParallelTasks] )
+      let resEffFun i = realToFrac $ resEffsMap M.! i
+      return $ MkResource ("R-" ++ show rId) resEffFun (choose (1, maxNbParallelTasks))
+      ) [1 .. nbResources]
+
+    nbTasks <- choose (1, 20)
+    tasks <- genTasks "PRJ" resources (return $ choose (10.0, 20.0::Float) >>= (return . realToFrac)) 0 nbTasks >>= genRemoveResources
+
+    dependencies <- genDependencies (nbTasks `div` 2) (L.map tId tasks)
+    let (simState, problemDefinition) = initialize tasks resources dependencies arbitrary
+
+    -- time to run the simulation
+    nbSims <- choose (2, 100)
+    let simsRes = runSimulations inv finalInv problemDefinition deltaTime simState getFinalEndTime length 42 nbSims
+
+    return (simsRes, nbSims)
+
+  prop (res, nbSims) = res == nbSims
+
 
 testInvariantsOnly :: Property
 testInvariantsOnly =
