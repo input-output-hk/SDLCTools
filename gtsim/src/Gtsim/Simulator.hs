@@ -56,7 +56,7 @@ import Gtsim.Types
 -- to the algorithm that determines whether they're run.
 --
 
-runSimulations :: NFData a =>
+runSimulations :: (Show a, NFData a) =>
   (SimState -> [(InvariantResult)]) -- ^ Checks transient invariants (at the end of each time step)
   -> (ProblemDefinition -> SimState -> [InvariantResult]) -- ^ Checks final invariants (at the end of the simulation)
   -> ProblemDefinition -- ^ actual problem definition
@@ -66,11 +66,11 @@ runSimulations :: NFData a =>
   -> ([a] -> b)   -- ^ Aggregation function that computes the final results of the simulations
   -> Int       -- ^ seed
   -> Int       -- ^ the number of simulations
-  -> b -- ^ The final simulation state or errors if the simulation failed (i.e invariants not respected).
+  -> b -- ^ The final results.
 runSimulations inv finalInv problemDefinition deltaTime simState partial aggregator seed nbSims =
-  aggregator partials
+  aggregator $ rights partials
   where
-  partials = rights $ runPar $ parMap oneSim qcGens
+  partials = runPar $ parMap oneSim qcGens
   thGen = mkTheGen seed
   -- Create one generator per simulation
   qcGens = map (QCGen . splitn thGen 24) [1..(fromIntegral nbSims)]

@@ -43,7 +43,6 @@ allIssuesForProjectJson authorization projectName query = do
               ) req
   resp <- httpBS req'
   let xmlBs = getResponseBody resp
-  BS.writeFile "tall" xmlBs
   let st = L.concat $ xmlStreamToJSON (BS8.unpack xmlBs)
   let jsonBs = LBS.fromStrict $ BS8.pack $ st
   return jsonBs

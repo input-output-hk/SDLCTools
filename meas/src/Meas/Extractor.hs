@@ -27,6 +27,18 @@ import            Meas.YouTrack.Queries
 nbTouchedDays :: Integer
 nbTouchedDays = 0
 
+getAllNoHistory :: String -> [(String, String)] -> IO [(String, [YtTask], [YtIssue])]
+getAllNoHistory authorization projects = do
+  mapM getOneproject projects
+  where
+  getOneproject (projectId, query) = do
+    print $ "Extracting project: "++ projectId
+    gissues <- allIssues authorization projectId query
+    print ("Found # issues: " ++ (show $ length gissues))
+    let (tasks, issues) = extractAllIssues gissues
+    return (projectId, tasks, issues)
+
+
 getAll :: String -> [(String, String)] -> IO [(String, [YtTask], [YtIssue])]
 getAll authorization projects = do
   mapM getOneproject projects

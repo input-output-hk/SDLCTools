@@ -169,6 +169,8 @@ issueFieldParser =
           "p_benefits"        -> issueEnumFieldParser GPBenefitsField o
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
           "Target versions"   -> issueSimpleFieldParser GTargetVersions o
+          "Potential Squads"  -> issueSimpleFieldParser GPotentialSquadField o
+
 
           --IOHKS
           "Subsystem"         -> issueSimpleFieldParser GSubSystemField o

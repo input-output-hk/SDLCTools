@@ -2,10 +2,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 
-module Test.Gtsim.Simulator
+module Test.Gtsim.Loader
 
 where
-
 
 
 
@@ -25,12 +24,15 @@ import            Test.QuickCheck (forAll, arbitrary, Property)
 import            Test.QuickCheck.Gen (Gen, shuffle, sublistOf, choose, vectorOf)
 
 
-import            Gtsim.Types
-import            Gtsim.Invariants
-import            Gtsim.Simulator
+import Gtsim.Types
+import Gtsim.Invariants
+import Gtsim.Simulator
 
 tests :: [Test]
-tests = [
+tests = []
+
+
+{-}
    testProperty "testInvariantsOnlyManySims"            testInvariantsOnlyManySims
    , testProperty "testInvariantsOnly"                  testInvariantsOnly
    , testProperty "testOneResource"                     testOneResource
@@ -223,7 +225,7 @@ testIndependentProjects =
     res <- mapM genProject [1::Int .. nbProjects]
     let globalEndTime = L.maximum $ L.map snd res
     let globalProblemDefinition = L.foldl' mergeProblemDefinitions emptyProblemDefinition (L.map (snd . fst) res)
-    let globalSimState = L.foldl' mergeSimStates defaultSimState (L.map (fst . fst) res)
+    let globalSimState = L.foldl' mergeSimStates emptySimState (L.map (fst . fst) res)
 
     -- time to run the simulation
     simRes <- runSimulation inv finalInv  globalProblemDefinition deltaTime globalSimState
@@ -249,6 +251,8 @@ testIndependentProjects =
       Right simState -> abs (getFinalEndTime simState - expectedEndTime) < (realToFrac tol)
       Left msg -> trace (show msg) False
 
+emptySimState :: SimState
+emptySimState = MkSimState 0 [] []
 
 emptyProblemDefinition :: ProblemDefinition
 emptyProblemDefinition = MkProblemDefinition M.empty M.empty [] M.empty (return True)
@@ -290,6 +294,7 @@ genDependencies maxDep tIds = do
     preReqTaskIds <- (shuffle $ M.keys m0) >>= (return . L.take cappedNbPreReq)
 
     return $ M.insert tId preReqTaskIds m0
+-}
 
 {-
   generate nb tasks [nMin+1 .. nMin+n], each can be done by all resources

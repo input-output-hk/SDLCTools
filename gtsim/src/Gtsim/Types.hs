@@ -66,6 +66,11 @@ data SimState = MkSimState
   }
   deriving Show
 
+
+defaultSimState :: SimState
+defaultSimState = MkSimState 0 [] []
+
+
 -- QUESTION: Why include potential resources directly in the task,
 -- but not task dependencies?
 -- J-C : potential resources directly in the task : see my answer 'tCanBeDoneBy' (above).
