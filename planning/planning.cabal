@@ -39,6 +39,8 @@ library
     , monad-par
     , monad-par-extras
     , mtl
+    , random-fu
+    , random-source
     , text
     , time
     , tf-random

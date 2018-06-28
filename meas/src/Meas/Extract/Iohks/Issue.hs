@@ -43,19 +43,19 @@ extractIohksIssue genericIssue =
   where
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIohksIssue {_ytIohksIssueId = issueId genericIssue}
-  updater (GCreatedField s)         = set ytIohksCreated (read $ T.unpack s)
-  updater (GProjectField s)         = set ytIohksProject s
-  updater (GNumberField s)          = set ytIohksNumber (read $ T.unpack s)
-  updater (GStateField s)           = set ytIohksState (T.fromText s)
-  updater (GPriorityField s)        = set ytIohksPriority (T.fromText s)
-  updater (GAssigneeField s)        = set ytIohksAssignees (T.splitOn "," s)
-  updater (GSubSystemField s)       = set ytIohksSubSystem s
-  updater (GFixVerionsField s)      = set ytIohksFixVersions (T.splitOn "," s)
-  updater (GAffectedVerionsField s) = set ytIohksAffectedVersions (T.splitOn "," s)
-  updater (GExchangeField s)        = set ytIohksExchange s
-  updater (GResolutionField s)      = set ytIohksResolution s
-  updater (GPlatformField s)        = set ytIohksPlatform s
-  updater (GLinkField links)        = \issue ->
+  updater (GCreatedField s)           = set ytIohksCreated (read $ T.unpack s)
+  updater (GProjectField s)           = set ytIohksProject s
+  updater (GNumberField s)            = set ytIohksNumber (read $ T.unpack s)
+  updater (GStateField s)             = set ytIohksState (T.fromText s)
+  updater (GPriorityField s)          = set ytIohksPriority (T.fromText s)
+  updater (GAssigneeField s)          = set ytIohksAssignees (T.splitOn "," s)
+  updater (GSubSystemField s)         = set ytIohksSubSystem s
+  updater (GFixVersionsField s)       = set ytIohksFixVersions (T.splitOn "," s)
+  updater (GAffectedVersionsField s)  = set ytIohksAffectedVersions (T.splitOn "," s)
+  updater (GExchangeField s)          = set ytIohksExchange s
+  updater (GResolutionField s)        = set ytIohksResolution s
+  updater (GPlatformField s)          = set ytIohksPlatform s
+  updater (GLinkField links)          = \issue ->
     L.foldl' go issue links
     where
     go issue (linkType,  iId) = issue {_ytIohksLinks = (linkType, iId):(_ytIohksLinks issue)}  -- use lens

@@ -78,6 +78,13 @@ data ROMMandaysValue =
   |Quarters
   deriving (Eq, Show, Generic, NFData)
 
+data ResolutionValue =
+    Successful
+  | Aborted
+  | Duplicate
+  | Obsolete
+  deriving (Eq, Show, Generic, NFData)
+
 data LinkType =
   ParentFor
   |SubTaskOf
@@ -124,6 +131,7 @@ data YtIssue = MkYtIssue
   , _ytiOwner             :: Maybe T.Text
   , _ytiPotentialSquad    :: [T.Text]
   , _ytiTargetVersions    :: [T.Text]
+  , _ytiResolution        :: ResolutionValue
   , _ytiLinks             :: [(LinkType, T.Text)]
   , _ytiChanges           :: [(Int, [ValueChange])]
   , _ytiStateTransitions  :: StateTransitions
@@ -137,7 +145,7 @@ makeLenses ''YtIssue
 defaultIssue :: YtIssue
 defaultIssue = MkYtIssue
   "" 0 T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
-  Nothing Nothing [] [] [] [] STIllegalStateTransitions 0 []
+  Nothing Nothing [] [] Successful [] [] STIllegalStateTransitions 0 []
 
 
 data YtTask = MkYtTask
@@ -269,11 +277,20 @@ instance FromText IohksStateValue where
   fromText "Done"           = IohksDone
   fromText s                = error ("unknow Iohks State: "++T.unpack s)
 
+
+instance FromText ResolutionValue where
+  fromText "Successful" = Successful
+  fromText "Aborted"    = Aborted
+  fromText "Duplicate"  = Duplicate
+  fromText "Obsolete"   = Obsolete
+  fromText s            = error ("unknow Resolution: "++T.unpack s)
+
 instance Show IohksStateValue where
   show IohksSubmitted     = "Submitted"
   show IohksReadyToSolve  = "Ready to Solve"
   show IohksFixed         = "Fixed"
   show IohksDone          = "Done"
+
 
 -- Misc functions
 

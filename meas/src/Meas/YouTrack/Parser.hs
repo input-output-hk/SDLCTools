@@ -67,12 +67,12 @@ data GenericIssueField =
   |GPotentialSquadField T.Text
   |GPriorityField T.Text
   |GSubSystemField T.Text
-  |GFixVerionsField T.Text
-  |GAffectedVerionsField T.Text
+  |GFixVersionsField T.Text
+  |GAffectedVersionsField T.Text
   |GExchangeField T.Text
   |GResolutionField T.Text
   |GPlatformField T.Text
-  |GTargetVersions T.Text
+  |GTargetVersionsField T.Text
 
   deriving (Show, Generic, NFData)
 
@@ -168,14 +168,14 @@ issueFieldParser =
           "p_easy"            -> issueEnumFieldParser GPEasyField o
           "p_benefits"        -> issueEnumFieldParser GPBenefitsField o
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
-          "Target versions"   -> issueSimpleFieldParser GTargetVersions o
+          "Target versions"   -> issueSimpleFieldParser GTargetVersionsField o
           "Potential Squads"  -> issueSimpleFieldParser GPotentialSquadField o
 
 
           --IOHKS
           "Subsystem"         -> issueSimpleFieldParser GSubSystemField o
-          "Fix versions"      -> issueSimpleFieldParser GFixVerionsField o
-          "Affected versions" -> issueSimpleFieldParser GAffectedVerionsField o
+          "Fix versions"      -> issueSimpleFieldParser GFixVersionsField o
+          "Affected versions" -> issueSimpleFieldParser GAffectedVersionsField o
           "Exchange"          -> issueSimpleFieldParser GExchangeField o
           "Resolution"        -> issueSimpleFieldParser GResolutionField o
           "Platform"          -> issueSimpleFieldParser GPlatformField o

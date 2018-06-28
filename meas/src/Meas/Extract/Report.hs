@@ -69,6 +69,7 @@ defaultIssueReportHeader = header
   [ "IssueId"
   , "Project"
   , "State"
+  , "Resolution"
   , "Cycle Time"
   , "Age"
   , "Blocked Days"
@@ -83,6 +84,7 @@ instance ToNamedRecord IssueReport where
         [ "IssueId"         .= _ytiIssueId
         , "Project"         .= _ytiProject
         , "State"           .= show _ytiState
+        , "Resolution"      .= show _ytiResolution
         , "Cycle Time"      .= cycleTime currentDay _ytiStateTransitions
         , "Age"             .= ageInCurrentState currentDay _ytiCreated _ytiChanges
         , "Blocked Days"    .= _ytiBlockedDays

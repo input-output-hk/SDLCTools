@@ -78,7 +78,9 @@ extractIssue genericIssue =
   updater (GSquadField s)           = set ytiSquad (Just s)
   updater (GOwnerField s)           = set ytiOwner (Just s)
   updater (GPotentialSquadField s)  = set ytiPotentialSquad (T.splitOn "," s)
-  updater (GTargetVersions s)       = set ytiTargetVersions (T.splitOn "," s)
+  updater (GTargetVersionsField s)  = set ytiTargetVersions (T.splitOn "," s)
+  updater (GResolutionField s)      = set ytiResolution (T.fromText s)
+
   updater (GLinkField links)        = \issue ->
     L.foldl' go issue links
     where
