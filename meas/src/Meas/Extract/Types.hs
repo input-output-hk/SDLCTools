@@ -119,6 +119,8 @@ data StateTransitions =
 
 data YtIssue = MkYtIssue
   { _ytiIssueId           :: T.Text
+  , _ytiSummary           :: T.Text
+  , _ytiDescription       :: T.Text
   , _ytiCreated           :: Int
   , _ytiProject           :: T.Text
   , _ytiNumber            :: Int
@@ -144,12 +146,14 @@ makeLenses ''YtIssue
 
 defaultIssue :: YtIssue
 defaultIssue = MkYtIssue
-  "" 0 T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
+  T.empty T.empty T.empty  0 T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
   Nothing Nothing [] [] Successful [] [] STIllegalStateTransitions 0 []
 
 
 data YtTask = MkYtTask
   { _yttTaskId            :: T.Text
+  , _yttSummary           :: T.Text
+  , _yttDescription       :: T.Text
   , _yttCreated           :: Int
   , _yttProject           :: T.Text
   , _yttNumber            :: Int
@@ -169,7 +173,7 @@ data YtTask = MkYtTask
 makeLenses ''YtTask
 
 defaultTask :: YtTask
-defaultTask = MkYtTask "" 0 T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
+defaultTask = MkYtTask T.empty T.empty T.empty  0 T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
 
 
 instance FromText StateValue where

@@ -27,22 +27,24 @@ import Meas.Extract.Types
 
 
 data YtIohksIssue = MkYtIohksIssue
-  { _ytIohksIssueId           :: T.Text
-  , _ytIohksCreated           :: Int
-  , _ytIohksProject           :: T.Text
-  , _ytIohksNumber            :: Int
-  , _ytIohksState             :: IohksStateValue
-  , _ytIohksPriority          :: PriorityValue
-  , _ytIohksAssignees         :: [T.Text]
-  , _ytIohksSubSystem         :: T.Text
-  , _ytIohksFixVersions       :: [T.Text]
-  , _ytIohksAffectedVersions  :: [T.Text]
-  , _ytIohksExchange          :: T.Text
-  , _ytIohksResolution        :: T.Text
-  , _ytIohksPlatform          :: T.Text
-  , _ytIohksErrors            :: [String]
-  , _ytIohksLinks             :: [(LinkType, T.Text)]
-  , _ytIohksDevIssue          :: Maybe YtIssue
+  { _ytIohksIssueId          :: T.Text
+  , _ytIohksSummary          :: T.Text
+  , _ytIohksDescription      :: T.Text
+  , _ytIohksCreated          :: Int
+  , _ytIohksProject          :: T.Text
+  , _ytIohksNumber           :: Int
+  , _ytIohksState            :: IohksStateValue
+  , _ytIohksPriority         :: PriorityValue
+  , _ytIohksAssignees        :: [T.Text]
+  , _ytIohksSubSystem        :: T.Text
+  , _ytIohksFixVersions      :: [T.Text]
+  , _ytIohksAffectedVersions :: [T.Text]
+  , _ytIohksExchange         :: T.Text
+  , _ytIohksResolution       :: T.Text
+  , _ytIohksPlatform         :: T.Text
+  , _ytIohksErrors           :: [String]
+  , _ytIohksLinks            :: [(LinkType, T.Text)]
+  , _ytIohksDevIssue         :: Maybe YtIssue
   }
   deriving (Show, Generic, NFData)
 
@@ -50,7 +52,7 @@ makeLenses ''YtIohksIssue
 
 defaultIohksIssue :: YtIohksIssue
 defaultIohksIssue = MkYtIohksIssue
-  "" 0 T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] Nothing
+  T.empty T.empty T.empty 0 T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] Nothing
 
 
 

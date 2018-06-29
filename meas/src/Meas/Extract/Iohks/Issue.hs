@@ -44,6 +44,8 @@ extractIohksIssue genericIssue =
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIohksIssue {_ytIohksIssueId = issueId genericIssue}
   updater (GCreatedField s)           = set ytIohksCreated (read $ T.unpack s)
+  updater (GSummaryField s)           = set ytIohksSummary s
+  updater (GDescriptionField s)       = set ytIohksDescription s
   updater (GProjectField s)           = set ytIohksProject s
   updater (GNumberField s)            = set ytIohksNumber (read $ T.unpack s)
   updater (GStateField s)             = set ytIohksState (T.fromText s)

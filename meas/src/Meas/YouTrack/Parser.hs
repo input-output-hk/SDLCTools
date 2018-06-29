@@ -51,10 +51,11 @@ data GenericIssueField =
   |GTypeField T.Text
   |GCreatedField T.Text
   |GNumberField T.Text
+  |GSummaryField T.Text
+  |GDescriptionField T.Text
   |GStateField T.Text
   |GWaitField T.Text
   |GThreeDField T.Text
-  |GDescriptionField T.Text
   |GDueDateField T.Text
   |GRomManDaysField T.Text
   |GSquadField T.Text
@@ -155,6 +156,8 @@ issueFieldParser =
           "projectShortName"  -> issueSimpleFieldParser GProjectField o
           "numberInProject"   -> issueSimpleFieldParser GNumberField o
           "created"           -> issueSimpleFieldParser GCreatedField o
+          "summary"           -> issueSimpleFieldParser GSummaryField o
+          "description"       -> issueSimpleFieldParser GDescriptionField o
           "Type"              -> issueSimpleFieldParser GTypeField o
           "State"             -> issueEnumFieldParser GStateField o
           "Wait"              -> issueEnumFieldParser GWaitField o

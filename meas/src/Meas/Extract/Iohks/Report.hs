@@ -28,6 +28,8 @@ data IohksReport = IohksReport Day YtIohksIssue
 defaultIohksReportHeader :: Header
 defaultIohksReportHeader = header
   [ "Iohks IssueId"
+  , "Iohks Summary"
+  , "Iohks Description"
   , "Iohks Created"
   , "Iohks State"
   , "Iohks Priority"
@@ -61,6 +63,8 @@ instance ToNamedRecord IohksReport where
       iohksRecord = namedRecord
         [ "Iohks IssueId"             .= _ytIohksIssueId
         , "Iohks Created"             .= intToStdDateText _ytIohksCreated
+        , "Iohks Summary"             .= _ytIohksSummary
+        , "Iohks Description"         .= _ytIohksDescription
         , "Iohks State"               .= show _ytIohksState
         , "Iohks Priority"            .= show _ytIohksPriority
         , "Iohks Assignees"           .= show _ytIohksAssignees
