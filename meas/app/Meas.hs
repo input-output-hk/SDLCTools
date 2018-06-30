@@ -35,6 +35,7 @@ run authorization = do
       --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
 --         ("DDW", "issue id: DDW-10")
 --         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          --   ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 
             ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
             , ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")

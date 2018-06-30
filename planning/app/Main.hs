@@ -37,14 +37,23 @@ import            Meas.Extract.Report
 import            Gtsim.Types
 import qualified  Gtsim.Invariants as I
 
-import            Planning.Loader as L
+import            Planning.Loader as LO
 import            Planning.Processing
 
+import System.IO
 
 main :: IO ()
 main = do
   (MkOptions {..}) <- parseCliArgs
   run optAuth 100
+ -- zz' <- LO.zz 50000
+  --mapM LO.z $ L.take 10 $ L.repeat 1
+ -- print zz'
+--  withFile "beta.txt" WriteMode $ \h -> do
+--              hPutStrLn h "x"
+--              mapM_ (hPutStrLn h . show) zz'
+  --withFile :: FilePath -> IOMode -> (Handle -> IO r) -> IO r
+
 
 
 run :: String -> Int -> IO ()
@@ -75,7 +84,7 @@ run authorization nbSims = do
 
 
   putStrLn "simulation"
-  let (simState, problemDefinition) = L.initialize iohkResources issues
+  let (simState, problemDefinition) = LO.initialize iohkResources issues
 
   let ts = (pdTasksPerResource problemDefinition)
 

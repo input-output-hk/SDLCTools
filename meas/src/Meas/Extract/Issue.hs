@@ -47,8 +47,8 @@ extractTask parent genericIssue =
   task1 = foldr updater task0 (issueFields genericIssue)
   task0 = defaultTask {_yttTaskId = issueId genericIssue, _yttParent = parent}
   updater (GCreatedField s)     = set yttCreated (read $ T.unpack s)
-  updater (GSummaryField s)     = set yttSummary s
-  updater (GDescriptionField s) = set yttDescription s
+--  updater (GSummaryField s)     = set yttSummary s
+--  updater (GDescriptionField s) = set yttDescription s
   updater (GProjectField s)     = set yttProject s
   updater (GNumberField s)      = set yttNumber (read $ T.unpack s)
   updater (GStateField s)       = set yttState (T.fromText s)
@@ -68,8 +68,8 @@ extractIssue genericIssue =
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIssue {_ytiIssueId = issueId genericIssue}
   updater (GCreatedField s)     = set ytiCreated (read $ T.unpack s)
-  updater (GSummaryField s)     = set ytiSummary s
-  updater (GDescriptionField s) = set ytiDescription s
+--  updater (GSummaryField s)     = set ytiSummary s
+--  updater (GDescriptionField s) = set ytiDescription s
   updater (GDueDateField s)     = set ytiDueDate (read $ T.unpack s)
   updater (GProjectField s)     = set ytiProject s
   updater (GNumberField s)      = set ytiNumber (read $ T.unpack s)

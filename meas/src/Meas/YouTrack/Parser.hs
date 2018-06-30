@@ -12,7 +12,7 @@
 module Meas.YouTrack.Parser
 where
 
-import Debug.Trace (trace)
+--import Debug.Trace (trace)
 
 import            Control.DeepSeq
 
@@ -32,6 +32,9 @@ import            Text.Read (readMaybe)
 
 import            Meas.Extract.Types
 
+
+head' msg [] = error $ "head2 : empty list + -> "++msg
+head' _ l = head l
 
 data GenericIssues = GenericIssues [GenericIssue]
   deriving (Show, Generic, NFData)
@@ -156,18 +159,17 @@ issueFieldParser =
           "projectShortName"  -> issueSimpleFieldParser GProjectField o
           "numberInProject"   -> issueSimpleFieldParser GNumberField o
           "created"           -> issueSimpleFieldParser GCreatedField o
-          "summary"           -> issueSimpleFieldParser GSummaryField o
-          "description"       -> issueSimpleFieldParser GDescriptionField o
+          "summary"           -> issueSimpleFieldWithDefaultParser T.empty GSummaryField o
+          "description"       -> issueSimpleFieldWithDefaultParser T.empty GDescriptionField o
           "Type"              -> issueSimpleFieldParser GTypeField o
           "State"             -> issueEnumFieldParser GStateField o
           "Wait"              -> issueEnumFieldParser GWaitField o
           "Assignee"          -> issueSimpleFieldParser GAssigneeField o
-         -- "description" -> issueSimpleFieldParser DescriptionField o
           "3D"                -> issueEnumFieldParser GThreeDField o
           "ROM Mandays"       -> issueEnumFieldParser GRomManDaysField o
           "Squad"             -> issueEnumFieldParser GSquadField o
           "Owner"             -> issueSimpleFieldParser GOwnerField o
-          "Due Date"          -> trace (show o) $ issueSimpleFieldParser GDueDateField o
+          "Due Date"          -> issueSimpleFieldParser GDueDateField o
           "p_easy"            -> issueEnumFieldParser GPEasyField o
           "p_benefits"        -> issueEnumFieldParser GPBenefitsField o
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
@@ -187,12 +189,6 @@ issueFieldParser =
           _                   -> return Nothing
       _ -> return Nothing
 
-{-
-
-parseSingletonArray :: (Value -> Parser a) -> Value -> Parser a
-parseSingletonArray p value =
-  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head)
-  -}
 
 issueSimpleFieldParser :: (T.Text -> a) -> Object -> Parser (Maybe a)
 issueSimpleFieldParser ctor o = do
@@ -222,20 +218,40 @@ issueEnumFieldParser ctor o = do
             parseSingletonArray (withText "field value" pure) itemsVal >>= (return . Just)
           _ -> return Nothing
 
-
-
+issueSimpleFieldWithDefaultParser :: T.Text -> (T.Text -> a) -> Object -> Parser (Maybe a)
+issueSimpleFieldWithDefaultParser def ctor o = do
+  itemsVal <- o .: "items"
+  value <- parseNamedSingletonArray p itemsVal
+  return $ Just $ ctor value
+  where
+  p :: Value -> Parser (Maybe T.Text)
+  p = withObject "" $ \o' -> do
+        (name::T.Text) <- o' .: "name"
+        case name of
+          "value" -> do
+            itemsVal <- o' .: "items"
+            parseSingletonArrayWithDefault def (withText "field value" pure) itemsVal  >>= (return . Just)
+          _ -> return Nothing
 
 
 
 -- improve
 parseSingletonArray :: (Value -> Parser a) -> Value -> Parser a
 parseSingletonArray p value =
-  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head)
+  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . (head' "a"))
+
+
+parseSingletonArrayWithDefault :: a -> (Value -> Parser a) -> Value -> Parser a
+parseSingletonArrayWithDefault def p value =
+  withArray "Singleton Array" (\a -> do
+    case V.toList a of
+      [] -> return def
+      [s] -> p s) value
 
 
 parseNamedSingletonArray :: (Value -> Parser (Maybe a)) -> Value -> Parser a
 parseNamedSingletonArray p value =
-  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . L.head . catMaybes)
+  withArray "Singleton Array" (\a -> mapM p $ V.toList a) value >>= (return . (head' "b") . catMaybes)
 
 
 parseUpdateTime :: Value -> Parser ValueChange

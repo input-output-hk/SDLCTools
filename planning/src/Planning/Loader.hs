@@ -35,105 +35,41 @@ import            Meas.Extract.Types
 
 import System.IO.Unsafe (unsafePerformIO)
 
-
--- runRVar :: RandomSource m s => RVar a -> s -> m a
-
-$(randomSource [d|
-          instance RandomSource Gen Int where
---            getRandomPrimFrom :: s -> Prim t -> m t
-            getRandomPrimFrom s PrimWord8 =             pure $ fromIntegral s -- s::Gen Word8
-            getRandomPrimFrom s PrimWord16 =            pure $ fromIntegral s -- s::Gen Word16
-            getRandomPrimFrom s PrimWord32 =            pure $ fromIntegral s -- s::Gen Word32
-            getRandomPrimFrom s PrimWord64 =            pure $ fromIntegral s -- s::Gen Word64
-            getRandomPrimFrom s PrimDouble =            pure $ fromIntegral s -- s::Gen Double
-            getRandomPrimFrom s (PrimNByteInteger _) =  pure $ fromIntegral s -- s::Gen Integer
-     |])
-{-
-$(randomSource [d|
-          instance RandomSource Gen Rational where
---            getRandomPrimFrom :: s -> Prim t -> m t
-            getRandomPrimFrom s PrimWord8 =             pure $ fromRational s -- s::Gen Word8
-            getRandomPrimFrom s PrimWord16 =            pure $ fromRational s -- s::Gen Word16
-            getRandomPrimFrom s PrimWord32 =            pure $ fromRational s -- s::Gen Word32
-            getRandomPrimFrom s PrimWord64 =            pure $ fromRational s -- s::Gen Word64
-            getRandomPrimFrom s PrimDouble =            pure $ fromRational s -- s::Gen Double
-            getRandomPrimFrom s (PrimNByteInteger _) =  pure $ fromRational s -- s::Gen Integer
-     |])
--}
-
-$(randomSource [d|
-          instance RandomSource IO Int where
---            getRandomPrimFrom :: s -> Prim t -> m t
-            getRandomPrimFrom s PrimWord8 =             pure $ fromIntegral s -- s::Gen Word8
-            getRandomPrimFrom s PrimWord16 =            pure $ fromIntegral s -- s::Gen Word16
-            getRandomPrimFrom s PrimWord32 =            pure $ fromIntegral s -- s::Gen Word32
-            getRandomPrimFrom s PrimWord64 =            pure $ fromIntegral s -- s::Gen Word64
-            getRandomPrimFrom s PrimDouble =            pure $ fromIntegral s -- s::Gen Double
-            getRandomPrimFrom s (PrimNByteInteger _) =  pure $ fromIntegral s -- s::Gen Integer
-     |])
-
-
-$(monadRandom [d|
-         instance MonadRandom Gen where
-             getRandomWord8 =         return 1
-             getRandomWord16 =        choose (1, 2) -- return 1
-             getRandomWord32 =        choose (1, 2) -- return 1
-             getRandomWord64 =        return 1
-             getRandomDouble =        choose (1, 2) -- return 1
-             getRandomNByteInteger n = return 1
-     |])
-
---betaGen :: Distribution Beta a => a -> a -> Gen a
---betaGen :: Distribution Beta a => a -> a -> Gen Float
---
---betaGen min max = do
---  (seed::Rational) <- arbitrary
---  runRVar (stdUniform) seed
---  --  runRVar (beta min max) seed
-
-betaGen :: Float -> Float -> Gen Float
-betaGen min max = do
-  (seed::Int) <- arbitrary
-  let e = go seed
-  return $ (1.0 - e) * min  + e * max
+betaGen :: Gen Float
+betaGen = do
+  frequency $ L.zip density slots
   where
-  go _ = unsafePerformIO $ sample $ beta 2.0 (5.0::Float)
+  density =
+    [ 6734, 16340, 22042, 24026, 24346, 22830, 19992, 17248, 13956, 10810
+      , 7944, 5592, 3750, 2290, 1230, 0562, 234, 70, 2, 2
+    ]
+  breaks =
+    [ 0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60
+    , 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00
+    ]
+  slots = L.zipWith (\min max -> choose (min, max)) breaks $ L.tail breaks
 
 
-{-
-
-
-z _ = generate $ betaGen 10 20
-
-
---t = generate $ betaGen 1 (2::Float)
-e :: Int -> IO Float
-e seed = runRVar (stdUniform  ) (seed::Int)
-
-a :: IO Float
-a  = sample $ beta 2.0 (5.0::Float)
-
-b _ = unsafePerformIO $ sample $ beta 2.0 (5.0::Float)
-
-PrimWord8 :: Prim Word8
-PrimWord16 :: Prim Word16
-PrimWord32 :: Prim Word32
-PrimWord64 :: Prim Word64
-PrimDouble :: Prim Double
-PrimNByteInteger :: !Int -> Prim Integer
--}
 
 iohkResources =
-  [ MkResource "Squad 1"          (stdResourceEfficiency 2.5) parTaskGen
-  , MkResource "Squad 2"          (stdResourceEfficiency 1.0) parTaskGen
-  , MkResource "Squad 3"          (stdResourceEfficiency 2.5) parTaskGen
-  , MkResource "Squad 4"          (stdResourceEfficiency 2.5) parTaskGen
-  , MkResource "New Wallet Squad" (stdResourceEfficiency 5.0) parTaskGen
-  , MkResource "Core Squad"       (stdResourceEfficiency 6.0) parTaskGen
-  , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+  [ MkResource "Squad 1"          (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "Squad 2"          (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "Squad 3"          (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "Squad 4"          (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "New Wallet Squad" (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "Core Squad"       (stdResourceEfficiency 1.2) parTaskGen
+  , MkResource "Network Squad"    (stdResourceEfficiency 1.2) parTaskGen
   ]
+--  [ MkResource "Squad 1"          (stdResourceEfficiency 2.5) parTaskGen
+--  , MkResource "Squad 2"          (stdResourceEfficiency 1.0) parTaskGen
+--  , MkResource "Squad 3"          (stdResourceEfficiency 2.5) parTaskGen
+--  , MkResource "Squad 4"          (stdResourceEfficiency 2.5) parTaskGen
+--  , MkResource "New Wallet Squad" (stdResourceEfficiency 5.0) parTaskGen
+--  , MkResource "Core Squad"       (stdResourceEfficiency 6.0) parTaskGen
+--  , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+--  ]
   where
-  parTaskGen = choose (1, 5)
+  parTaskGen = choose (6, 6)
 
 iohkResourceMap = M.fromList $ map (\r -> (rId r, r)) iohkResources
 
@@ -227,10 +163,14 @@ data YtIssue = MkYtIssue
 
 
 romMandaysToGen :: ROMMandaysValue -> Gen ManDays
-romMandaysToGen Days      = betaGen 0.5  4.0    >>= (return . toRational)
-romMandaysToGen Weeks     = betaGen 3.0  13.0   >>= (return . toRational)
-romMandaysToGen Months    = betaGen 12.0 45.0   >>= (return . toRational)
-romMandaysToGen Quarters  = betaGen 40.0 100.0  >>= (return . toRational)
+romMandaysToGen Days      = mandaysGen 0.5  4.0    >>= (return . toRational)
+romMandaysToGen Weeks     = mandaysGen 3.0  13.0   >>= (return . toRational)
+romMandaysToGen Months    = mandaysGen 12.0 45.0   >>= (return . toRational)
+romMandaysToGen Quarters  = mandaysGen 40.0 100.0  >>= (return . toRational)
+
+mandaysGen min max = do
+  x <- betaGen
+  return $ min + (max - min) * x
 
 --romMandaysToGen Days      = choose (0.5 , 4.0::Float)    >>= (return . toRational)
 --romMandaysToGen Weeks     = choose (3.0 , 13.0::Float)   >>= (return . toRational)
