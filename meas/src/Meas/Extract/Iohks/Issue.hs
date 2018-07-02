@@ -55,6 +55,7 @@ extractIohksIssue genericIssue =
   updater (GFixVersionsField s)       = set ytIohksFixVersions (T.splitOn "," s)
   updater (GAffectedVersionsField s)  = set ytIohksAffectedVersions (T.splitOn "," s)
   updater (GExchangeField s)          = set ytIohksExchange s
+  updater (GTargetVersionsField s)    = set ytIohksTargetVersions (T.splitOn "," s)
   updater (GResolutionField s)        = set ytIohksResolution s
   updater (GPlatformField s)          = set ytIohksPlatform s
   updater (GLinkField links)          = \issue ->

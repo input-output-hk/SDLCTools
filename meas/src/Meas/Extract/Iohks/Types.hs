@@ -42,6 +42,7 @@ data YtIohksIssue = MkYtIohksIssue
   , _ytIohksExchange         :: T.Text
   , _ytIohksResolution       :: T.Text
   , _ytIohksPlatform         :: T.Text
+  , _ytIohksTargetVersions   :: [T.Text]
   , _ytIohksErrors           :: [String]
   , _ytIohksLinks            :: [(LinkType, T.Text)]
   , _ytIohksDevIssue         :: Maybe YtIssue
@@ -52,7 +53,7 @@ makeLenses ''YtIohksIssue
 
 defaultIohksIssue :: YtIohksIssue
 defaultIohksIssue = MkYtIohksIssue
-  T.empty T.empty T.empty 0 T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] Nothing
+  T.empty T.empty T.empty 0 T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] [] Nothing
 
 
 

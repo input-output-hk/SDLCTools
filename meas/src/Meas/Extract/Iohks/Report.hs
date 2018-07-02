@@ -15,6 +15,7 @@ where
 -- import            Debug.Trace (trace)
 
 import            Data.Csv
+import qualified  Data.List as L
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
 import            Data.Time.Calendar
@@ -38,6 +39,7 @@ defaultIohksReportHeader = header
   , "Iohks Fix Versions"
   , "Iohks Affected Versions"
   , "Iohks Exchange"
+  , "Iohks Target Versions"
   , "Iohks Resolution"
   , "Iohks Platform"
 
@@ -72,6 +74,7 @@ instance ToNamedRecord IohksReport where
         , "Iohks Fix Versions"        .= show _ytIohksFixVersions
         , "Iohks Affected Versions"   .= show _ytIohksAffectedVersions
         , "Iohks Exchange"            .= _ytIohksExchange
+        , "Iohks Target Versions"     .= tv
         , "Iohks Resolution"          .= _ytIohksResolution
         , "Iohks Platform"            .= _ytIohksPlatform
         ]
@@ -89,6 +92,7 @@ instance ToNamedRecord IohksReport where
                               , "Target Version"  .= T.empty
                               ]
           Just devIssue -> toNamedRecord $ IssueReport currentDay devIssue
+      (tv:_) = _ytIohksTargetVersions ++ L.repeat ""
 
 instance DefaultOrdered IohksReport where
     headerOrder _ = defaultIohksReportHeader
