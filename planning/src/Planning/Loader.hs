@@ -52,24 +52,24 @@ betaGen = do
 
 
 iohkResources =
-  [ MkResource "Squad 1"          (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "Squad 2"          (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "Squad 3"          (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "Squad 4"          (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "New Wallet Squad" (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "Core Squad"       (stdResourceEfficiency 1.2) parTaskGen
-  , MkResource "Network Squad"    (stdResourceEfficiency 1.2) parTaskGen
-  ]
---  [ MkResource "Squad 1"          (stdResourceEfficiency 2.5) parTaskGen
---  , MkResource "Squad 2"          (stdResourceEfficiency 1.0) parTaskGen
---  , MkResource "Squad 3"          (stdResourceEfficiency 2.5) parTaskGen
---  , MkResource "Squad 4"          (stdResourceEfficiency 2.5) parTaskGen
---  , MkResource "New Wallet Squad" (stdResourceEfficiency 5.0) parTaskGen
---  , MkResource "Core Squad"       (stdResourceEfficiency 6.0) parTaskGen
---  , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+--  [ MkResource "Squad 1"          (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "Squad 2"          (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "Squad 3"          (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "Squad 4"          (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "New Wallet Squad" (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "Core Squad"       (stdResourceEfficiency 1.2) parTaskGen
+--  , MkResource "Network Squad"    (stdResourceEfficiency 1.2) parTaskGen
 --  ]
+  [ MkResource "Squad 1"          (stdResourceEfficiency 2.5) parTaskGen
+  , MkResource "Squad 2"          (stdResourceEfficiency 1.0) parTaskGen
+  , MkResource "Squad 3"          (stdResourceEfficiency 2.5) parTaskGen
+  , MkResource "Squad 4"          (stdResourceEfficiency 2.5) parTaskGen
+  , MkResource "New Wallet Squad" (stdResourceEfficiency 5.0) parTaskGen
+  , MkResource "Core Squad"       (stdResourceEfficiency 6.0) parTaskGen
+  , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+  ]
   where
-  parTaskGen = choose (6, 6)
+  parTaskGen = choose (1, 3)
 
 iohkResourceMap = M.fromList $ map (\r -> (rId r, r)) iohkResources
 
@@ -85,8 +85,8 @@ stdResourceEfficiency baseEff =
   resourceEfficiency effs
   where
   effs = zipWith (\i f -> (i, let b = fromIntegral i * (1+f) in baseEff / b)) [1..] switchPercent
-  switchPercent = L.take 10 $ L.repeat 0.0
-  --switchPercent = [0, 0.1, 0.15, 0.20, 0.30, 0.45, 0.7, 1, 1.5, 2.0, 2.0, 3.0]
+  --switchPercent = L.take 10 $ L.repeat 0.0
+  switchPercent = [0, 0.05, 0.05, 0.20, 0.30, 0.45, 0.7, 1, 1.5, 2.0, 2.0, 3.0]
 
 
 initialize :: [Resource] -> [YtIssue] -> (SimState, ProblemDefinition)

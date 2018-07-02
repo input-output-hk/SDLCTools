@@ -57,7 +57,7 @@ getHistoryForTask authorization task = do
   putStrLn $ "History for Task: " ++ T.unpack (_yttTaskId task)
   changes <- allChangesForIssue authorization (_yttTaskId task)
   --let !evChanges = force changes
-  let stateTransitions = getStateTransitions (_yttCreated task) changes
+  let !stateTransitions = getStateTransitions (_yttCreated task) changes
   currentDay <- getCurrentTime >>= (return . utctDay)
   let blockedDays = getBlockedDays currentDay nbTouchedDays stateTransitions changes
   return $ task {_yttChanges = changes, _yttStateTransitions = stateTransitions, _yttBlockedDays = blockedDays}
@@ -66,7 +66,7 @@ getHistoryForIssue :: String -> YtIssue -> IO YtIssue
 getHistoryForIssue authorization issue = do
   putStrLn $ "History for Issue: " ++ T.unpack (_ytiIssueId issue)
   changes <- allChangesForIssue authorization (_ytiIssueId issue)
-  let stateTransitions = getStateTransitions (_ytiCreated issue) changes
+  let !stateTransitions = getStateTransitions (_ytiCreated issue) changes
   currentDay <- getCurrentTime >>= (return . utctDay)
   let blockedDays = getBlockedDays currentDay nbTouchedDays stateTransitions changes
   return $ issue {_ytiChanges = changes, _ytiStateTransitions = stateTransitions, _ytiBlockedDays = blockedDays}

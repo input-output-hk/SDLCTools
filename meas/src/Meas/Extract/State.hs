@@ -12,7 +12,7 @@
 module Meas.Extract.State
 where
 
--- import Debug.Trace (trace)
+import Debug.Trace (trace)
 
 import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
@@ -107,22 +107,29 @@ No 2 consecutive transitions have the same state.
 enterWip :: Int -> Int -> [(Int, StateValue)] -> StateTransitions
 enterWip _ _ [] = error "should not happen"
 enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
-  case (rest1, timeInProgress, timeInReview, firstWipState) of
-  -- Not Done state found
-  ([], 0, 0, InProgress)    ->  STInProgress tBacklog tSelected tEnterWip
-  ([], 0, 0, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
+  if isBacklogWhileInWip trs
+  then
+    -- This state is a InProgress state, followed by a Backlog like state.
+    -- Restart the whole state transition procedure but not taking into account the current
+    -- state. Otherwise, we'll enter in a infinite loop
+    waitingBacklog (L.tail trs)
+  else
+    case (rest1, timeInProgress, timeInReview, firstWipState) of
+    -- Not Done state found
+    ([], 0, 0, InProgress)    ->  STInProgress tBacklog tSelected tEnterWip
+    ([], 0, 0, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
 
-  ([], 0, _, InProgress)    ->  STIllegalStateTransitions -- should never happen by construction
-  ([], 0, _, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, _, InProgress)    ->  STIllegalStateTransitions -- should never happen by construction
+    ([], 0, _, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
 
-  ([], tip, 0, _)           ->  STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
+    ([], tip, 0, _)           ->  STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
 
-  ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
+    ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
 
-  -- At least one Done state found
-  ((_, Done):_, 0, 0, _)    -> STIllegalStateTransitions
-  ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
-  _                         -> STIllegalStateTransitions
+    -- At least one Done state found
+    ((_, Done):_, 0, 0, _)    -> STIllegalStateTransitions
+    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
+    _                         -> STIllegalStateTransitions
 
   where
   -- keep all transitions until we find a Done transition
@@ -135,6 +142,18 @@ enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   -- sum periods where state = InProgress
   timeInProgress =  timeInState InProgress trPeriods
   timeInReview =  timeInState Review trPeriods
+
+-- Is there a backlog state (Backlog|Selected|Planning)
+isBacklogWhileInWip :: [(Int, StateValue)] -> Bool
+isBacklogWhileInWip =
+  go
+  where
+  go [] = False
+  go ((_, Backlog):_) = True
+  go ((_, Planning):_) = True
+  go ((_, Selected):_) = True
+  go (_:rest) = go rest
+
 
 {-
 When encountering 2 consecutive transitions with same State, remove the second.

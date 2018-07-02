@@ -60,8 +60,8 @@ run :: String -> Int -> IO ()
 run authorization nbSims = do
   res <- getAllNoHistory authorization
           [
-           ("CBR", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
-          -- , ("CDEC", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
+           -- ("CBR",  "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
+            ("CDEC", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
           -- , ("CHW", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
 
 --         ("DDW", "issue id: DDW-10")
