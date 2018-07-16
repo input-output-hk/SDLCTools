@@ -1,0 +1,16 @@
+query {
+ organization(login: "input-output-hk") {
+   name
+   repository(name: "cardano-sl") {
+     description
+     forkCount
+     releases(first:1) {
+       edges {
+         node {
+           name
+         }
+       }
+     }
+   }
+ }
+}
