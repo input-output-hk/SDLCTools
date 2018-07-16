@@ -35,7 +35,7 @@ getBlockedDays currentDay nDays stateTransitions changes =
   where
   (tipDay, tdDay) = getWipPeriod currentDay stateTransitions
   wipDays = diffDays tdDay tipDay
-  updateDays = L.map (toDay . fst)  changes
+  updateDays = L.map (toDay . fst) changes
   wipUpdateDays = L.filter (\t -> tipDay <= t && t <= tdDay) updateDays
   touchedDays = S.fromList $ do
     day <- wipUpdateDays
@@ -49,4 +49,26 @@ getWipPeriod currentDay (STInProgress _ _ tip)    = (toDay tip, currentDay)
 getWipPeriod currentDay (STInReview _ _ tip _)    = (toDay tip, currentDay)
 getWipPeriod _          (STDone _ _ tip _ td)     = (toDay tip, toDay td)
 getWipPeriod _          STIllegalStateTransitions = (toDay 0, toDay 0)
+
+
+{-
+Given a period of time, compute the set of touched days while the issue is in WIP.
+-}
+
+touchedDaysInPeriod :: Day -> Integer -> (Day, Day) -> StateTransitions -> [(Int, [ValueChange])] -> S.Set Day
+touchedDaysInPeriod currentDay nDays (startPeriod, endPeriod) stateTransitions changes =
+  touchedDays
+  where
+  (tipDay, tdDay) = getWipPeriod currentDay stateTransitions
+  (tipDay', tdDay') = (max tipDay startPeriod, min tdDay endPeriod)
+  updateDays = L.map (toDay . fst) changes
+  wipUpdateDays = L.filter (\t -> tipDay' <= t && t <= tdDay') updateDays
+  touchedDays = S.fromList $ do
+    day <- wipUpdateDays
+    [addDays (-i) day | i <- [0 .. nDays]]
+
+
+
+
+
 

@@ -47,6 +47,7 @@ library
     , vector
     , xml-to-json-fast
   exposed-modules:
+      Meas.Breakdown
       Meas.Extract.Efficiency
       Meas.Extract.Iohks.Extractor
       Meas.Extract.Iohks.Issue
@@ -75,10 +76,11 @@ executable meas
     , meas
     , bytestring
     , cassava
+    , containers
     , time
 
   other-modules:
-      Paths_meas
+--      Paths_meas
   default-language: Haskell2010
   ghc-options:         -Wall
 

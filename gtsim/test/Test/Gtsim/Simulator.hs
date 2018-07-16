@@ -31,13 +31,15 @@ import            Gtsim.Simulator
 
 tests :: [Test]
 tests = [
-   testProperty "testInvariantsOnlyManySims"            testInvariantsOnlyManySims
-   , testProperty "testInvariantsOnly"                  testInvariantsOnly
-   , testProperty "testOneResource"                     testOneResource
-   , testProperty "testMultipleResources"               testMultipleResources
-   , testProperty "testMultipleResourcesWithParallism"  testMultipleResourcesWithParallism
-   , testProperty "testIndependentProjects"             testIndependentProjects
-   , testProperty "testInvariantsOnly"                  testInvariantsOnly
+
+    testProperty "testInvariantsOnlyManySims"                    testInvariantsOnlyManySims
+    , testProperty "testInvariantsOnly"                          testInvariantsOnly
+    , testProperty "testOneResourceWithDependencies"             testOneResourceWithDependencies
+    , testProperty "testOneResourceWithConstantParallelism"      testOneResourceWithConstantParallelism
+    , testProperty "testMultipleResources"                       testMultipleResources
+    , testProperty "testMultipleResourcesWithConstantParallism"  testMultipleResourcesWithConstantParallism
+    , testProperty "testIndependentProjects"                     testIndependentProjects
+    , testProperty "testInvariantsOnly"                          testInvariantsOnly
     ]
 
 
@@ -120,8 +122,8 @@ testInvariantsOnly =
       Right _ -> True
       Left msg -> trace (show msg) False
 
-testOneResource :: Property
-testOneResource =
+testOneResourceWithDependencies :: Property
+testOneResourceWithDependencies =
   forAll gen prop
   where
   gen = do
@@ -146,6 +148,43 @@ testOneResource =
     case res of
       Right simState -> abs (getFinalEndTime simState - expectedEndTime) < (realToFrac tol)
       Left msg -> trace (show msg) False
+
+
+testOneResourceWithConstantParallelism :: Property
+testOneResourceWithConstantParallelism =
+  forAll gen prop
+  where
+  gen = do
+    let deltaTime = 1
+    (resEff::Rational) <-  choose (0.5 , 2.0::Float) >>= (return . realToFrac)
+    let resEffFun = const resEff
+    nbParalellTasks <- choose (1, 4)
+    let resource = MkResource "R1" resEffFun (return nbParalellTasks)  -- 1 to 4 parallel tasks
+    (manDays::Rational) <- choose (10, 20::Int)  >>= (return . realToFrac)
+    let manDaysGenGen = return $ return manDays
+    nbTasks <- choose (2, 10) >>= return . (*) nbParalellTasks
+    tasks <- genTasks "PRJ" [resource] manDaysGenGen 0 nbTasks
+    let endTime = manDays * (fromIntegral nbTasks) / resEff / fromIntegral nbParalellTasks
+    -- No dependency
+    dependencies <- genDependencies 0 (L.map tId tasks)
+
+    let (simState, problemDefinition) = initialize tasks [resource] dependencies (return True)
+
+    -- time to run the simulation
+    simRes <- runSimulation inv finalInv  problemDefinition deltaTime simState
+    return (simRes, endTime)
+
+  prop (res, expectedEndTime) =
+    case res of
+      Right simState ->  abs (getFinalEndTime simState - expectedEndTime) < (realToFrac tol)
+      Left msg -> trace (show msg) False
+
+decreasingEffs :: Rational -> (Int -> Rational)
+decreasingEffs eff  =
+  (m M.!)
+  where
+  m = M.fromList $ (0,eff) : map (\i -> (i, eff / fromIntegral i)) [1..]
+
 
 testMultipleResources :: Property
 testMultipleResources =
@@ -177,8 +216,8 @@ testMultipleResources =
       Left msg -> trace (show msg) False
 
 
-testMultipleResourcesWithParallism :: Property
-testMultipleResourcesWithParallism =
+testMultipleResourcesWithConstantParallism :: Property
+testMultipleResourcesWithConstantParallism =
   forAll gen prop
   where
   gen = do

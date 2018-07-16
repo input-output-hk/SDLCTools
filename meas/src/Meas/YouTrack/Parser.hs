@@ -53,6 +53,7 @@ data GenericIssueField =
   GProjectField T.Text
   |GTypeField T.Text
   |GCreatedField T.Text
+  |GUpdatedField T.Text
   |GNumberField T.Text
   |GSummaryField T.Text
   |GDescriptionField T.Text
@@ -159,6 +160,7 @@ issueFieldParser =
           "projectShortName"  -> issueSimpleFieldParser GProjectField o
           "numberInProject"   -> issueSimpleFieldParser GNumberField o
           "created"           -> issueSimpleFieldParser GCreatedField o
+          "updated"           -> issueSimpleFieldParser GUpdatedField o
           "summary"           -> issueSimpleFieldWithDefaultParser T.empty GSummaryField o
           "description"       -> issueSimpleFieldWithDefaultParser T.empty GDescriptionField o
           "Type"              -> issueSimpleFieldParser GTypeField o

@@ -12,7 +12,7 @@
 module Meas.Extract.Issue
 where
 
--- import Debug.Trace (trace)
+import Debug.Trace (trace)
 
 import            Control.Lens hiding (element, (.=))
 
@@ -47,6 +47,7 @@ extractTask parent genericIssue =
   task1 = foldr updater task0 (issueFields genericIssue)
   task0 = defaultTask {_yttTaskId = issueId genericIssue, _yttParent = parent}
   updater (GCreatedField s)     = set yttCreated (read $ T.unpack s)
+  updater (GUpdatedField s)     = set yttUpdated (Just $ read $ T.unpack s)
 --  updater (GSummaryField s)     = set yttSummary s
 --  updater (GDescriptionField s) = set yttDescription s
   updater (GProjectField s)     = set yttProject s
@@ -67,7 +68,9 @@ extractIssue genericIssue =
   where
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIssue {_ytiIssueId = issueId genericIssue}
+  updater (GTypeField s)        = set ytiType s
   updater (GCreatedField s)     = set ytiCreated (read $ T.unpack s)
+  updater (GUpdatedField s)     = set ytiUpdated (Just $ read $ T.unpack s)
 --  updater (GSummaryField s)     = set ytiSummary s
 --  updater (GDescriptionField s) = set ytiDescription s
   updater (GDueDateField s)     = set ytiDueDate (read $ T.unpack s)

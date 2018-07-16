@@ -45,7 +45,7 @@ import System.IO
 main :: IO ()
 main = do
   (MkOptions {..}) <- parseCliArgs
-  run optAuth 100
+  run optAuth 42 100
  -- zz' <- LO.zz 50000
   --mapM LO.z $ L.take 10 $ L.repeat 1
  -- print zz'
@@ -56,13 +56,13 @@ main = do
 
 
 
-run :: String -> Int -> IO ()
-run authorization nbSims = do
+run :: String -> Int -> Int -> IO ()
+run authorization seed nbSims = do
   res <- getAllNoHistory authorization
           [
            -- ("CBR",  "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
             ("CDEC", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
-          -- , ("CHW", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
+          -- ("CHW", "Type:{User Story} #Bug State: Backlog #Selected #Planning sort by: {issue id} asc")
 
 --         ("DDW", "issue id: DDW-10")
 --         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
@@ -88,19 +88,15 @@ run authorization nbSims = do
 
   let ts = (pdTasksPerResource problemDefinition)
 
---  print("------------------------------------")
---  print ts
-  print ("------------------------------------")
-  print $ M.size (pdTasks problemDefinition)
-  print ("------------------------------------")
+  putStrLn $ "Nb of issues: " ++ (show $ M.size $ pdTasks problemDefinition)
 
-  print $ pdTasks problemDefinition
+--  print $ pdTasks problemDefinition
   let simRes = runSimulations
                 --I.simStateInv I.finalSimStateAdditionalInv
                 (const []) (\_ _ -> [])
                 problemDefinition 1 simState
-                getFinalEndTime (stats) -- . map fromRational) -- (\xs -> map (\x-> (fromRational x)::Float) xs)
-                42 nbSims
+                getFinalEndTime stats
+                seed nbSims
 
   putStrLn "results"
   --mapM print simRes

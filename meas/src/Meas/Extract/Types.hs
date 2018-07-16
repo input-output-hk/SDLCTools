@@ -119,9 +119,11 @@ data StateTransitions =
 
 data YtIssue = MkYtIssue
   { _ytiIssueId           :: T.Text
+  , _ytiType              :: T.Text
   , _ytiSummary           :: T.Text
   , _ytiDescription       :: T.Text
   , _ytiCreated           :: Int
+  , _ytiUpdated           :: Maybe Int
   , _ytiProject           :: T.Text
   , _ytiNumber            :: Int
   , _ytiState             :: StateValue
@@ -146,7 +148,7 @@ makeLenses ''YtIssue
 
 defaultIssue :: YtIssue
 defaultIssue = MkYtIssue
-  T.empty T.empty T.empty  0 T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
+  T.empty T.empty T.empty T.empty 0 Nothing T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
   Nothing Nothing [] [] Successful [] [] STIllegalStateTransitions 0 []
 
 
@@ -155,6 +157,7 @@ data YtTask = MkYtTask
   , _yttSummary           :: T.Text
   , _yttDescription       :: T.Text
   , _yttCreated           :: Int
+  , _yttUpdated           :: Maybe Int
   , _yttProject           :: T.Text
   , _yttNumber            :: Int
   , _yttState             :: StateValue
@@ -173,7 +176,7 @@ data YtTask = MkYtTask
 makeLenses ''YtTask
 
 defaultTask :: YtTask
-defaultTask = MkYtTask T.empty T.empty T.empty  0 T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
+defaultTask = MkYtTask T.empty T.empty T.empty 0 Nothing T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
 
 
 instance FromText StateValue where
@@ -183,8 +186,11 @@ instance FromText StateValue where
   fromText "In Progress"                        = InProgress
   fromText "Review"                             = Review
   fromText "Done"                               = Done
+  fromText "Backlog (pool of Ideas)"            = Backlog
+  fromText "To Verify"                          = Backlog
 
 -- old stuff in YouTrack ...
+  fromText "Closed"                             = Done
   fromText "No State"                           = Backlog
   fromText "No state"                           = Backlog
   fromText "Open"                               = Backlog
@@ -393,6 +399,7 @@ defaultIssueHeader = header
   , "Project"
   , "Squad", "Owner"
   , "Target Version"
+  , "Type"
   , "State"
   ]
 
@@ -404,6 +411,7 @@ instance ToNamedRecord YtIssue where
         , "InProgress"      .= maybe T.empty intToDateText (getInProgressTime _ytiStateTransitions)
         , "Review"          .= maybe T.empty intToDateText (getReviewTime _ytiStateTransitions)
         , "Done"            .= maybe T.empty intToDateText (getDoneTime _ytiStateTransitions)
+        , "Type"            .= _ytiType
         , "Project"         .= _ytiProject
         , "Squad"           .= _ytiSquad
         , "Owner"           .= _ytiOwner

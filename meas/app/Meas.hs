@@ -13,9 +13,13 @@
 
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.Csv as CSV
+import qualified  Data.List as L
+import qualified  Data.Map.Strict as M
+import            Data.Time.Calendar
 import            Data.Time.Clock
 
 
+import Meas.Breakdown
 import Meas.Extract.Types
 import Meas.Extractor
 import Meas.Extract.Misc
@@ -32,6 +36,9 @@ run :: String -> IO ()
 run authorization = do
   res <- getAll authorization
           [
+            --("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+           -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
+
       --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
 --         ("DDW", "issue id: DDW-10")
 --         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
@@ -39,9 +46,12 @@ run authorization = do
           -- ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} desc")
          --            ("CO", "issue id: CO-14")
 
-          ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
-          , ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+       --    ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+
+
+          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
           , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
@@ -87,6 +97,31 @@ run authorization = do
   let csvIssueReportLBS = CSV.encodeByName defaultIssueReportHeader $ map (IssueReport currentDay) allIssues
   LBS.writeFile   "issue-report.csv" LBS.empty
   LBS.appendFile  "issue-report.csv" csvIssueReportLBS
+
+  -- compute project breakdown
+
+  let periods = let
+        days = L.map (\(y, m) -> fromGregorian (fromIntegral y) m 1) [(y, m) | y <- [2018], m <- [1 .. 12]]
+        in L.zip days (L.tail days)
+  currentDay <- getCurrentTime >>= (return . utctDay)
+
+  let (bds :: [Breakdown]) = L.concatMap (\p@(s, e) -> L.map (\(prj, r) -> MkBreakdown s e prj r) $ M.toList $ projectBreakDown goodTasks currentDay p) periods
+  let bdsLBS = CSV.encodeByName defaultBreakdownHeader bds
+  LBS.writeFile   "breakdown-by-tasks.csv" LBS.empty
+  LBS.appendFile  "breakdown-by-tasks.csv" bdsLBS
+
+  return ()
+
+--projectBreakDown :: [YtTask] -> Day -> (Day, Day) -> M.Map T.Text Float
+
+
+--fromGregorian :: Integer -> Int -> Int -> Day
+
+
+
+
+
+
 
 
 

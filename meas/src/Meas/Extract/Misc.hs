@@ -38,6 +38,8 @@ intToDateText n = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSeconds
 intToStdDateText :: Int -> T.Text
 intToStdDateText n = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
 
+dayToStdDateText :: Day -> T.Text
+dayToStdDateText d = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) d
 
 
 

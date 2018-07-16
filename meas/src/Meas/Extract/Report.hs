@@ -16,6 +16,7 @@ where
 
 import            Data.Csv
 import qualified  Data.List as L
+import qualified  Data.Text as T
 import            Data.Time.Calendar
 
 import            Meas.Extract.Misc
@@ -28,6 +29,7 @@ defaultTaskReportHeader :: Header
 defaultTaskReportHeader = header
   [ "IssueId"
   , "Project"
+  , "Summary"
   , "State"
   , "Cycle Time"
   , "Age"
@@ -41,6 +43,7 @@ instance ToNamedRecord TaskReport where
     toNamedRecord (TaskReport currentDay MkYtTask{..}) = namedRecord
         [ "IssueId"       .= _yttTaskId
         , "Project"       .= _yttProject
+        , "Summary"       .= _yttSummary
         , "State"         .= show _yttState
         , "Cycle Time"    .= cycleTime currentDay _yttStateTransitions
         , "Age"           .= ageInCurrentState currentDay _yttCreated _yttChanges
@@ -50,6 +53,7 @@ instance ToNamedRecord TaskReport where
         , "Assignee-2"    .= a2
         , "Assignee-3"    .= a3
         , "Parent"        .= _yttParent
+        , "Last Updated"    .= (maybe T.empty intToStdDateText  _yttUpdated)
         ]
         where
         (a1:a2:a3:_) = _yttAssignees ++ L.repeat ""
@@ -68,6 +72,8 @@ defaultIssueReportHeader :: Header
 defaultIssueReportHeader = header
   [ "IssueId"
   , "Project"
+  , "Summary"
+  , "Type"
   , "State"
   , "Resolution"
   , "Cycle Time"
@@ -77,12 +83,15 @@ defaultIssueReportHeader = header
   , "Owner"
   , "Target Version"
   , "Due Date"
+  , "Last Updated"
   ]
 
 instance ToNamedRecord IssueReport where
     toNamedRecord (IssueReport currentDay MkYtIssue{..}) = namedRecord
         [ "IssueId"         .= _ytiIssueId
         , "Project"         .= _ytiProject
+        , "Summary"         .= _ytiSummary
+        , "Type"            .= show _ytiType
         , "State"           .= show _ytiState
         , "Resolution"      .= show _ytiResolution
         , "Cycle Time"      .= cycleTime currentDay _ytiStateTransitions
@@ -92,6 +101,7 @@ instance ToNamedRecord IssueReport where
         , "Owner"           .= _ytiOwner
         , "Target Version"  .= tv
         , "Due Date"        .= intToStdDateText _ytiDueDate
+        , "Last Updated"    .= (maybe T.empty intToStdDateText  _ytiUpdated)
         ]
         where
         (tv:_) = _ytiTargetVersions ++ L.repeat ""

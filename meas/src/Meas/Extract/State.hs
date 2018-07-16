@@ -180,6 +180,9 @@ Sum the period of times when `state'` is active.
 timeInState :: Eq s => s -> [(Int, s)] -> Int
 timeInState state trPeriods = L.sum $ L.map fst $ L.filter (\(_, s) -> s == state) trPeriods
 
+--lastUpdatedTime :: [(Int, a)] -> Maybe Int
+--lastUpdatedTime [] = Nothing
+--lastUpdatedTime changes = Just $ L.maximum $ L.map fst changes
 
 -- compute the age of the issue in its current state
 timeOfCurrentState :: Int ->  [(Int, [ValueChange])] -> Int

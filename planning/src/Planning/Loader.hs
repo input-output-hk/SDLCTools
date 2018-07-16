@@ -65,11 +65,13 @@ iohkResources =
   , MkResource "Squad 3"          (stdResourceEfficiency 2.5) parTaskGen
   , MkResource "Squad 4"          (stdResourceEfficiency 2.5) parTaskGen
   , MkResource "New Wallet Squad" (stdResourceEfficiency 5.0) parTaskGen
-  , MkResource "Core Squad"       (stdResourceEfficiency 6.0) parTaskGen
+  , MkResource "Core Squad"       (stdResourceEfficiency 5.0) parTaskGen
   , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+  , MkResource "Network Squad"    (stdResourceEfficiency 3.0) parTaskGen
+  , MkResource "Dev"              (stdResourceEfficiency 1.0) parTaskGen
   ]
   where
-  parTaskGen = choose (1, 3)
+  parTaskGen = choose (1, 2)
 
 iohkResourceMap = M.fromList $ map (\r -> (rId r, r)) iohkResources
 
@@ -86,7 +88,7 @@ stdResourceEfficiency baseEff =
   where
   effs = zipWith (\i f -> (i, let b = fromIntegral i * (1+f) in baseEff / b)) [1..] switchPercent
   --switchPercent = L.take 10 $ L.repeat 0.0
-  switchPercent = [0, 0.05, 0.05, 0.20, 0.30, 0.45, 0.7, 1, 1.5, 2.0, 2.0, 3.0]
+  switchPercent = [0, 0.05, 0.10, 0.15, 0.30, 0.45, 0.7, 1, 1.5, 2.0, 2.0, 3.0]
 
 
 initialize :: [Resource] -> [YtIssue] -> (SimState, ProblemDefinition)
@@ -104,7 +106,10 @@ mkTask (MkYtIssue {..}) = do
   let tId = T.unpack _ytiIssueId
   let tProjectId = T.unpack _ytiProject
   let tManDaysGen = romMandaysToGen romMandays
-  let tCanBeDoneBy = map T.unpack _ytiPotentialSquad
+  let tCanBeDoneBy =
+        if L.null _ytiPotentialSquad
+          then ["Dev"]
+          else map T.unpack _ytiPotentialSquad
   if L.null tCanBeDoneBy
     then fail ""
     else return $ MkTask {..}
@@ -113,57 +118,8 @@ mkTask (MkYtIssue {..}) = do
 
 
 
-
-{-
-
-
-{-}
-data ProblemDefinition = MkProblemDefinition
-  { pdTasks                  :: M.Map TaskId Task         -- ^ All initial Tasks
-  , pdResources              :: M.Map ResourceId Resource -- ^ All available Resources
-  , pdTasksPerResource       :: [(ResourceId, TaskId)]    -- ^ (R, T): the resource R can work on task T
-  , pdDependencies           :: M.Map TaskId [TaskId]     -- ^ The dependent Task (key) must start after all of the pre-requisites Tasks (values) are completed.
-  , pdRunningAssignmentGen   :: Gen Bool                  -- ^ Generator of Running/Waiting flag. Corresponds to the WaitingAssignmentProb in the specs.
-  }
--}
-
-data Resource = MkResource
-  { rId                       :: ResourceId           -- ^ Identifier of the Resource
-  , rEfficiency               :: Int -> ManDaysPerDay -- ^ Efficiency wrt the number of concurrent running Assignment. rEfficiency 0 == rEfficiency 1
-  , rNbActiveAssignmentsGen   :: Gen Int              -- ^ Generator for the number of concurrent Active Assignments for this Resource.
-  }
-data Task = MkTask
-  { tId               :: TaskId         -- ^ Identifier of the Task
-  , tProjectId        :: ProjectId      -- ^ Project the Task belongs to
-  , tManDaysGen       :: Gen ManDays    -- ^ Generator of effort in man.days for this Task
-  , tCanBeDoneBy      :: [ResourceId]   -- ^ Resources that can work on this Task
-  }
-
-data YtIssue = MkYtIssue
-  { _ytiIssueId           :: T.Text
-  , _ytiCreated           :: Int
-  , _ytiProject           :: T.Text
-  , _ytiNumber            :: Int
-  , _ytiState             :: StateValue
-  , _ytiWait              :: WaitValue
-  , _ytiDueDate           :: Int
-  , _ytiROMManday         :: Maybe ROMMandaysValue
-  , _ytiPPriorities       :: (Int, Int, Int)
-  , _ytiSquad             :: Maybe T.Text
-  , _ytiOwner             :: Maybe T.Text
-  , _ytiPotentialSquad    :: [T.Text]
-  , _ytiTargetVersions    :: [T.Text]
-  , _ytiLinks             :: [(LinkType, T.Text)]
-  , _ytiChanges           :: [(Int, [ValueChange])]
-  , _ytiStateTransitions  :: StateTransitions
-  , _ytiBlockedDays       :: Integer
-  , _ytiErrors            :: [String]
-  }
-  deriving (Show, Generic, NFData)-}
-
-
 romMandaysToGen :: ROMMandaysValue -> Gen ManDays
-romMandaysToGen Days      = mandaysGen 0.5  4.0    >>= (return . toRational)
+romMandaysToGen Days      = mandaysGen 1.0  4.0    >>= (return . toRational)
 romMandaysToGen Weeks     = mandaysGen 3.0  13.0   >>= (return . toRational)
 romMandaysToGen Months    = mandaysGen 12.0 45.0   >>= (return . toRational)
 romMandaysToGen Quarters  = mandaysGen 40.0 100.0  >>= (return . toRational)
@@ -171,9 +127,4 @@ romMandaysToGen Quarters  = mandaysGen 40.0 100.0  >>= (return . toRational)
 mandaysGen min max = do
   x <- betaGen
   return $ min + (max - min) * x
-
---romMandaysToGen Days      = choose (0.5 , 4.0::Float)    >>= (return . toRational)
---romMandaysToGen Weeks     = choose (3.0 , 13.0::Float)   >>= (return . toRational)
---romMandaysToGen Months    = choose (12.0, 45.0::Float)   >>= (return . toRational)
---romMandaysToGen Quarters  = choose (40.0, 100.0::Float)  >>= (return . toRational)
 

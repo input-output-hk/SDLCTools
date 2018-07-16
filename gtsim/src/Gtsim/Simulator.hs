@@ -280,7 +280,7 @@ updateActiveAssignmentsForResource MkProblemDefinition{..} nextTime (simState@Mk
   let activeAssignmentsToWorkOn = L.filter aaRunning activeAssignments
   -- determine the efficiency
   let eff = rEfficiency $ L.length activeAssignmentsToWorkOn
-  let !r = trace (show ((fromRational eff::Float), L.length activeAssignmentsToWorkOn)) ()
+--  let !r = trace (show ((fromRational eff::Float), L.length activeAssignmentsToWorkOn)) ()
   -- update the remaining mandays, possibly completing tasks
   -- verify strictness here
   --
