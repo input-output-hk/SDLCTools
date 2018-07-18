@@ -24,6 +24,8 @@ dependencies:
 - aeson
 - bytestring
 - http-conduit
+- text
+- unordered-containers
 
 library:
   source-dirs: src

@@ -1,30 +1,84 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE DeriveAnyClass     #-}
+{-# LANGUAGE RecordWildCards    #-}
 module Main where
 
 import qualified Data.ByteString.Char8 as L8
 import qualified Data.ByteString.Lazy.Char8 as LL8
 import           Network.HTTP.Simple
 import           System.Environment (getArgs)
+import           Control.Monad
+import           GHC.Generics
+import           Data.Aeson
+import           Data.Aeson.Types
+import qualified Data.Text as T
+import qualified Data.HashMap.Strict as HM
 
-main :: IO ()
-main = do
+
+
+data PullRequest = PullRequest {
+                   title       :: Maybe Title
+                 , isMerged    :: Maybe Bool
+                 , isMergeable :: Maybe MergeableStatus
+                 } deriving ( Show, Eq, Generic)
+
+data MergeableStatus = Mergeable | NotMergeable
+ deriving (Show, Eq, Generic, FromJSON, ToJSON)
+
+type Title = T.Text
+
+samplePullReq = PullRequest (Just "someTitle") (Just True) (Just Mergeable)
+
+main = print "OK"
+
+
+instance FromJSON PullRequest where
+ parseJSON = parseResponse
+
+parseResponse :: Value -> Parser PullRequest
+parseResponse = withObject "PullRequest" $ \o -> do
+  data_        <- o            .: "data"
+  organisation <- data_        .: "organization"
+  repository   <- organisation .: "repository"
+  pullRequests <- repository   .: "pullRequests"
+  edges        <- pullRequests .: "edges"
+  pr <- forM edges parsePullrequest
+  return (head pr)
+
+
+parsePullrequest :: Value -> Parser PullRequest
+parsePullrequest v = do
+    node         <- withObject "PullRequest"  (.: "node") v
+    title_       <- node .: "title"
+    isMerged_    <- node .: "merged"
+    isMergeable_ <- node .: "mergeable"
+    return $ PullRequest title_ isMerged_ isMergeable_
+
+
+--query response I'm trying to parse but not successful yet
+resp :: LL8.ByteString
+resp = "{\"data\":{\"organization\":{\"repository\":{\"pullRequests\":{\"edges\":[{\"node\":{\"title\":\"[CDEC-432] Switch `JsonLog` & `Mockable` imports from networking to core\",\"merged\":false,\"createdAt\":\"2018-07-18T14:18:59Z\",\"mergeable\":\"MERGEABLE\"}}]}}}}}\n"
+
+
+runQuery :: IO (LL8.ByteString)
+runQuery = do
   -- tokenFileName <- head <$> getArgs
   authorization <- (("token " ++) . init) <$> readFile tokenFilePath
-  print  authorization
 
-  req' <- parseRequest "https://api.github.com/graphql"
+  req' <- parseRequest "POST https://api.github.com/graphql"
   let req = setRequestHeaders [ ("User-Agent", "Firefox")
                               , ("Authorization", L8.pack authorization)
-                              , ("Content-Type", "application/json") ]
-          . setRequestMethod "POST"
-          . setRequestBodyLBS ( LL8.pack query) $ req'  --if you want to see a positive feedback uncomment this line and comment next line
-  --        . setRequestBodyFile queryFilePath $ req'  -- if you want to try query from file commentout this and add comment above
+                              , ("Content-Type", "application/json")
+                              ]
+          . setRequestBodyFile queryFilePath $ req'
 
   response <- httpLBS req
   putStrLn $ "The status code was: " ++
               show (getResponseStatusCode response)
-  LL8.putStrLn $ getResponseBody response
+  let responseBody = getResponseBody response
+  --LL8.putStrLn responseBody
+  return responseBody
 
 query :: String
 query = "{ \"query\" : \"{ viewer { login }}\"}"
@@ -36,3 +90,8 @@ tokenFilePath = "/home/deepak/IOHK-work/github/copytoken"
 -- set it your sample graphql query file path
 queryFilePath :: FilePath
 queryFilePath = "/home/deepak/IOHK-work/SDLCTools/GHStats/app/query"
+
+
+
+
+
