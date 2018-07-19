@@ -47,7 +47,7 @@ instance FromJSON MergeableStatus where
   case t of
     "MERGEABLE" -> return Mergeable
     -- Check whether NOTMERGEABLE is a legal value
-    -- d-k : Yes you are write its not
+    -- d-k : Yes you are right its not, will include other status in main branch
     "NOTMERGEABLE" -> return NotMergeable
     _ -> fail ("Bad Mergeable Status: " ++ T.unpack t)
 
