@@ -22,6 +22,9 @@ import qualified Data.HashMap.Strict as HM
 
 data PullRequest = PullRequest {
                    title       :: Maybe Title    -- J-C are you sure Maybe is needed ? try with resp1 and see what happens
+                                                 -- D-K : hmm Maybe I kept so that if we run query without a particular field
+                                                 -- for e.g `Title` then also it should be parsed successfuly.
+                                                 -- now it runs on resp1 because title field should take Text (not bool).
                  , isMerged    :: Maybe Bool
                  , isMergeable :: Maybe MergeableStatus
                  } deriving ( Show, Eq, Generic)
@@ -44,6 +47,7 @@ instance FromJSON MergeableStatus where
   case t of
     "MERGEABLE" -> return Mergeable
     -- Check whether NOTMERGEABLE is a legal value
+    -- d-k : Yes you are write its not
     "NOTMERGEABLE" -> return NotMergeable
     _ -> fail ("Bad Mergeable Status: " ++ T.unpack t)
 
@@ -75,7 +79,7 @@ resp :: LL8.ByteString
 resp = "{\"data\":{\"organization\":{\"repository\":{\"pullRequests\":{\"edges\":[{\"node\":{\"title\":\"[CDEC-432] Switch `JsonLog` & `Mockable` imports from networking to core\",\"merged\":false,\"createdAt\":\"2018-07-18T14:18:59Z\",\"mergeable\":\"MERGEABLE\"}}]}}}}}\n"
 
 resp1 :: LL8.ByteString
-resp1 = "{\"data\":{\"organization\":{\"repository\":{\"pullRequests\":{\"edges\":[{\"node\":{\"title\":true,\"merged\":false,\"createdAt\":\"2018-07-18T14:18:59Z\",\"mergeable\":\"MERGEABLE\"}}]}}}}}\n"
+resp1 = "{\"data\":{\"organization\":{\"repository\":{\"pullRequests\":{\"edges\":[{\"node\":{\"title\":\"someTitle\",\"merged\":false,\"createdAt\":\"2018-07-18T14:18:59Z\",\"mergeable\":\"MERGEABLE\"}}]}}}}}\n"
 
 
 runQuery :: IO (LL8.ByteString)
