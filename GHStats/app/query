@@ -1,1 +1,0 @@
-{"query":"query {\n  organization(login: \"input-output-hk\") {\n    repository(name: \"cardano-sl\") {\n      pullRequests(last: 1) {\n        edges {\n          node {\n            title\n            merged\n            mergeable\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{}}
