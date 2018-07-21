@@ -1,0 +1,61 @@
+{
+  "data": {
+    "organization": {
+      "repository": {
+        "pullRequest": {
+          "commits": {
+            "totalCount": 6,
+            "pageInfo": {
+              "hasNextPage": false,
+              "endCursor": "Ng=="
+            },
+            "nodes": [
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6NjZiOGVkODhhNTQ4YmEwOGNhZDRjYmQ5MGRhODc1OGQ1MTc5MTYzMQ==",
+                  "message": "[CSL-2087] Primary endpoints speedup (#2122)\n\n* [CSL-2087] Add additional logging for checking timing\n\n* [CSL-2087] Enable deserialization hashing for CId for wallets, newPayment, history endpoints\n\n* [CSL-2087] Speed up `newAddress`\n\n* [CSL-2034]  fix | appveyor:  the OpenSSL package was updated, fix URL\n\n* [CSL-2087] Use set to filter out mempool addresses in `getAccount`\n\n* [CSL-2087] Add lower bound on `newPayment` duration\n\n* Use atomic cache updates\n\n* Update pkgs/default.nix",
+                  "committedDate": "2018-01-08T12:42:33Z"
+                }
+              },
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZjkwNzE5ZTZjMTM1OTg0MTU0ZDliMGQ0MGY5OWQ1MDZlNGM0OWEwYQ==",
+                  "message": "[CSL-2087] Search signer by address using map, not list",
+                  "committedDate": "2018-01-08T12:47:19Z"
+                }
+              },
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6M2RhMjQwM2FiYWQ5NzZjYjY1ZWRhMDk5MDY4ZWE1MGJkOWFhNjU2MQ==",
+                  "message": "[CSL-2087] Add more logs in `newPayment` endpoint",
+                  "committedDate": "2018-01-08T12:55:00Z"
+                }
+              },
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6MTdhNjhlYzU2NWJhNWNkZDBkN2U4ZTY2MmJkNTIyOTRlZDlmZTVlNw==",
+                  "message": "[CSL-2087] More logs in `getHistory`, remove huge ones",
+                  "committedDate": "2018-01-08T12:55:21Z"
+                }
+              },
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6YmJkZjc0OGNhNjc3YTA0ZmNhNzAzZjhkMjMyMzc5NTk0NjA4MTlkYg==",
+                  "message": "[CSL-2087] Add logs to `getWallets`",
+                  "committedDate": "2018-01-08T13:02:33Z"
+                }
+              },
+              {
+                "commit": {
+                  "id": "MDY6Q29tbWl0NzA5MTM5OTc6N2QwZmU2ZDFiOTM2NWMyNTU0ZDdmNGRlOWQ1N2I1MmRlZWUzOGZlMQ==",
+                  "message": "[CSL-2124] Create special log-config for exchanges\n\n1. Remove time rounding\n2. Increase amount of logs remaining",
+                  "committedDate": "2018-01-08T13:02:47Z"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
