@@ -17,10 +17,12 @@ import qualified Data.HashMap.Strict as HM
 import           Types
 
 main = do
-  resp <- runQuery commitQueryFilePath
-  let parsedJSON = eitherDecode resp :: Either String CommitList
-  print parsedJSON
-
+  respCommit  <- runQuery commitQueryFilePath
+  respComment <- runQuery commentQueryFilePath
+  let parsedCommitJSON  = eitherDecode respCommit  :: Either String CommitList
+      parsedCommentJSON = eitherDecode respComment :: Either String CommentList
+  print parsedCommitJSON
+  print parsedCommentJSON
 
 runQuery :: FilePath -> IO (BL8.ByteString)
 runQuery queryFilePath = do
@@ -47,3 +49,7 @@ tokenFilePath = "/home/deepak/IOHK-work/github/copytoken"
 -- set it your sample graphql query file path for commits
 commitQueryFilePath :: FilePath
 commitQueryFilePath = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryCommit"
+
+-- set it your sample graphql query file path for comments
+commentQueryFilePath :: FilePath
+commentQueryFilePath = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryComment"
