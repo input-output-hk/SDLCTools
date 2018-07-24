@@ -11,13 +11,32 @@ import           GHC.Generics
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Text
-import qualified Data.HashMap.Strict as HM
+
+data PullRequest = PullRequest {
+                   prId        :: Id
+                 , prNumber    :: Int
+                 , prTitle     :: Title
+                 , prCreatedAt :: Date
+                 , prState     :: PRState
+                 , prClosed    :: Bool
+                 , prClosedAt  :: Maybe Date
+                 , prMerged    :: Bool
+                 , prMergedAt  :: Maybe Date
+                 , prCommits   :: [Commit]
+                 , prComments  :: [Comment]
+                 } deriving ( Show, Eq, Generic)
+
+instance FromJSON PullRequest where
+  parseJSON = parseResponse
 
 data Commit = Commit {
               cId            :: Id
             , cCommittedDate :: Date
             , cMessage       :: Message
             } deriving ( Show, Eq, Generic)
+
+instance FromJSON Commit where
+  parseJSON = parseCommit
 
 data Comment = Comment {
                coId        :: Id
@@ -26,13 +45,20 @@ data Comment = Comment {
              , coAuthor    :: Author
              } deriving ( Show, Eq, Generic)
 
+instance FromJSON Comment where
+  parseJSON = parseComment
+
 data Author = Author {
               auName :: Name
             } deriving ( Show, Eq, Generic)
 
-data PullRequest = PullRequest {
-                   prTitle       :: Title
-                 } deriving ( Show, Eq, Generic)
+instance FromJSON Author where
+  parseJSON = withObject "Author" $ \o -> do
+    auName <- o .: "name"
+    return Author{..}
+
+data PRState = OPEN | CLOSED | MERGED
+  deriving ( Show, Eq, Generic, FromJSON)
 
 type Title    = Text
 type Id       = Text
@@ -41,21 +67,28 @@ type Name     = Text
 type Message  = Text
 type BodyText = Text
 
-newtype CommitList = CommitList [Commit]
-  deriving ( Show, Eq, Generic)
-
-instance FromJSON CommitList where
-  parseJSON v = CommitList <$> parseAllCommit v
-
-parseAllCommit :: Value -> Parser [Commit]
-parseAllCommit = withObject "Commits" $ \o -> do
+parseResponse :: Value -> Parser PullRequest
+parseResponse = withObject "PullRequest" $ \o -> do
   data_        <- o            .: "data"
   organisation <- data_        .: "organization"
   repository   <- organisation .: "repository"
   pullRequest  <- repository   .: "pullRequest"
-  commits      <- pullRequest  .: "commits"
-  commitNodes  <- commits      .: "nodes"
-  forM commitNodes parseCommit
+  prId         <- pullRequest  .: "id"
+  prNumber     <- pullRequest  .: "number"
+  prTitle      <- pullRequest  .: "title"
+  prCreatedAt  <- pullRequest  .: "createdAt"
+  prState      <- pullRequest  .: "state"
+  prClosed     <- pullRequest  .: "closed"
+  prClosedAt   <- pullRequest  .: "closedAt"
+  prMerged     <- pullRequest  .: "merged"
+  prMergedAt   <- pullRequest  .: "mergedAt"
+  allCommits   <- pullRequest  .: "commits"
+  commitNodes  <- allCommits   .: "nodes"
+  prCommits    <- forM commitNodes parseCommit
+  allComments  <- pullRequest  .: "comments"
+  commentNodes <- allComments  .: "nodes"
+  prComments   <- forM commentNodes parseComment
+  return PullRequest{..}
 
 parseCommit :: Value -> Parser Commit
 parseCommit = withObject "Commit" $ \commitNode -> do
@@ -65,27 +98,6 @@ parseCommit = withObject "Commit" $ \commitNode -> do
   cMessage       <- commit     .: "message"
   return Commit{..}
 
-instance FromJSON Author where
-  parseJSON = withObject "Author" $ \o -> do
-    auName <- o .: "name"
-    return Author{..}
-
-newtype CommentList = CommentList [Comment]
-  deriving ( Show, Eq, Generic)
-
-instance FromJSON CommentList where
-  parseJSON v = CommentList <$> parseAllComment v
-
-parseAllComment :: Value -> Parser [Comment]
-parseAllComment = withObject "Comments" $ \o -> do
-  data_        <- o            .: "data"
-  organisation <- data_        .: "organization"
-  repository   <- organisation .: "repository"
-  pullRequest  <- repository   .: "pullRequest"
-  comments     <- pullRequest  .: "comments"
-  commentNodes <- comments     .: "nodes"
-  forM commentNodes parseComment
-
 parseComment :: Value -> Parser Comment
 parseComment = withObject "Comment" $ \comment -> do
   coId        <- comment .: "id"
@@ -93,18 +105,3 @@ parseComment = withObject "Comment" $ \comment -> do
   coCreatedAt <- comment .: "createdAt"
   coAuthor    <- comment .: "author"
   return Comment{..}
-
-instance FromJSON PullRequest where
-  parseJSON = parseResponse
-
-parseResponse :: Value -> Parser PullRequest
-parseResponse = withObject "PullRequest" $ \o -> do
-  data_        <- o            .: "data"
-  organisation <- data_        .: "organization"
-  repository   <- organisation .: "repository"
-  pullRequest  <- repository   .: "pullRequest"
-  prTitle      <- pullRequest  .: "title"
-  return $ PullRequest{..}
-
-
-
