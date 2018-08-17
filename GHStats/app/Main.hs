@@ -12,11 +12,14 @@ import           GHC.Generics
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Types
+import           Extract
 
 main = do
   respPr <- runQuery prQueryFilePath
   let parsedPrJSON  = eitherDecode respPr  :: Either String PullRequest
   print parsedPrJSON
+  print "now our useful data"
+  either print (print . getPrData) parsedPrJSON
 
 runQuery :: FilePath -> IO (BL8.ByteString)
 runQuery queryFilePath = do

@@ -5,7 +5,6 @@
 module Types where
 
 import qualified Data.ByteString.Char8 as B8
-import qualified Data.ByteString.Lazy.Char8 as BL8
 import           Control.Monad
 import           GHC.Generics
 import           Data.Aeson
@@ -60,12 +59,13 @@ instance FromJSON Author where
 data PRState = OPEN | CLOSED | MERGED
   deriving ( Show, Eq, Generic, FromJSON)
 
-type Title    = Text
-type Id       = Text
-type Date     = Text
-type Name     = Text
-type Message  = Text
-type BodyText = Text
+type Title           = Text
+type Id              = Text
+type Date            = Text
+type Name            = Text
+type Message         = Text
+type BodyText        = Text
+type YoutrackIssueId = Text
 
 parseResponse :: Value -> Parser PullRequest
 parseResponse = withObject "PullRequest" $ \o -> do
@@ -105,3 +105,4 @@ parseComment = withObject "Comment" $ \comment -> do
   coCreatedAt <- comment .: "createdAt"
   coAuthor    <- comment .: "author"
   return Comment{..}
+
