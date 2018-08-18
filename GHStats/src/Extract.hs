@@ -11,7 +11,7 @@ import Types
 -- time (if closed).
 getPrData :: PullRequest -> (Date, Date, Maybe Date)
 getPrData PullRequest{..} =
-  let !devStartedAt    = cCommittedDate (head prCommits)
+  let !devStartedAt    = cCommittedDate (head prCommits)  -- JCM how do you make sure commits are correctly ordered?
       !reviewStartedAt = prCreatedAt
-      !prClosingDate   = prClosedAt
+      !prClosingDate   = prClosedAt   -- JCM what if prClosedAt = Nothing and prMergedAt is Just date?
   in (devStartedAt, reviewStartedAt, prClosedAt)

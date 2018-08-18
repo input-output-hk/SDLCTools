@@ -39,6 +39,7 @@ runQuery queryFilePath = do
   BL8.putStrLn responseBody
   return responseBody
 
+-- JCM : use relative paths (or better - & later -  pass them as CLI args)
 -- set to your github personnel access token file path
 tokenFilePath :: FilePath
 tokenFilePath = "/home/deepak/IOHK-work/github/copytoken"
