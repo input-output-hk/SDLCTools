@@ -36,6 +36,7 @@ run :: String -> IO ()
 run authorization = do
   res <- getAll authorization
           [
+
             --("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
            -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
 
@@ -57,6 +58,8 @@ run authorization = do
           , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          , ("QA", "Type:Task sort by: {issue id} asc")
+
           ]
 
   let allTasks = do
