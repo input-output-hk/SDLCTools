@@ -13,5 +13,5 @@ getPrData :: PullRequest -> (Date, Date, Maybe Date)
 getPrData PullRequest{..} =
   let !devStartedAt    = cCommittedDate (head prCommits)
       !reviewStartedAt = prCreatedAt
-      !prClosingDate   = prClosedAt
+      !prClosingDate   = if (prMergedAt == Nothing) then prClosedAt else prMergedAt
   in (devStartedAt, reviewStartedAt, prClosedAt)

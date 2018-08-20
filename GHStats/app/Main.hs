@@ -16,10 +16,12 @@ import           Extract
 
 main = do
   respPr <- runQuery prQueryFilePath
-  let parsedPrJSON  = eitherDecode respPr  :: Either String PullRequest
+  let parsedPrJSON  = eitherDecode respPr  :: Either String PullRequestList
   print parsedPrJSON
   print "now our useful data"
-  either print (print . getPrData) parsedPrJSON
+  case parsedPrJSON of
+    Left e -> print $ "oops error occured :" ++ e
+    Right (PullRequestList prs) -> mapM_ (print .getPrData) prs
 
 runQuery :: FilePath -> IO (BL8.ByteString)
 runQuery queryFilePath = do

@@ -11,6 +11,13 @@ import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Text
 
+
+newtype PullRequestList = PullRequestList [PullRequest]
+  deriving ( Show )
+
+instance FromJSON PullRequestList where
+  parseJSON = parseResponse
+
 data PullRequest = PullRequest {
                    prId        :: Id
                  , prNumber    :: Int
@@ -26,7 +33,7 @@ data PullRequest = PullRequest {
                  } deriving ( Show, Eq, Generic)
 
 instance FromJSON PullRequest where
-  parseJSON = parseResponse
+  parseJSON = parsePullRequest
 
 data Commit = Commit {
               cId            :: Id
@@ -48,7 +55,7 @@ instance FromJSON Comment where
   parseJSON = parseComment
 
 data Author = Author {
-              auName :: Name
+              auName :: Maybe Name
             } deriving ( Show, Eq, Generic)
 
 instance FromJSON Author where
@@ -67,12 +74,19 @@ type Message         = Text
 type BodyText        = Text
 type YoutrackIssueId = Text
 
-parseResponse :: Value -> Parser PullRequest
-parseResponse = withObject "PullRequest" $ \o -> do
-  data_        <- o            .: "data"
-  organisation <- data_        .: "organization"
-  repository   <- organisation .: "repository"
-  pullRequest  <- repository   .: "pullRequest"
+parseResponse :: Value -> Parser PullRequestList
+parseResponse = withObject "All PullRequests" $ \o -> do
+  data_           <- o               .: "data"
+  organisation    <- data_           .: "organization"
+  repository      <- organisation    .: "repository"
+  allPullRequests <- repository      .: "pullRequests"
+  prNodes         <- allPullRequests .: "nodes"
+  pullRequests    <- forM prNodes parsePullRequest
+  return $ PullRequestList pullRequests
+
+
+parsePullRequest :: Value -> Parser PullRequest
+parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
   prId         <- pullRequest  .: "id"
   prNumber     <- pullRequest  .: "number"
   prTitle      <- pullRequest  .: "title"
