@@ -4,7 +4,7 @@
 
 module Extract where
 
-import qualified Data.Text as T (pack)
+import qualified Data.Text as T
 
 import Types
 
@@ -15,7 +15,15 @@ import Types
 getPrData :: PullRequest -> PRCSVData
 getPrData PullRequest{..} =
   let !prNum           = T.pack . show $ prNumber
-      !devStartedAt    = cCommittedDate (head prCommits)
-      !reviewStartedAt = prCreatedAt
-      !prClosingDate   = maybe "" id $ if (prMergedAt == Nothing) then prClosedAt else prMergedAt
+      !devStartedAt    = formatTime $ cCommittedDate (head prCommits)
+      !reviewStartedAt = formatTime prCreatedAt
+      !prClosingDate   = formatTime . maybe "" id $
+        if (prMergedAt == Nothing)
+          then prClosedAt
+        else prMergedAt
   in PRCSVData ( prNum, devStartedAt, reviewStartedAt, prClosingDate)
+
+
+-- | given a dateTime in ISO 8601 format returns a Date in yyyymmdd format
+formatTime :: Date -> T.Text
+formatTime = T.concat . T.splitOn "-" . T.takeWhile (/= 'T')
