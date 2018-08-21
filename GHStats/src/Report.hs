@@ -11,7 +11,7 @@ import Types
 
 defaultPRCSVHeader :: Header
 defaultPRCSVHeader = header
-  [ "PullRequest Number"
+  [ "PullRequest Number ID"
   , "Development Start Time"
   , "Review Start Time"
   , "Closing Time"
@@ -19,7 +19,7 @@ defaultPRCSVHeader = header
 
 instance ToNamedRecord PRCSVData where
   toNamedRecord (PRCSVData ( prnumber, devStartTime, reviewStartTime, closingTime)) =
-    namedRecord [ "PullRequest Number"     .= prnumber
+    namedRecord [ "PullRequest Number ID"  .= prnumber
                 , "Development Start Time" .= devStartTime
                 , "Review Start Time"      .= reviewStartTime
                 , "Closing Time"           .= closingTime
