@@ -74,7 +74,7 @@ type Message         = Text
 type BodyText        = Text
 type YoutrackIssueId = Text
 
-newtype PRCSVData = PRCSVData ( Date, Date, Date)
+newtype PRCSVData = PRCSVData ( Id, Date, Date, Date)
 
 
 parseResponse :: Value -> Parser PullRequestList
