@@ -74,6 +74,9 @@ type Message         = Text
 type BodyText        = Text
 type YoutrackIssueId = Text
 
+newtype PRCSVData = PRCSVData ( Date, Date, Date)
+
+
 parseResponse :: Value -> Parser PullRequestList
 parseResponse = withObject "All PullRequests" $ \o -> do
   data_           <- o               .: "data"

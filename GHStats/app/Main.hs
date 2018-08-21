@@ -11,17 +11,19 @@ import           System.Environment (getArgs)
 import           GHC.Generics
 import           Data.Aeson
 import           Data.Aeson.Types
+
 import           Types
 import           Extract
+import           Report
 
 main = do
   respPr <- runQuery prQueryFilePath
   let parsedPrJSON  = eitherDecode respPr  :: Either String PullRequestList
-  print parsedPrJSON
-  print "now our useful data"
   case parsedPrJSON of
     Left e -> print $ "oops error occured :" ++ e
-    Right (PullRequestList prs) -> mapM_ (print .getPrData) prs
+    Right (PullRequestList prs) -> do
+      makeReport "Report.csv" $ getPrData <$> prs
+      print "OK"
 
 runQuery :: FilePath -> IO (BL8.ByteString)
 runQuery queryFilePath = do
@@ -38,7 +40,6 @@ runQuery queryFilePath = do
   putStrLn $ "The status code was: " ++
               show (getResponseStatusCode response)
   let responseBody = getResponseBody response
-  BL8.putStrLn responseBody
   return responseBody
 
 -- set to your github personnel access token file path
