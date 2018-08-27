@@ -2,13 +2,16 @@
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DeriveAnyClass     #-}
 {-# LANGUAGE RecordWildCards    #-}
+
 module Report where
 
-import Data.Csv
 import qualified Data.ByteString.Lazy as BS
-
-import Types
+import           Data.Csv
 import qualified Data.Text as T
+import           Data.Time.Clock
+import           Data.Time.Format
+
+import           Types
 
 defaultPRCSVHeader :: Header
 defaultPRCSVHeader = header
@@ -21,9 +24,9 @@ defaultPRCSVHeader = header
 instance ToNamedRecord PRCSVData where
   toNamedRecord (PRCSVData ( prnumber, devStartTime, reviewStartTime, closingTime)) =
     namedRecord [ "PullRequest Number ID"  .= prnumber
-                , "Development Start Time" .= devStartTime
-                , "Review Start Time"      .= reviewStartTime
-                , "Closing Time"           .= closingTime
+                , "Development Start Time" .= formatDate devStartTime
+                , "Review Start Time"      .= formatDate reviewStartTime
+                , "Closing Time"           .= maybe "" formatDate closingTime
                 ]
 
 instance DefaultOrdered PRCSVData where
@@ -39,18 +42,22 @@ defaultPRACSVHeader = header
   [ "PullRequest Number ID"
   , "First Commit Time"
   , "PullRequest Creation Time"
-  , "Latest Commit Time"
+  -- we don't need this in the csv, makes no sense.
+ -- , "Latest Commit Time"
   , "Closing Time"
   ]
 
 instance ToNamedRecord PRAnalysis where
   toNamedRecord PRAnalysis{..} =
     namedRecord [ "PullRequest Number ID"     .= (T.pack . show $ paPRNumber)
-                , "First Commit Time"         .= paFirstCommitTime
-                , "PullRequest Creation Time" .= paPRCreationTime
-                , "Latest Commit Time"        .= paLatestCommitTime
-                , "Closing Time"              .= paPRClosingTime
+                , "First Commit Time"         .= formatDate paFirstCommitTime
+                , "PullRequest Creation Time" .= formatDate paPRCreationTime
+               -- , "Latest Commit Time"        .= formatDate paLatestCommitTime
+                , "Closing Time"              .= maybe "" formatDate paPRClosingTime
                 ]
 
 instance DefaultOrdered PRAnalysis where
   headerOrder _ = defaultPRACSVHeader
+
+
+formatDate = formatTime defaultTimeLocale "%Y%m%d"

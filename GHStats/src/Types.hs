@@ -1,7 +1,10 @@
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE DeriveGeneric        #-}
+{-# LANGUAGE DeriveAnyClass       #-}
+{-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+
+
 module Types where
 
 import qualified Data.ByteString.Char8 as B8
@@ -10,6 +13,9 @@ import           GHC.Generics
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Text
+import           Data.Time.Clock
+import           Data.Time.Format
+import           GHC.Exts (sortWith)
 
 
 newtype PullRequestList = PullRequestList [PullRequest]
@@ -38,6 +44,7 @@ instance FromJSON PullRequest where
 data Commit = Commit {
               cId            :: Id
             , cCommittedDate :: Date
+            , cAuthoredDate  :: Date
             , cMessage       :: Message
             } deriving ( Show, Eq, Generic)
 
@@ -68,20 +75,20 @@ data PRState = OPEN | CLOSED | MERGED
 
 type Title           = Text
 type Id              = Text
-type Date            = Text
+type Date            = UTCTime
 type Name            = Text
 type Message         = Text
 type BodyText        = Text
 type YoutrackIssueId = Text
 
-newtype PRCSVData = PRCSVData ( Text, Date, Date, Date)
+newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
 data PRAnalysis = PRAnalysis {
                   paPRNumber         :: Int
                 , paFirstCommitTime  :: Date
                 , paPRCreationTime   :: Date
                 , paLatestCommitTime :: Date
-                , paPRClosingTime    :: Date
+                , paPRClosingTime    :: Maybe Date
                 } deriving ( Show, Eq, Generic)
 
 
@@ -98,21 +105,22 @@ parseResponse = withObject "All PullRequests" $ \o -> do
 
 parsePullRequest :: Value -> Parser PullRequest
 parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
-  prId         <- pullRequest  .: "id"
-  prNumber     <- pullRequest  .: "number"
-  prTitle      <- pullRequest  .: "title"
-  prCreatedAt  <- pullRequest  .: "createdAt"
-  prState      <- pullRequest  .: "state"
-  prClosed     <- pullRequest  .: "closed"
-  prClosedAt   <- pullRequest  .: "closedAt"
-  prMerged     <- pullRequest  .: "merged"
-  prMergedAt   <- pullRequest  .: "mergedAt"
-  allCommits   <- pullRequest  .: "commits"
-  commitNodes  <- allCommits   .: "nodes"
-  prCommits    <- forM commitNodes parseCommit
-  allComments  <- pullRequest  .: "comments"
-  commentNodes <- allComments  .: "nodes"
-  prComments   <- forM commentNodes parseComment
+  prId              <- pullRequest  .: "id"
+  prNumber          <- pullRequest  .: "number"
+  prTitle           <- pullRequest  .: "title"
+  prCreatedAt       <- fmap parseDate $ pullRequest  .: "createdAt"
+  prState           <- pullRequest  .: "state"
+  prClosed          <- pullRequest  .: "closed"
+  prClosedAt        <- pullRequest  .: "closedAt"
+  prMerged          <- pullRequest  .: "merged"
+  prMergedAt        <- pullRequest  .: "mergedAt"
+  allCommits        <- pullRequest  .: "commits"
+  commitNodes       <- allCommits   .: "nodes"
+  unsortedPrCommits <- forM commitNodes parseCommit
+  let prCommits =   sortWith cAuthoredDate unsortedPrCommits
+  allComments       <- pullRequest  .: "comments"
+  commentNodes      <- allComments  .: "nodes"
+  prComments        <- forM commentNodes parseComment
   return PullRequest{..}
 
 parseCommit :: Value -> Parser Commit
@@ -120,6 +128,7 @@ parseCommit = withObject "Commit" $ \commitNode -> do
   commit         <- commitNode .: "commit"
   cId            <- commit     .: "id"
   cCommittedDate <- commit     .: "committedDate"
+  cAuthoredDate  <- commit     .: "authoredDate"
   cMessage       <- commit     .: "message"
   return Commit{..}
 
@@ -131,3 +140,4 @@ parseComment = withObject "Comment" $ \comment -> do
   coAuthor    <- comment .: "author"
   return Comment{..}
 
+parseDate = parseTimeOrError True defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%SZ"))
