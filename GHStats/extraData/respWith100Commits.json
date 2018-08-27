@@ -1,0 +1,3087 @@
+{
+  "data": {
+    "organization": {
+      "repository": {
+        "pullRequests": {
+          "nodes": [
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA3ODQ1NjI4",
+              "number": 3385,
+              "title": "Add beginnings of Cardano specific git documentation",
+              "createdAt": "2018-08-12T23:14:37Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6M2U2MGI0MjIzOWYwODZlOWZiZDUxMGUyMWNjZTM1MDU0YjNhNjcwOA==",
+                      "message": "Add beginnings of Cardano specific git documentation\n\nTwo parts, a cheat sheat and a getting started guide.",
+                      "committedDate": "2018-08-13T21:49:53Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzUwMzIyNg==",
+                    "bodyText": "Will add some more to the cheat sheet about rebasing against develop and \"rebase -i\"",
+                    "createdAt": "2018-08-16T10:45:55Z",
+                    "author": {
+                      "name": "Erik de Castro Lopo"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA3ODYwMzg3",
+              "number": 3386,
+              "title": "[DEVOPS-999] explorer frontend: Replace @GITREV@ with actual rev",
+              "createdAt": "2018-08-13T03:08:37Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T22:01:57Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T22:01:57Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MzU5YWU3ZTliNGU1NDNkMmI3OWI4MTU2NTc5NzIwYzE2NzA0NGU2Ng==",
+                      "message": "[DEVOPS-999] explorer frontend: Replace @GITREV@ with actual rev\n\nThis fix is for the release/1.3.1 branch -- where gitrev changes\ninvalidate the build cache.",
+                      "committedDate": "2018-08-16T13:38:13Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA3OTgyMjU5",
+              "number": 3387,
+              "title": "[CBR-97] WIP structured logging - adapt to CI 'wallet-integration-test'",
+              "createdAt": "2018-08-13T13:43:49Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-13T20:15:54Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDQyOGFjZmRkN2IyNzVjNDE4MjcxNGJjZDBkZTEzYmFmZWM4MTZhOA==",
+                      "message": "[CBR-97] logging implementation based on 'katip'\n\nSigned-off-by: Alexander Diemand <codieplusplus@apax.net>",
+                      "committedDate": "2018-08-07T06:16:34Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMjY0ODY4Ng==",
+                    "bodyText": "tests successful! can remove this PR and branch\nchanges get merged into PR #3358",
+                    "createdAt": "2018-08-13T20:15:54Z",
+                    "author": {
+                      "name": "Alexander Diemand"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MDA4NjQ3",
+              "number": 3388,
+              "title": "[CBR-250] Refactor `createPrefiltered`",
+              "createdAt": "2018-08-13T15:05:51Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-14T05:21:44Z",
+              "merged": true,
+              "mergedAt": "2018-08-14T05:21:44Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ODc4ZmQ1MTE4ZTY3Nzc1OTZhNmZlODY4Mjk5ODIyNWViNDhlMjk1NA==",
+                      "message": "[CBR-250] Refactor `createPrefiltered`\n\nThis function was a bit confusing, and needed to be extended once again to\nsupport proper ChainBrief values. Rather than adding that to an already poorly\ndefined function, this refactors it into something much clearer and more easily\nextended.",
+                      "committedDate": "2018-08-13T15:23:06Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MDIwODQ2",
+              "number": 3389,
+              "title": "[CHW] Support of root public key for external wallets.",
+              "createdAt": "2018-08-13T15:45:05Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T03:18:37Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T03:18:36Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6Yzg5MjM4MmM0YjI3ZDcwMTk5MjdhZWY0OTFiYTM1ZDFjY2VhNTI1NQ==",
+                      "message": "[CHW] Support of root public key for external wallets.",
+                      "committedDate": "2018-08-14T21:59:49Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MTU0MzU5",
+              "number": 3390,
+              "title": "[DEVOPS-992] Fix x509 generator SANs to work with IP addresses",
+              "createdAt": "2018-08-14T02:41:45Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T09:17:02Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T09:17:02Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjQ4OTliMDE4MjAwZWVjNzk0ZTM3YzMwMTcwMjIxYWRiMTAzMWY0OA==",
+                      "message": "[DEVOPS-992] Fix x509 generator SANs to work with IP addresses\n\n(cherry picked from commit 834ade85577c2fca8d8b3649582499e2abc78515)",
+                      "committedDate": "2018-08-14T02:40:39Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MTkzNDA1",
+              "number": 3391,
+              "title": "[CO-351] Re-introduce custom template for rendering swagger",
+              "createdAt": "2018-08-14T07:36:59Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-14T12:38:40Z",
+              "merged": true,
+              "mergedAt": "2018-08-14T12:38:40Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGY5MzZlMjE4MDhhNTY3M2NiNWUyZWEyNDE1MTNmMzRiN2ZmZDcwMw==",
+                      "message": "[CO-351] Re-introduce custom template for rendering swagger\n\nThere's actually a bug in the current template which serves the swagger specs on an absolute url\n, completely ignoring any sub-path in the URL. A PR has been submitted to the upstream library\n(servant-swagger-ui-redoc) https://github.com/haskell-servant/servant-swagger-ui/pull/53 but until\nit gets accepted, we need a way to serve our documentation",
+                      "committedDate": "2018-08-14T07:30:23Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MjMzNTM4",
+              "number": 3392,
+              "title": "reworks SQLite and puTxMeta",
+              "createdAt": "2018-08-14T10:17:53Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-15T08:25:52Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YmVmMmU5MTM4OWI4NmJkNDA3NDIyMjNlYWJlMGVlMmE0NWY1MTllMw==",
+                      "message": "reworks SQLite and puTxMeta",
+                      "committedDate": "2018-08-14T10:01:25Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzEyOTA5Mw==",
+                    "bodyText": "Obsoleted by #3407 .",
+                    "createdAt": "2018-08-15T08:25:52Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MjUyOTUz",
+              "number": 3393,
+              "title": "[CBR-227] Go over TODOs, remove stray, add tickets",
+              "createdAt": "2018-08-14T11:40:03Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-14T13:28:26Z",
+              "merged": true,
+              "mergedAt": "2018-08-14T13:28:25Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NzUyMDE1NjMzZjc5ZGY5YzE5OWJjNDJlMjBhYjY4NDhlODQxM2JjMQ==",
+                      "message": "[CBR-227] Go over TODOs, remove stray, add tickets",
+                      "committedDate": "2018-08-14T11:38:01Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMjg3MTUyNQ==",
+                    "bodyText": "Thanks everyone :)",
+                    "createdAt": "2018-08-14T13:28:35Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MjUzMjEy",
+              "number": 3394,
+              "title": "report-server:  bump to latest master",
+              "createdAt": "2018-08-14T11:41:15Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T13:24:37Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T13:24:37Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjIwZDMzNTgyM2QzYjhlZTdmM2M4YjZkOTY5OTUxY2Q1YTczY2Y4Yw==",
+                      "message": "report-server:  bump to latest master",
+                      "committedDate": "2018-08-17T16:10:30Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI2MzM2Mw==",
+                    "bodyText": "@disassembler , this was rebased against 1.3.1",
+                    "createdAt": "2018-08-20T09:59:34Z",
+                    "author": {
+                      "name": "Kosyrev Serge"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MjY4MjI5",
+              "number": 3395,
+              "title": "[CBR-227] Remove legacy wallet layer",
+              "createdAt": "2018-08-14T12:42:21Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-14T13:39:47Z",
+              "merged": true,
+              "mergedAt": "2018-08-14T13:39:46Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjgyMzIyOTZiMGRlNzJiZjNhMjkyYzI0NjIyOTg0MWJkMWM3YmJlZg==",
+                      "message": "[CBR-227] Remove legacy wallet layer\n\nThis was never used, and will never be used. That is unfortunate, but at this\npoint won't change, and having the legacy layer makes it more awkward to modify\nthe layer since we have to make modifications to a layer that is never actually\nused.",
+                      "committedDate": "2018-08-14T12:40:36Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMjg3NDk2NQ==",
+                    "bodyText": "Nope, there aren't :) Thanks!",
+                    "createdAt": "2018-08-14T13:39:42Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MzIzOTIz",
+              "number": 3396,
+              "title": "[CBR-243] Simplify `Checkpoint`",
+              "createdAt": "2018-08-14T15:35:22Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T07:08:19Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T07:08:19Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzQ1MjQwMzBmYjdjMzk2MjBjOTQ3NGIzNjc2MTUwNjFhZjMxODVjMw==",
+                      "message": "[CBR-243] Simplify `Checkpoint`\n\nThis removes the 'ChainBrief' from 'Checkpoint' and replaces it with a simple\n'SlotId'. This will give us enough information for recovery, but makes\neverything else much easier. In particular, there is no need to come up with\nsome kind of 'ChainBrief' value for the initial checkpoint of an account. It\ndoes mean that we cannot check the wallet's own DB for things like the current\nsoftware version or the max tx size, but we can simply ask the underlying node\nfor these values. This is the more pragmatic approach for now, we may revisit\nthis later.\n\nThis completely removes the need for the dummy `ChainBrief` value.",
+                      "committedDate": "2018-08-14T15:24:09Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MzQ4MDE5",
+              "number": 3397,
+              "title": "[DEVOPS-1003] Bump appveyor ssl version to 1.0.2q",
+              "createdAt": "2018-08-14T16:58:57Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T16:51:35Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T16:51:35Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDdiYjlhZDc2YTNiNDc1YTU1YmIyM2NkNWY1OGFhNzg5NDI0NWZkNQ==",
+                      "message": "[DEVOPS-1003] Bump appveyor ssl version to 1.0.2q",
+                      "committedDate": "2018-08-14T16:57:33Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MzQ5MTUx",
+              "number": 3398,
+              "title": "[DEVOPS-1003] Bump appveyor ssl version to 1.0.2q",
+              "createdAt": "2018-08-14T17:03:17Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-14T21:09:46Z",
+              "merged": true,
+              "mergedAt": "2018-08-14T21:09:46Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NGYxNTFlOWY4ZTc2OTk0MjlmZjIzMDkxNGY1MzlmMDQyZjE0ZjY0Yw==",
+                      "message": "[DEVOPS-1003] Bump appveyor ssl version to 1.0.2q\n\n(cherry picked from commit 47bb9ad76a3b475a55bb23cd5f58aa7894245fd5)",
+                      "committedDate": "2018-08-14T17:02:05Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4MzcxMzI4",
+              "number": 3399,
+              "title": "[CO-350] Load throttling configuration from file",
+              "createdAt": "2018-08-14T18:32:38Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T16:05:46Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T16:05:46Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjYwZGQ2NzZjMmIxMTdiYzVjM2ZjZDMyODUxNDJjYTBhZjA1MzdkNA==",
+                      "message": "[CO-350] Pass the wallet configuration around",
+                      "committedDate": "2018-08-14T17:56:31Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzU4ODk1NQ==",
+                    "bodyText": "The weeder commit didn't even fix the problem :(",
+                    "createdAt": "2018-08-16T15:37:11Z",
+                    "author": {
+                      "name": "Matt Parsons"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4Mzg4NjMz",
+              "number": 3400,
+              "title": "[DEVOPS-1004] improve the override structure in cardano",
+              "createdAt": "2018-08-14T19:41:07Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T17:51:59Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T17:51:59Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OTY2ZWJkNjc2Yjk5YjFhMzZiMzNiZmQxMjFlODU2OTI1ZTE4MGZkNw==",
+                      "message": "[DEVOPS-1004] improve the override structure in cardano",
+                      "committedDate": "2018-08-15T15:06:52Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDA3MjYz",
+              "number": 3401,
+              "title": "[CBR-97] structured logging",
+              "createdAt": "2018-08-14T20:53:24Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T18:48:09Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T18:48:09Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MDM4N2E0ZGZhNzJkYzExZWJkODU4ZWMzYmM1ZDZhYWNlYzk2NDY5Nw==",
+                      "message": "[CBR-97] logging implementation based on 'katip'\n\nSigned-off-by: Alexander Diemand <codieplusplus@apax.net>",
+                      "committedDate": "2018-08-21T14:28:27Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzY3MzAwMA==",
+                    "bodyText": "@erikd your comments point to commits which were overwritten. But in essence, I have restored the changes that you requested like removal of commented out code, GADT rewriting, etc. in util.",
+                    "createdAt": "2018-08-16T20:23:12Z",
+                    "author": {
+                      "name": "Alexander Diemand"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDMyNTgzNg==",
+                    "bodyText": "rebased on current develop\nsome changes were needed in 'util' because of RecordWildCard - I have mentionned the fields explicitely when the structure is not locally defined\nremoved the change to turn off optimisations in wallet/src/Pos/Wallet/Web/Server/Handlers.hs -> expect Appveyor to fail",
+                    "createdAt": "2018-08-20T13:59:00Z",
+                    "author": {
+                      "name": "Alexander Diemand"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDM1NjY1",
+              "number": 3402,
+              "title": "[CO-347]  Wallet's UTXO histogram view",
+              "createdAt": "2018-08-14T23:14:45Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T06:18:08Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T06:18:08Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6N2UzMmFkNjZjMTY0MTdiNTAwMDM2ZGFlZDYxODExZGUwN2EzODk3MQ==",
+                      "message": "[CO-347] Adding stubs to Handler and LegacyHandler\n\nThis commit adds stubs to legacy and new-wallet, histogram and bar datatypes are accomodated, one-pass many-aggregates functionality is added",
+                      "committedDate": "2018-08-10T11:45:22Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzg2NTk1Mg==",
+                    "bodyText": "Thank you all for the reviews and suggestions. I have just made respective commit",
+                    "createdAt": "2018-08-17T13:28:22Z",
+                    "author": {
+                      "name": null
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDA0NDA1Mg==",
+                    "bodyText": "Correction commit done.\nI had previously exactly these linker errors in a number of checks:\n#3432",
+                    "createdAt": "2018-08-18T09:09:31Z",
+                    "author": {
+                      "name": null
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDIzMjczMA==",
+                    "bodyText": "NOTE:\nWe're going to need this (#3432) for the arguments list build issue\nI'll rebase the base as soon as we have it.",
+                    "createdAt": "2018-08-20T08:07:44Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDQ0MDQy",
+              "number": 3403,
+              "title": "[CDEC-500] Factor out example datatypes from Json+Bi tests",
+              "createdAt": "2018-08-15T00:16:22Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T11:41:54Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T11:41:54Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGQ5ZTJiODgyOTZlYmM5Y2IxYzk5ZTcyYzc5YjM4OTNjZDRlMmIzZQ==",
+                      "message": "[CDEC-500] Factor out example datatypes from Json+Bi tests\n\nThe `Bi` & `Json` modules had a number of datatypes which were shared\nand could be factored out. This commit pulls them out into the\n`ExampleHelpers` module.",
+                      "committedDate": "2018-08-15T04:04:47Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDY1ODU3",
+              "number": 3404,
+              "title": "[CHW] Work with root public key and errors for external wallets.",
+              "createdAt": "2018-08-15T03:42:45Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T07:53:40Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T07:53:40Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGM1MmNmOTNjNzU2NzJmMjI0OWFlYTk1NGJmN2Y4YmMyYmM3ZmUxZQ==",
+                      "message": "[CHW] Work with root public key for external wallets. Errors for external wallets.",
+                      "committedDate": "2018-08-15T06:27:50Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDY5MjEz",
+              "number": 3405,
+              "title": "[CDEC-500] Add golden tests for Address",
+              "createdAt": "2018-08-15T04:16:18Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T12:15:51Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T12:15:51Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGQ5ZTJiODgyOTZlYmM5Y2IxYzk5ZTcyYzc5YjM4OTNjZDRlMmIzZQ==",
+                      "message": "[CDEC-500] Factor out example datatypes from Json+Bi tests\n\nThe `Bi` & `Json` modules had a number of datatypes which were shared\nand could be factored out. This commit pulls them out into the\n`ExampleHelpers` module.",
+                      "committedDate": "2018-08-15T04:04:47Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzA5NDA0OA==",
+                    "bodyText": "This must be merged after #3403, which contains the prerequisite refactoring commit that's included in this branch.\nMy hope is that once #3403 is merged, this PR will apply the second commit cleanly onto develop.",
+                    "createdAt": "2018-08-15T04:54:50Z",
+                    "author": {
+                      "name": "Michael Hueschen"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDcxMzE1",
+              "number": 3406,
+              "title": "CDEC-492: Add code to handle epoch index files",
+              "createdAt": "2018-08-15T04:38:24Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T23:36:07Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T23:36:07Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NmJhZGMzZWFlNmRlODc1NzQ1YzQ1ZmZiYzk5YjVlMDk0ZjRhYzQ0Mw==",
+                      "message": "CDEC-493: Choose DenseBinary impl for epoch index file",
+                      "committedDate": "2018-08-15T21:14:39Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDc0NDgx",
+              "number": 3407,
+              "title": "Kderme/cbr 375",
+              "createdAt": "2018-08-15T05:13:03Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T08:23:11Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T08:23:11Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OTkxOWY5ZjRlMjA1NzAwNzUyNTA4NGM0NzQzOWY5MmIwOTQ0NzNiYw==",
+                      "message": "[CBR-375] adds unresolved inputs in Sqlite",
+                      "committedDate": "2018-08-15T04:51:59Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzEyMzg2Mg==",
+                    "bodyText": "@kderme when this is merged we can close https://iohk.myjetbrains.com/youtrack/issue/CBR-324 right?",
+                    "createdAt": "2018-08-15T08:01:37Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzEyODUyOA==",
+                    "bodyText": "Merging as-is, @kderme will address feedback in follow-up PR.",
+                    "createdAt": "2018-08-15T08:23:06Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NDkzMDE4",
+              "number": 3408,
+              "title": "[CBR-341] Don't iterate over the keystore",
+              "createdAt": "2018-08-15T07:39:32Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T10:09:25Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T10:09:25Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDRjOTAzNTg3ZDQ1M2NlYTg2ZGFlNGVmODU0OTQzMGUzNGIyNDQ5Zg==",
+                      "message": "[CBR-341] Don't iterate over the keystore\n\nThis also does some minor refactoring: most kernel functionality was defined in\nsubmodules, but `applyBlock`, `rollback`, and `newPending` and co where not.\nI've moved them to their own submodule now, along with a new .Read module for\nread-only access.\n\nThis also cleans up some import lists.",
+                      "committedDate": "2018-08-15T09:23:20Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzE0MzA0Nw==",
+                    "bodyText": "Rebased.",
+                    "createdAt": "2018-08-15T09:24:41Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NTQ2NjY5",
+              "number": 3410,
+              "title": "[CBR-376, CBR-353] Make chain parameters available",
+              "createdAt": "2018-08-15T12:16:13Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-15T14:04:41Z",
+              "merged": true,
+              "mergedAt": "2018-08-15T14:04:41Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGU2YzIyNGFmOGExNGU3NDk3ODg5NjRkNzM3ZGE1NGYyYjU3MjAzNA==",
+                      "message": "[CBR-376] Add functions to query node state\n\nThis introduces\n\n* `getSecurityParam` (CBR-376)\n* `getTipSlotId` (CBR-376)\n* `getMaxTxSize` (CBR-353)",
+                      "committedDate": "2018-08-15T10:02:16Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NTU4MzI0",
+              "number": 3411,
+              "title": "Updated LICENCE file",
+              "createdAt": "2018-08-15T13:11:23Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OWRlMWY2MzJmNzkyYjhkZWJkNmE4NTY1OGU0ZDBhMmFkODFlNWIxZQ==",
+                      "message": "Updated LICENCE file\n\nThe licence file didn't actually contain a licence , this was causing github not to show the project as open source.\r\nThis text is from the daedalus repo where this is working correctly.\r\nThis is NOT a change to the content of the licence per se , although its possible the licence might not have applied before having not been explicitly mentioned in this file.",
+                      "committedDate": "2018-08-15T13:10:07Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzIzNTQ2MA==",
+                    "bodyText": "@KtorZ @kantp",
+                    "createdAt": "2018-08-15T15:31:33Z",
+                    "author": {
+                      "name": "Amias Channer"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzI2NDIyNA==",
+                    "bodyText": "The licence file didn't actually contain a licence , this was causing github not to show the project as open source.\n\nThe LICENSE file is was symlink. Maybe GitHub doesn't read these properly.\nThe project is clearly open source because it's on GitHub.\nThere are quite a few LICENSE files in the repo -- one for each cabal project. You might be able to put the MIT license text in the top-level file and make all the rest symlinks to the top-level file.",
+                    "createdAt": "2018-08-15T17:02:02Z",
+                    "author": {
+                      "name": "Rodney Lorrimar"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzI2NzEyNw==",
+                    "bodyText": "Yeah, flipping it so the project licenses that are the same as the main one might make more sense since github doesn't follow the symlink properly... I'd also update some links in documentation to the one not in lib if you do this. do a git grep for LICENSE and should be able to find anything. Ignore anything in a cabal file.",
+                    "createdAt": "2018-08-15T17:11:46Z",
+                    "author": {
+                      "name": "Samuel Leathers"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NjIxMTA2",
+              "number": 3412,
+              "title": "[CDEC-505] Move txp types from core to chain",
+              "createdAt": "2018-08-15T17:01:36Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDUzZjhjNzJiNDc3NGZjOGNmN2U0ZjljNjk0MzdmN2M0NmY3ODg3Yg==",
+                      "message": "[CDEC-505] Move txp types from core to chain",
+                      "committedDate": "2018-08-16T22:58:05Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NjM0Njc4",
+              "number": 3413,
+              "title": "[CBR-322] Tests and infrastructure for testing block metadata",
+              "createdAt": "2018-08-15T17:58:00Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T13:22:44Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T13:22:44Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MmEyOWQ2NDYzY2Y1YTcwYTM5NTg5Nzk2YmYwMWExYzRjZjUyMzllZg==",
+                      "message": "[CBR-322] Tests and infrastructure for testing block metadata\n\nBlockMeta tests are expressed as test scenarios that validate the behaviour of BlockMeta as defined in the Wallet Spec.\n\n* Introduce DSL BlockMeta' with interpreter instance to translate to BlockMeta.\n* Use BlockMeta' for DSL/Cardano comparisons in BlockMeta test scenarios\n* Enable Multiple addresses for Poor actors, use in BlockMeta test scenarios\n* unify newForeign with newPending\n* for newPending/newForeign, discover new addresses for _all_ wallets",
+                      "committedDate": "2018-08-16T12:08:19Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NjQzNzYw",
+              "number": 3414,
+              "title": "[CHW] API v1 types for external wallets.",
+              "createdAt": "2018-08-15T18:33:50Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T11:33:17Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T11:33:17Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NzZkODgwYTE4ZTA4ZjA5MDEyMzcwZGQxMTY4NzE1MGFmZjg2ZmM2Ng==",
+                      "message": "[CHW] API v1 types for external wallets.",
+                      "committedDate": "2018-08-20T08:21:40Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4NjQ2NjQw",
+              "number": 3415,
+              "title": "[CDEC-506] Make JSON golden tests check `FromJSON` decoding in addition to `ToJSON` encoding",
+              "createdAt": "2018-08-15T18:45:05Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T14:23:50Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T14:23:50Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YjE3YWEzOTEzMGU2ODNiMmYxMTliMWQwYmI5NzUzMWIzY2VjOTQyNA==",
+                      "message": "[CDEC-506] goldenTestJSON: check `FromJSON` decoding\n\nMake JSON golden tests check `FromJSON` decoding in addition to\n`ToJSON` encoding.",
+                      "committedDate": "2018-08-15T17:04:53Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4Njk3ODYy",
+              "number": 3416,
+              "title": "[CDEC-499] Add golden+roundtrip JSON tests for `TxpConfiguration`",
+              "createdAt": "2018-08-15T22:22:50Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T15:50:04Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T15:50:04Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzhhMWI3ZTg1YmRhYzcyMzYzYzhhN2M3ODMxMzBlYjgwMWFlOTBlMw==",
+                      "message": "[CDEC-499] Add golden+roundtrip JSON for `TxpConfiguration`\n\nThis datatypes will be modified for CO-354, and it currently uses\nderived JSON instances, which means it is fragile when the datatype\nis modified. We will use these golden tests to ensure compatibility\nwith the current configuration format (when we add a field to the\ndatatype we will give it a default value in the event a key is\nmissing from the configuration).",
+                      "committedDate": "2018-08-16T13:50:00Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzU0OTA2OA==",
+                    "bodyText": "The golden tests in this PR suffer from the formatting issues described in CDEC-507. I'm ok with delaying cleanup of this technical debt until after CO-354 has been sorted out, since our deadline is next week.",
+                    "createdAt": "2018-08-16T13:40:32Z",
+                    "author": {
+                      "name": "Michael Hueschen"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzY3NjQyNg==",
+                    "bodyText": "@erikd unfortunately we all missed my boneheaded omission of a call to actually run the tests 🤦‍♂️\nJust merged the fix in #3419 though.",
+                    "createdAt": "2018-08-16T20:35:47Z",
+                    "author": {
+                      "name": "Michael Hueschen"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzY4OTY1Ng==",
+                    "bodyText": ":)",
+                    "createdAt": "2018-08-16T21:25:52Z",
+                    "author": {
+                      "name": "Erik de Castro Lopo"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4ODEzNjM1",
+              "number": 3417,
+              "title": "CDEC-508: Add a dbGetSerBlund method to the MonadDBRead typeclass ",
+              "createdAt": "2018-08-16T10:28:01Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T20:20:26Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T20:20:26Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MTYzYTM4OTZhNWJkZWQxZmI3OTFlZGY4NjIzYWM5ZDViYzVjODdhYQ==",
+                      "message": "CDEC-508: Add dbGetSerBlund to MonadDBRead typeclass\n\nNeed this during epoch file consolidation.",
+                      "committedDate": "2018-08-16T10:23:18Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4ODcxMjQ4",
+              "number": 3418,
+              "title": "[CBR-369] Inform submission layer in BListener",
+              "createdAt": "2018-08-16T14:05:33Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T17:21:45Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T17:21:45Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDg1ZmIwYjdkNmNiOTg4YTI5YTJhMzY5MGY5NDllYjNhMjkwMGRlNA==",
+                      "message": "[CBR-369] Inform submission layer in BListener\n\nIt is important that the submission layer gets notified after a block is\napplied (to tell when transactions confirmed) and after rollback (which may\nreintroduce pending transactions).\n\nIn order to do this, this commit makes a number of changes:\n\n* The submission layer is moved to the passive wallet. This is important,\n  because that's all the `BListener` has access to. The passive wallet is still\n  passive of course, since the thread that actually \"ticks\" the submission\n  layer and sends transactions is still (and can only be) started in the active\n  wallet.\n\n* The apply block and rollback primitives return the set of transactions that\n  removed from pending or added to pending, respectively. This changes is then\n  propagated all the way up to the top-levels functions that get called by the\n  BListener.\n\n* Generalized the `AccountUpdate` infrastructure to allow for return values,\n  and made related changes (introduced `otraverseCollect`, generalized\n  `zoomAll`).\n\nThis PR also makes a few unrelated but important changes:\n\n* The `Update'` monad that we use throughout to modify the acid-state DB now\n  uses StrictStateT instead of StateT.",
+                      "committedDate": "2018-08-16T13:53:43Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4OTM0OTM1",
+              "number": 3419,
+              "title": "[CDEC-499] Run `Test.Pos.Chain.Txp.tests`",
+              "createdAt": "2018-08-16T17:46:28Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-16T20:34:23Z",
+              "merged": true,
+              "mergedAt": "2018-08-16T20:34:23Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDk3ZDhkNmQxZTdhMTAxZmRjMTJlMjQyZGM1NTgzN2Y3MGRlZTdlYw==",
+                      "message": "[CDEC-499] Run `Test.Pos.Chain.Txp.tests`\n\nThese were added to the package, but the changeset which added\nthem to the test executable was checked out by accident.",
+                      "committedDate": "2018-08-16T17:43:31Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4OTUxNTM0",
+              "number": 3420,
+              "title": "[CBR-382] Don't throw exceptions in newTransaction",
+              "createdAt": "2018-08-16T18:51:54Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-17T06:36:16Z",
+              "merged": true,
+              "mergedAt": "2018-08-17T06:36:16Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NTJmMWFkOTM3MWIxMTE4MzdiOWQyN2Q0Yzg2MTA2MmEzM2I4Nzg0ZQ==",
+                      "message": "[CBR-382] Don't throw exceptions in newTransaction\n\nnewTranaction was using `throwM` to throw some exceptions, rather than\nreturning them propertly. This fixes that, and cleans up the code using\nrunExceptT.",
+                      "committedDate": "2018-08-16T18:48:30Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA4OTk5ODg4",
+              "number": 3421,
+              "title": "[DDW-380] Configure launcher to read/write safe mode parameter",
+              "createdAt": "2018-08-16T22:18:15Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-23T18:24:51Z",
+              "merged": true,
+              "mergedAt": "2018-08-23T18:24:51Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZWFkNTQ5ZmRmZjZkZjBlZjQzZWEzMjgxNDBiZDgxZWNkMDJiM2EyZQ==",
+                      "message": "[DDW-380] Configure launcher to read/write safe mode parameter",
+                      "committedDate": "2018-08-16T22:19:42Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MDA0MTQw",
+              "number": 3422,
+              "title": "[CDEC-499] Create roundtrip + golden JSON tests for `TxpConfiguration` (with `RequiresNetworkMagic` field)",
+              "createdAt": "2018-08-16T22:43:45Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-18T02:53:14Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NmJiYzJhMmM4ZmYwM2YxMTI4ZTJkY2VjOWNiN2MzOWI2MzRjOGNkMg==",
+                      "message": "[CDEC-499] Rewrite TxpConfiguration JSON instances explicitly\n\nWe will need custom instances to add `RequiresNetworkMagic`. This\ncommit switches from generic instances to explicit ones which behave\nthe same way - thus demonstrating equivalence before we modify the\ntests.",
+                      "committedDate": "2018-08-16T22:16:37Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDAyNzU0OA==",
+                    "bodyText": "This PR is part of our initial approach, using TxpConfiguration, which we are likely scrapping. I'll close this and we can reopen it if things change.",
+                    "createdAt": "2018-08-18T02:53:14Z",
+                    "author": {
+                      "name": "Michael Hueschen"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MDI2NDA3",
+              "number": 3423,
+              "title": "Set UTF-8 when running hedgehog tests",
+              "createdAt": "2018-08-17T01:48:53Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-17T22:53:36Z",
+              "merged": true,
+              "mergedAt": "2018-08-17T22:53:36Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MzE1YTI2NGJmMzA0ZmM2MmQ3Nzg2MDkxYTQ0MzYzYmFkZDI5YzFjMw==",
+                      "message": "Set UTF-8 when running hedgehog tests\n\nhedgehog uses fancy unicode codepoints to point it's output; this is at odds with non-utf8 charsets and leads to GHC crashing with\n\n<stdout>: commitBuffer: invalid argument (invalid character)\n\nThis change sets the stdout/stderr encoding to utf8 prior to running hedgehog tests via the `runTests` function.\n\nThe relevant hedgehog issue is hedgehogqa/haskell-hedgehog#110",
+                      "committedDate": "2018-08-17T07:11:43Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MDI5MDMz",
+              "number": 3424,
+              "title": "[CDEC-498] Remove `RecordWildCards` extension from cabal default extensions for packages `auxx`, `binary`, `chain`, `util`, `networking`, `crypto`, `core`, `db`, `infra`, `client` and `explorer`",
+              "createdAt": "2018-08-17T02:14:16Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-19T10:45:33Z",
+              "merged": true,
+              "mergedAt": "2018-08-19T10:45:33Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDQ0YmFkODkwMTczZGJkMjU2OTg4YzIyNzc4NWFiMDA5YTFlMzFhNg==",
+                      "message": "[CDEC-498] Remove `RecordWildCards` default extension from `auxx`, `binary`, `chain`",
+                      "committedDate": "2018-08-17T01:49:22Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTAwNzM0",
+              "number": 3426,
+              "title": "fix broken haddock annotations",
+              "createdAt": "2018-08-17T09:59:21Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-17T18:18:54Z",
+              "merged": true,
+              "mergedAt": "2018-08-17T18:18:54Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6Nzk1YTZhNTViNjhlZmMzNTRlYjFkM2VkOGE4MDk0YmMwZTczYjU1MQ==",
+                      "message": "fix broken haddock annotations\n\nThis commit turns broken haddock annotations into normal comments.",
+                      "committedDate": "2018-08-17T17:25:28Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTAwOTgw",
+              "number": 3427,
+              "title": "[CBR-382] Generalize zoom ops to work on queries",
+              "createdAt": "2018-08-17T10:00:13Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-17T12:01:17Z",
+              "merged": true,
+              "mergedAt": "2018-08-17T12:01:17Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDE1NGQ4ZDFlMTZlY2E1ZjRhNTEwZmUwZmEzNmM0MWJhODIxMGM3Yg==",
+                      "message": "[CBR-382] Generalize zoom ops to work on queries\n\nThis will help to reduce duplication in the queries.",
+                      "committedDate": "2018-08-17T09:58:16Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTI0NzEy",
+              "number": 3428,
+              "title": "[CBR-375] Create transaction metadata for incoming transactions",
+              "createdAt": "2018-08-17T11:49:15Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T14:08:43Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T14:08:43Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZGViOGEyMzc5MTIwMTljMTMxOWQ1MzU0MTIzODUxOGY0OGJhMzY5Mg==",
+                      "message": "[CBR-375] old fixed and reorder of input",
+                      "committedDate": "2018-08-20T03:45:54Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDAzOTQ4OA==",
+                    "bodyText": "Would it be possible to give PRs a proper title so I don't have to look at the PR to know what its about.",
+                    "createdAt": "2018-08-18T07:47:11Z",
+                    "author": {
+                      "name": "Erik de Castro Lopo"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTcxOTQ2",
+              "number": 3429,
+              "title": "[CBR-26] Error Handling Improvements",
+              "createdAt": "2018-08-17T14:50:31Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-18T23:58:37Z",
+              "merged": true,
+              "mergedAt": "2018-08-18T23:58:37Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDcyZDY3ODg1Y2JiNTUzOWFmNzQxNGJiZmM3NWM5OTJmOWM2MGFkMg==",
+                      "message": "[CBR-254] Implement wallet ID in error",
+                      "committedDate": "2018-08-18T16:54:04Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxMzk4OTE2OA==",
+                    "bodyText": "I have \"reviewed\" it by implementing all the changes I would have done.",
+                    "createdAt": "2018-08-17T21:10:14Z",
+                    "author": {
+                      "name": "Matt Parsons"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTczODk3",
+              "number": 3430,
+              "title": "[CBR-382] Refactor the `.Read` modules",
+              "createdAt": "2018-08-17T14:57:27Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-17T16:39:59Z",
+              "merged": true,
+              "mergedAt": "2018-08-17T16:39:59Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGI2N2RkODNmZWFlY2YyOTA4N2I1NjViNjk1MDQyMjQ1YzQ1ZWI4NQ==",
+                      "message": "[CBR-382] Refactor the `.Read` modules\n\nThere was a lot of duplication, inconsistent naming, and dead code. Most\nimportantly, a lot of pure errors were silently thrown as pure exceptions by a\nblanket wrapper. This wrapper is now completely gone, the naming is entirely\nconsistent, (most) duplication is gone, and the dead code is removed.\n\nThe split into modules is now also consistent:\n\n* The `Spec.Read` module works on a checkpoint\n* The `HdWallet.Read` module works on a HdWallet\n* The `DB.Read` lifts this to the entire acid-state DB\n\nThis takes advantage of the new Query' infrastructure introduced previously.\n\nRenamed functions:\n\n```\n  queryAccountTotalBalannce      currentTotalBalance\n  queryAccountUtxo               currentUtxo\n  queryAccountAvailableUtxo      currentAvailableUtxo\n  queryAccountAvailableBalance   currentAvailableBalance\n\n  accountAddresses               addressesByAccountId\n  walletAccounts                 accountsByRootId\n\n  accountAvailableBalance        currentAvailableBalance\n  accountAvailableUtxo           currentAvailableUtxo\n  accountIsTxPending             currentTxIsPending\n  accountTotalBalance            currentTotalBalance\n  accountTxSlot                  currentTxSlotId\n  accountUtxo                    currentUtxo\n  readAddressMeta                currentAddressMeta\n\n  walletAssuranceLevel           rootAssuranceLevel\n  walletTotalBalance             rootTotalBalance\n\n  readAccountsByRootId           accountsByRootId\n  readAddressesByRootId          addressesByRootId\n  readAddressesByAccountId       addressesByAccountId\n  readHdAddressByCardanoAddress  lookupCardanoAddress\n\n  readHdRoot     lookupHdRootId\n  readHdAccount  lookupHdAccountId\n  readHdAddress  lookupHdAddressId\n```\n\nReplaced by new zoom combinators:\n\n```\n  readHdAccountCurrentCheckpoint  zoomHdAccountCurrent\n```\n\nNew (or newly exported) functions on checkpoints:\n\n```\n  cpChanged\n  cpTotalBalance\n  cpTxSlotId\n  cpTxIsPending\n```\n\nDeleted (these were simple aliases for existing lenses):\n\n```\n  hdWallets            dbHdWallets\n  readAllHdRoots       hdWalletsRoots\n  readAllHdAccounts    hdWalletsAccounts\n  readAllHdAddresses   hdWalletsAddresses\n```\n\nDeleted (dead code):\n\n```\n  hdRootBalance\n  hdAccountBalance\n```",
+                      "committedDate": "2018-08-17T14:56:50Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MTg4Mzk1",
+              "number": 3431,
+              "title": "[CBR-179] Bouncing and throttling",
+              "createdAt": "2018-08-17T15:49:20Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NzEwYWVjMmIzM2YzZmIxNTkyMTdhNmQ5NjU4MmQ4M2FmYzkyNzk1Mg==",
+                      "message": "[CO-349] Implement throttling middleware",
+                      "committedDate": "2018-08-17T20:07:19Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5Mjg0MTg3",
+              "number": 3432,
+              "title": "[DEVOPS-1005] Fix Argument list too long `cc' failed in phase `Linker…",
+              "createdAt": "2018-08-18T00:31:29Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T05:49:09Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T05:49:09Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZWQwZjM5NjljNjUxNDFiMGU0ZjVjNWVlMWZmNmQzNTIyMWU3MGVkYQ==",
+                      "message": "[DEVOPS-1005] Fix Argument list too long `cc' failed in phase `Linker'. (Exit code: 126)",
+                      "committedDate": "2018-08-22T01:17:23Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDIzNDQxNA==",
+                    "bodyText": "🤞",
+                    "createdAt": "2018-08-20T08:14:00Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDg2ODIyMQ==",
+                    "bodyText": "nixpkgs changes:\ninput-output-hk/nixpkgs@120b013...118431d",
+                    "createdAt": "2018-08-22T00:44:38Z",
+                    "author": {
+                      "name": "Moritz Angermann"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5Mjk3Mzc2",
+              "number": 3433,
+              "title": "[CBR-387] Add `getSlotStart` to the node adaptor",
+              "createdAt": "2018-08-18T06:22:58Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-18T07:38:26Z",
+              "merged": true,
+              "mergedAt": "2018-08-18T07:38:26Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OWU3NjE3ODk5MDA1NDI1ODAzYTRhMjk5MmYyNGQ2NzMwZjRlYTBjYQ==",
+                      "message": "[CBR-387] Add `getSlotStart` to the node adaptor",
+                      "committedDate": "2018-08-18T06:21:25Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzA4MDg4",
+              "number": 3434,
+              "title": "[CBR-383] Test that submission layer is informed after applyBlock/rollback",
+              "createdAt": "2018-08-18T11:32:10Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-18T13:07:27Z",
+              "merged": true,
+              "mergedAt": "2018-08-18T13:07:27Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ODE5NWFlNWY2NTYyZmJkZGI5NGFlN2Y5YjIyNTYxOWFjNzViN2M1MQ==",
+                      "message": "[CBR-383] Write tests for submission layer updates",
+                      "committedDate": "2018-08-18T08:16:44Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzA5OTQ0",
+              "number": 3435,
+              "title": "[CBR-339] Only keep k checkpoints",
+              "createdAt": "2018-08-18T12:28:53Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-18T13:27:42Z",
+              "merged": true,
+              "mergedAt": "2018-08-18T13:27:42Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzYyNzcxMjI2NGVjYmMxN2EzZjJlOGZlZjdjYTg1YTRiODZjN2FlYg==",
+                      "message": "[CBR-339] Only keep k checkpoints",
+                      "committedDate": "2018-08-18T12:26:30Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzExMjM2",
+              "number": 3436,
+              "title": "[CBR-325] Compare parent IDs last",
+              "createdAt": "2018-08-18T13:05:04Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-18T15:00:09Z",
+              "merged": true,
+              "mergedAt": "2018-08-18T15:00:09Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OWNiZTA1ZjlhY2ZlMjlhZTI4YmJjMzMzZjdlNGVmNDU4YzljY2M0YQ==",
+                      "message": "[CBR-325] Compare parent IDs last\n\nThis is important for efficient sorting.",
+                      "committedDate": "2018-08-18T13:10:18Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDA1NzA0NQ==",
+                    "bodyText": "Rebased.",
+                    "createdAt": "2018-08-18T13:12:57Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzMwODg1",
+              "number": 3437,
+              "title": "[CDEC-509] Remove HasGeneratedSecrets",
+              "createdAt": "2018-08-18T21:14:38Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T20:36:28Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T20:36:28Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MDZiNGYwOTM4NzM0MmVmODRkNzVmYjJkMjE4Mzk3ZTY3NTFhZTdkZg==",
+                      "message": "[CDEC-509] Remove HasGeneratedSecrets",
+                      "committedDate": "2018-08-24T20:30:56Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzQ4Nzg2",
+              "number": 3438,
+              "title": "[CBR-347] Delete `IxSet'`",
+              "createdAt": "2018-08-19T08:19:58Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T09:58:26Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T09:58:26Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YTFkMWY0NjZhN2M0OTdmNGRhZjA0OTBmNTlhZWVmNmJjZDI0NmYzMQ==",
+                      "message": "[CBR-347] Delete `IxSet'`\n\nWe had _two `IxSet` wrappers, one introduced by Alfredo, and one introduced by\nme. Alfredo and I agreed to migrate the code over to the one I introduced, as\nit is bit more feature complete. The most important improvement that my `IxSet`\nwrapper introduces is that it doesn't require `Eq` or `Ord` instances for the\nelements in the set, but instead introduces a concept of a \"primary key\", and\ncompares primary keys only, for better performance.\n\nThis updates the code base to use the (new) `IxSet` wrapper throughout. It\nstill allows for an `IxSet` of V1 addresses, which we really should not do, but\nthat's a problem for a separate PR (and a separate ticket: CBR-356).",
+                      "committedDate": "2018-08-19T08:29:50Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDExMjAzMA==",
+                    "bodyText": "Oh, I see there are conflicts. Will rebase.",
+                    "createdAt": "2018-08-19T08:22:09Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI2MjQ4OQ==",
+                    "bodyText": "Shall I merge so?",
+                    "createdAt": "2018-08-20T09:56:07Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI2MjkzNQ==",
+                    "bodyText": "Please do 👍",
+                    "createdAt": "2018-08-20T09:57:57Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5MzY2ODA0",
+              "number": 3439,
+              "title": "[CBR-389] Don't construct WalletAddress IxSet",
+              "createdAt": "2018-08-19T15:58:40Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T16:11:40Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T16:11:40Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YWZiNzRkMWIxMWFmODAwMzY3ZWMyM2RiNjUwZDg4ZjBhNTZhNTZiNA==",
+                      "message": "[CBR-389] Generalize filtering infrastructure\n\nAn `IxSet` should be thought of as a database table with associated indices.\nAs such, we should _never_ create these tables (with their indices) on the fly\nin request to every response, _especially_ for large amounts of data. Instead\nwe should use the _existing_ `IxSet` and work with that. The problem is that\nwe might have an\n\n```haskell\nIxSet HdAddress\n```\n\nin the database, but we need to construct a response of, say,\n\n```haskell\n[WalletAddress]\n```\n\nA workhorse of the API at the moment is the function\n\n```haskell\nrespondWith :: (Monad m, Indexable a)\n            => RequestParams\n            -> FilterOperations a\n            -> SortOperations a\n            -> m (IxSet a)\n            -> m (WalletResponse [a])\n```\n\nbut we cannot use `respondWith` on an `IxSet HdAddress` to construct a\n`WalletResponse [WalletAddress]`. The answer here is _not_ to to construct\nan `IxSet WalletAddress`, for the reasons explained above. Instead we must\npass the _original_ `IxSet`, getting back a `WalletResponse [HdAddress]`, and\nonly _then_ map this to `WalletResponse [WalletAddress]`.\n\nHowever, that results in a new problem: in the API we get specified a set of\n`FilterOperations WalletAddress`; but in order to be able to call `respondWith`\nwe need to somehow translate this to `FilterOperations HdAddress`. This ought\nto be possible: the indices that we use on `WalletAddress` are also available\non `HdAddress`. Convincing the type checker of this fact is anything but\ntrivial, and is the focus of this PR. Indeed, the coup-de-grace of this PR\nis the function\n\n```haskell\nfilterHdAddress :: FilterOperations '[V1 Core.Address] WalletAddress\n                -> FilterOperations '[V1 Core.Address] (Indexed HD.HdAddress)\nfilterHdAddress NoFilters               = NoFilters\nfilterHdAddress (FilterNop NoFilters)   = FilterNop NoFilters\nfilterHdAddress (FilterOp op NoFilters) = FilterOp (coerce op) NoFilters\n```\n\nwhich is a proof that all filters that we might need on `WalletAddress`\nare indeed also available on `HdAddress`. To get there however I needed to\nmake two key changes (the rest is just the fall-out from these changes):\n\n* The `FilterOperations` type previously just recorded the type it operates on,\n  not the filters it requires. This would make it possible to define something\n  like `filterHdAddress`. It now carries the indices it requries (as shown).\n* There was an alias 'IndexRelation' that was used in a number of places, but\n  (much like the large monad stacks of core) this listed all kinds of\n  constraints that weren't actually needed in many places. These unnecessary\n  constraints again made it impossible to define `filterHdAddress`. I've now\n  removed this constraint, reduced the constraints that `FilterOperations`\n  carries, and inlined the other constraints only where they were needed.\n\nThe easy part of this PR (with all this infrastructure in place) was to\nimplement CBR-366. In order to do so, I've added two new entries to the\nwallet layer:\n\n```haskell\n_pwlGetAccountBalance   :: WalletId\n                        -> AccountIndex\n                        -> m (Either GetAccountError AccountBalance)\n_pwlGetAccountAddresses :: WalletId\n                        -> AccountIndex\n                        -> RequestParams\n                        -> FilterOperations '[V1 Address] WalletAddress\n                        -> m (Either GetAccountError (WalletResponse [WalletAddress]))\n```\n\n`_pwlGetAccountBalance` here just follows the rest, but\n`_pwlGetAccountAddresses` does not: unlike the other methods it takes the\n`RequestParams` and `FilterOperations` as arguments. This is essential, and\nindeed the rest of the wallet layer should be similarly modified; however, this\nis not quite as important for the other ones as addresses are the only `IxSet`\nthat is really huge. There is an open ticket for the rest\n(https://iohk.myjetbrains.com/youtrack/issue/CBR-356).\n\nNote that I've moved\n\n```haskell\ninstance IxSet.Indexable (V1 Core.Address ': SecondaryWalletAddressIxs)\n                         (OrdByPrimKey WalletAddress) where\n    indices = ixList\n```\n\nto a new module `Cardano.Wallet.API.V1.LegacyHandlers.Instances`. This means\nthat an `IxSet WalletAddress` can only be constructed when this instance is\nexplicitly imported; if not, this will result in a type error. The other\n'Indexable' instances for V1 types should be moved to this module also once\nCBR-356 is completely done (and can be removed entirely once the legacy wallet\nis deleted).",
+                      "committedDate": "2018-08-20T15:22:02Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI2NDY4Ng==",
+                    "bodyText": "Will take a look at this test failure.",
+                    "createdAt": "2018-08-20T10:04:28Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI3MTcwNw==",
+                    "bodyText": "This test failure is unrelated to this branch (it fails in the same way on develop). I will rebase this on latest develop and I suggest we merge if approved an CI is green, and I will look at this test failure separately.",
+                    "createdAt": "2018-08-20T10:33:07Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDI3MjM4MA==",
+                    "bodyText": "I have no idea what these \"cached failures\" are. I don't think they are related to this branch (indeed, CI didn't even seem to have run..?).",
+                    "createdAt": "2018-08-20T10:36:07Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDMzNjA5Nw==",
+                    "bodyText": "Rebased and addressed PR feedback (inserted comments, removed sliceList).",
+                    "createdAt": "2018-08-20T14:29:33Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NDM4Njk4",
+              "number": 3440,
+              "title": "CDEC-494: Prepare for consolidation of blund files into epoch files",
+              "createdAt": "2018-08-20T07:54:54Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T02:10:25Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T02:10:25Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MDczYzdmMDE2NzJjNDI0YzMxNWVlYTRiZTY2OWVjNzFhNDg5MzBmZg==",
+                      "message": "CDEC-494: Pos.Util...RWLock: Add whenAcquireWrite",
+                      "committedDate": "2018-08-20T22:06:43Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NDczOTA4",
+              "number": 3441,
+              "title": "[CBR-246] WIP: Implement getInfo and getNodeSettings",
+              "createdAt": "2018-08-20T10:16:51Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T08:51:33Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T08:51:33Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDI0ZTZiMjdhMGU1ZWVjYzc3NzMwNWRiMmVjMTRhMjFmMDJiN2NjMA==",
+                      "message": "[CBR-246] Implement getInfo and getNodeSettings\n\n* This stubs out entries for wallet restoration.\n* Give the node state adaptor access to the NTP client\n* Extend the wallet difussion layer with a status report\n* Minor refactoring: get rid of the useless lensification of the passive wallet\n  layer.",
+                      "committedDate": "2018-08-21T07:46:23Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NDgzMDA2",
+              "number": 3442,
+              "title": "[CDEC-510] Remove `RecordWildCards` from cabal default extensions for packages `generator`, `tools`, `sl` and `node`",
+              "createdAt": "2018-08-20T10:54:13Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T12:42:09Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T12:42:09Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NzU1MTQ5NDg2NzMyYjRkMjEzZDlmMTFmNWMwMDc5Zjg3ZWNmYTRmNQ==",
+                      "message": "[CDEC-510] Remove `RecordWildCards` default extension from `lib`",
+                      "committedDate": "2018-08-20T10:30:19Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NTExOTg3",
+              "number": 3443,
+              "title": "[CBR-227] Avoid overflow in `updateUTxO`",
+              "createdAt": "2018-08-20T12:56:16Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-20T15:20:06Z",
+              "merged": true,
+              "mergedAt": "2018-08-20T15:20:06Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MWY0MTQyMGJhMmViNWE5ZTNhNzI2YmU3ODE5ZjEzNTJhYzM4YThmZg==",
+                      "message": "[CBR-227] Avoid overflow in `updateUTxO`\n\nThis is unlikely to happen in reality, but the tests were hitting this edge\ncase.",
+                      "committedDate": "2018-08-20T14:10:59Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NTM3OTQ0",
+              "number": 3444,
+              "title": "[CHW] API for external wallets, with empty handlers.",
+              "createdAt": "2018-08-20T14:23:08Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T05:19:05Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T05:19:05Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6N2MxYWNmMDU0MjNjNzZkYjkwYTk1ZDEzZGI5NTMwYTNkMDlhNTAxOA==",
+                      "message": "[CHW] API for external wallets, with empty handlers.",
+                      "committedDate": "2018-08-20T17:50:53Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDQwNTMyOA==",
+                    "bodyText": "@parsonsmatt I made some changes. based on your comments.",
+                    "createdAt": "2018-08-20T17:51:45Z",
+                    "author": {
+                      "name": "Denis Shevchenko"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NjIxODE1",
+              "number": 3445,
+              "title": "[CDEC-513] Move Pos.Core.Genesis.Canonical to Pos.Util.Json.Canonical",
+              "createdAt": "2018-08-20T19:38:02Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T12:34:31Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T12:34:31Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjkyY2ZhZjVlYjY5OTg4YjZlMjNkYjIyYzUwNDVjY2RiYjEwZjliOQ==",
+                      "message": "[CDEC-513] Move Pos.Core.Genesis.Canonical to Pos.Util.Json.Canonical",
+                      "committedDate": "2018-08-21T03:29:59Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NjkwNDY5",
+              "number": 3446,
+              "title": "Angerman/cdec 505",
+              "createdAt": "2018-08-21T02:17:16Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-22T00:52:03Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGFlMTlmYjBlYzc2MzkwZjA2YzExYzFmMDYyNTM3MmYxYmU1ZTQyOQ==",
+                      "message": "[DEVOPS-1005] Fix Argument list too long `cc' failed in phase `Linker'. (Exit code: 126)",
+                      "committedDate": "2018-08-18T00:30:22Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNDg2OTU0Mw==",
+                    "bodyText": "TEST PR ONLY.\nMerge #3432",
+                    "createdAt": "2018-08-22T00:52:03Z",
+                    "author": {
+                      "name": "Moritz Angermann"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NjkzMTI2",
+              "number": 3447,
+              "title": "whitespace to measure hydra linux",
+              "createdAt": "2018-08-21T02:39:29Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YjRlODllNDk1OWNhOGQ1MGExYjg0NDMxNWUzNzFlMDY1ZDFkNjY1Yg==",
+                      "message": "whitespace to measure hydra linux",
+                      "committedDate": "2018-08-21T02:38:51Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5NzE4OTkw",
+              "number": 3448,
+              "title": "[CO-325] API V1 Improvements",
+              "createdAt": "2018-08-21T06:18:48Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-23T13:00:36Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZWVlOWUwZjZjMzI0YjlmNTQ5OWZhMWRiYmFjOGIzNTZiMTg2NTA0Yg==",
+                      "message": "[CBR-305] SafeCopy instances for InDb types",
+                      "committedDate": "2018-08-07T15:19:33Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTM4OTEwMQ==",
+                    "bodyText": "Going to rebase this onto new-develop and force push 👍",
+                    "createdAt": "2018-08-23T11:58:02Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTQwNTU1Nw==",
+                    "bodyText": "Can't changed the base with the github UI for whatever reason. I am going to blame JavaScript for this.\nOpening a new PR against develop-new",
+                    "createdAt": "2018-08-23T13:00:36Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5ODE4NDE5",
+              "number": 3449,
+              "title": "[CBR-380] Shuffle tx outputs after coin selection",
+              "createdAt": "2018-08-21T13:03:27Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T16:39:28Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T16:39:28Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZThlMDI3ZjFkMTVlOGM3NWI0YzIwYzQwOWMzYTBjNTU3OWY0MzcwNA==",
+                      "message": "[CBR-380] Shuffle tx outputs after coin selection\n\nThis improves security (makes it harder to guess which are the change outputs).",
+                      "committedDate": "2018-08-21T15:56:08Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5ODU5ODA0",
+              "number": 3450,
+              "title": "[CBR-385] Accept unknown addrs in validateAddress",
+              "createdAt": "2018-08-21T15:07:46Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-21T16:00:12Z",
+              "merged": true,
+              "mergedAt": "2018-08-21T16:00:12Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MGY0YWNlNzgxMjcxOTg0ZmNmYWFiYjFlYjY5ZDU1YzcyZDZkNDllNw==",
+                      "message": "[CBR-385] Accept unknown addrs in validateAddress\n\nThis makes this endpoint useable in more scenarios. After the next release we\nmay want to extend this or split it for different purposes.",
+                      "committedDate": "2018-08-21T15:06:28Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjA5OTU3MDQ2",
+              "number": 3451,
+              "title": "Warn about a pitfall in followTheSatoshiUtxo",
+              "createdAt": "2018-08-21T21:11:11Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T00:42:34Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T00:42:34Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDY3Y2U2ZDk5YjQyYzE0YTA5NzY5ODU0MDM3ZTEwMWRiNTI5YTUwMA==",
+                      "message": "Warn about a pitfall in followTheSatoshiUtxo",
+                      "committedDate": "2018-08-21T21:10:55Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMDkwODU4",
+              "number": 3453,
+              "title": "[CBR-396] Acid-state strict all the way down",
+              "createdAt": "2018-08-22T10:39:41Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T11:51:10Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T11:51:10Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDI2NDQ2NGY5ODZiOTZhMDg5NGExMjg0MDEzY2NiNjJiODBlNDY4ZQ==",
+                      "message": "[CBR-396] Aid-state strict all the way down",
+                      "committedDate": "2018-08-22T10:51:52Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMTMyODkz",
+              "number": 3454,
+              "title": "[CBR-250] Support for updates",
+              "createdAt": "2018-08-22T13:25:42Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T15:15:55Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T15:15:55Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ODgyZWUzY2NhYTRkYWE5ZTQ4NGIzOGNhMDBjYTI0MjZjNmIyYmIxOQ==",
+                      "message": "[CBR-250] Support for updates\n\nThis PR makes a number of changes:\n\n* Rename the old `Cardano.Wallet.API.Internal.Handlers` module to\n  `Cardano.Wallet.API.Internal.LegacyHandlers`, and introduce a new\n  `Cardano.Wallet.API.Internal.Handlers` module.\n\n* Add new field to the kernel DB: the updates downloaded by the launcher,\n  along with the necessary functions to work with this new data.\n\n* A new API endpoint for checking for updates\n\n* `nextUpdate`, `applyUpdate`, `postponeUpdate` and `resetWalletState`\n  entries in the `PassiveWalletLayer`, along with implementations for the kernel\n  for all of these except for `resetWalletState` (CBR-393)\n\n* An implementation of the new check-for-update endpoint also for the legacy\n  implementation.\n\n* New functions in the `NodeStateAdaptor` that can be used to wait for an\n  update notification from the launcher and one to trigger a shutdown.\n  (This required extending the internal environment used in `WithNodeState`\n  with a logger function.)\n\nThis means that except for the reset internal wallet state, the internal\nendpoints are now implemented. However, this does _NOT_ yet include a plugin\nthat  lists for updates and notifies the wallet layer when they come available.\nThis should be done as part of CBR-377.",
+                      "committedDate": "2018-08-22T13:24:41Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTA0OTY0Mw==",
+                    "bodyText": "And yes, the testing would have to be done as part of https://iohk.myjetbrains.com/youtrack/issue/CBR-377 , where I added a comment specifically about this.",
+                    "createdAt": "2018-08-22T14:22:54Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMjA3OTU0",
+              "number": 3455,
+              "title": "also cache cabal2nix on hydra",
+              "createdAt": "2018-08-22T17:28:02Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-22T18:03:11Z",
+              "merged": true,
+              "mergedAt": "2018-08-22T18:03:11Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZjZkNzU3MzcyOWI2YWU5MTc1ZTI3YTQ5ODhjYWRhM2M2NjY1MWQ2Zg==",
+                      "message": "also cache cabal2nix on hydra",
+                      "committedDate": "2018-08-22T17:26:44Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMjkyOTUx",
+              "number": 3456,
+              "title": "[CDEC-517] Parallelize the `generator`, `wallet-new`, `binary`, `chain`, `client`, `core`, `crypto`, `explorer`, `lib` & `networking` tests",
+              "createdAt": "2018-08-22T23:36:01Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-23T12:53:15Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MzYzYTJmODcxYTUwNTMwZTU3MWE2MzczNTBiY2M5NTQyNGJiMmZkYg==",
+                      "message": "[CDEC-517] Add `parallelize` function to `util` and parallelize tests in\n`generator`",
+                      "committedDate": "2018-08-22T23:40:22Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTQwMzM2OA==",
+                    "bodyText": "PR closed until develop is functional again.\nNew PR: #3479",
+                    "createdAt": "2018-08-23T12:53:15Z",
+                    "author": {
+                      "name": "Jordan Millar"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMzA3Mzg4",
+              "number": 3457,
+              "title": "[DEVOPS-1013] bump nixpkgs and add enablePhaseMetrics=true",
+              "createdAt": "2018-08-23T01:35:02Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-25T01:52:10Z",
+              "merged": true,
+              "mergedAt": "2018-08-25T01:52:10Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NzJiMjM3ZDdlMDFiMWIxY2IyNzc3Yzk3YmI2YmQxMzRmNjAyYzcxMA==",
+                      "message": "[DEVOPS-1013] bump nixpkgs and add enablePhaseMetrics=true",
+                      "committedDate": "2018-08-24T21:21:08Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMzExMzEz",
+              "number": 3458,
+              "title": "[CDEC-512] Create JSON round-trip and golden tests for GenesisData, GenesisProtocolConstants, and GenesisConfiguration",
+              "createdAt": "2018-08-23T02:07:54Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OTY5OTI0NzA3OWY2NzY0MmUxOGM0NmU4ZjRjNzUwMDg0NDczZDRkNg==",
+                      "message": "[CDEC-512] Add goldenTestJSONDec utility function",
+                      "committedDate": "2018-08-23T17:09:52Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwMzM5NTk3",
+              "number": 3459,
+              "title": "Bump LTS-12",
+              "createdAt": "2018-08-23T06:06:02Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MmQxYWY4NDBmMWI4OTc2ZmQyZDMwNWQ1YmFkZWIzY2Y0ZjAwOTFkMw==",
+                      "message": "Drop packages that are in lts-12.7",
+                      "committedDate": "2018-08-27T04:17:24Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTMwMjQ2Ng==",
+                    "bodyText": "This contains the necessary changes to bump develop to lts-12.7 as a precursor for the windows cross compilation logic (which requires ghc8.4+, and as such lts-12+).",
+                    "createdAt": "2018-08-23T06:07:03Z",
+                    "author": {
+                      "name": "Moritz Angermann"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTc3NTE2NQ==",
+                    "bodyText": "What?",
+                    "createdAt": "2018-08-24T14:25:51Z",
+                    "author": {
+                      "name": "Moritz Angermann"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTc3ODExNw==",
+                    "bodyText": "Wut o.O ...\nHo. I deleted develop-new. That might be it.",
+                    "createdAt": "2018-08-24T14:34:53Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNDI1ODc0",
+              "number": 3460,
+              "title": "[CBR-386] Add document relating the Wallet Spec to the Cardano and DSL code",
+              "createdAt": "2018-08-23T12:08:19Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-24T12:28:48Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NWNlNzRkODA0NzJjODMwMWM4NGZmNmMzMmVlYjdiNTA4NWI1MDdhNg==",
+                      "message": "[CBR-386] Add document relating the Wallet Spec to the Cardano and DSL code",
+                      "committedDate": "2018-08-23T12:15:33Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNDQwODY2",
+              "number": 3461,
+              "title": "[CO-325] API V1 Improvements - Part 2",
+              "createdAt": "2018-08-23T13:04:09Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T12:27:20Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T12:27:20Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NjdjMGVkZWM2YTJmNDJmODc4MThkMTNjNzE5YjMzNjBiOGZkYjliMQ==",
+                      "message": "[CO-343] Replace hs-ed25519 dependency with cryptonite",
+                      "committedDate": "2018-08-24T10:08:32Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTQwNzE4MA==",
+                    "bodyText": "@edsko\nMay you review the parts related to the new wallet. I introduced them mostly during rebased, adding commits as necessary.\nRest was already reviewed during development, when creating PR from feature branches to this one but it's still good to have a quick look at it.",
+                    "createdAt": "2018-08-23T13:06:24Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTc0NDAxNA==",
+                    "bodyText": "Merging without AppVeyor ... as usual.",
+                    "createdAt": "2018-08-24T12:27:29Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNDkyNDU4",
+              "number": 3462,
+              "title": "Make develop great again",
+              "createdAt": "2018-08-23T15:41:35Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T11:02:58Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T11:02:58Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NjhkYzE3MDJlNzNlMTlkOWY3MmFlMTI0N2EwZTg1YjdjYzBmMWFmNg==",
+                      "message": "make stylish-haskell and hlint available inside nix-shell",
+                      "committedDate": "2018-07-31T12:06:51Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTQ3MjYxMQ==",
+                    "bodyText": "When merging this, make sure to select the right merge option and do a fast forward merge (without merge commit)",
+                    "createdAt": "2018-08-23T16:04:41Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNDk1MTk5",
+              "number": 3463,
+              "title": "[CBR-371] wallet-new: add tests for Servant's listAddresses endpoint",
+              "createdAt": "2018-08-23T15:50:43Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T05:32:28Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T05:32:27Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZTVhNzM3MTI0YjE0MjVjMTQ3ODc3ZWMxZDU1MzI1MDg5MmQxMGNjMg==",
+                      "message": "[CBR-371] wallet-new: add tests for Servant's listAddresses endpoint",
+                      "committedDate": "2018-08-23T15:44:44Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY1NTcwMg==",
+                    "bodyText": "Thanks :) Will be interesting to see if there is indeed a bug across accounts, since that where's the logic gets a bit trickier.",
+                    "createdAt": "2018-08-24T05:32:23Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNTAzNzgw",
+              "number": 3464,
+              "title": "[CBR-374] Catch all errors thrown by new data layer",
+              "createdAt": "2018-08-23T16:20:41Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NGEyM2ZlNmE4NDBjMGY4MjNkMDY0YjZhZGJhMTJkYTFmMmUxNjg1Ng==",
+                      "message": "[CO-374] Add WalletException stub",
+                      "committedDate": "2018-08-23T16:00:31Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTcxMzI5NQ==",
+                    "bodyText": "Since we are a bit pressured by time, here's a patch with my comments:\n\ndiff --git a/wallet-new/src/Cardano/Wallet/API/V1/Generic.hs b/wallet-new/src/Cardano/Wallet/API/V1/Generic.hs\nindex d6e0acb..2dfa883 100644\n--- a/wallet-new/src/Cardano/Wallet/API/V1/Generic.hs\n+++ b/wallet-new/src/Cardano/Wallet/API/V1/Generic.hs\n@@ -5,6 +5,7 @@ module Cardano.Wallet.API.V1.Generic\n     , jsendErrorGenericParseJSON\n     , gconsNames\n     , gconsName\n+    , GDiagnosticToJSON\n     ) where\n \n import           Universum hiding (All, Generic)\ndiff --git a/wallet-new/src/Cardano/Wallet/API/V1/Handlers/Accounts.hs b/wallet-new/src/Cardano/Wallet/API/V1/Handlers/Accounts.hs\nindex a7523fc..eb18bf0 100644\n--- a/wallet-new/src/Cardano/Wallet/API/V1/Handlers/Accounts.hs\n+++ b/wallet-new/src/Cardano/Wallet/API/V1/Handlers/Accounts.hs\n@@ -14,6 +14,8 @@ import           Cardano.Wallet.API.V1.Types\n import           Cardano.Wallet.WalletLayer (PassiveWalletLayer)\n import qualified Cardano.Wallet.WalletLayer as WalletLayer\n \n+import           Cardano.Wallet.Kernel.WalletException (throwWalletM)\n+\n handlers :: PassiveWalletLayer IO -> ServerT Accounts.API Handler\n handlers w =  deleteAccount w\n          :<|> getAccount    w\n@@ -30,7 +32,7 @@ deleteAccount :: PassiveWalletLayer IO\n deleteAccount layer wId accIdx = do\n     res <- liftIO $ WalletLayer.deleteAccount layer wId accIdx\n     case res of\n-         Left e   -> throwM e\n+         Left e   -> throwWalletM e\n          Right () -> return NoContent\n \n -- | Fetches an 'Account' given its parent 'WalletId' and its index.\ndiff --git a/wallet-new/src/Cardano/Wallet/Kernel/Accounts.hs b/wallet-new/src/Cardano/Wallet/Kernel/Accounts.hs\nindex 2d82fa6..59cbd98 100644\n--- a/wallet-new/src/Cardano/Wallet/Kernel/Accounts.hs\n+++ b/wallet-new/src/Cardano/Wallet/Kernel/Accounts.hs\n@@ -6,23 +6,17 @@ module Cardano.Wallet.Kernel.Accounts (\n     , CreateAccountError(..)\n     ) where\n \n-import qualified Prelude\n import           Universum\n \n-import           Formatting (bprint, build, formatToString, (%))\n+import           Formatting (bprint, (%))\n import qualified Formatting as F\n import qualified Formatting.Buildable\n import           System.Random.MWC (GenIO, createSystemRandom, uniformR)\n \n-import           Servant (err400)\n-\n import           Data.Acid (update)\n-import           Data.Aeson (ToJSON, toJSON)\n \n import           Pos.Crypto (EncryptedSecretKey, PassPhrase)\n \n-import           Cardano.Wallet.API.V1.Errors (ToHttpErrorStatus (..),\n-                     ToServantError (..))\n import           Cardano.Wallet.Kernel.DB.AcidState (CreateHdAccount (..), DB,\n                      DeleteHdAccount (..), UpdateHdAccountName (..))\n import           Cardano.Wallet.Kernel.DB.HdWallet (AccountName (..),\n@@ -37,8 +31,6 @@ import           Cardano.Wallet.Kernel.Internal (PassiveWallet, walletKeystore,\n                      wallets)\n import qualified Cardano.Wallet.Kernel.Keystore as Keystore\n import           Cardano.Wallet.Kernel.Types (WalletId (..))\n-import           Cardano.Wallet.Kernel.WalletException\n-                     (walletExceptionFromException, walletExceptionToException)\n \n import           Test.QuickCheck (Arbitrary (..), oneof)\n \n@@ -65,18 +57,6 @@ instance Buildable CreateAccountError where\n     build (CreateAccountHdRndAccountSpaceSaturated hdAcc) =\n         bprint (\"CreateAccountHdRndAccountSpaceSaturated \" % F.build) hdAcc\n \n-instance ToJSON CreateAccountError where\n-    toJSON = error \"TODO\"\n-instance ToServantError CreateAccountError where\n-    declareServantError _ = err400 -- FIXME: picked by random for now !!!!!!!!!!\n-instance ToHttpErrorStatus CreateAccountError\n-\n-instance Show CreateAccountError where\n-    show = formatToString build\n-\n-instance Exception CreateAccountError where\n-    toException   = walletExceptionToException\n-    fromException = walletExceptionFromException\n \n -- | Creates a new 'Account' for the input wallet.\n -- Note: @it does not@ generate a new 'Address' to go in tandem with this\ndiff --git a/wallet-new/src/Cardano/Wallet/Kernel/DB/HdWallet.hs b/wallet-new/src/Cardano/Wallet/Kernel/DB/HdWallet.hs\nindex 620d54c..6f4dffd 100644\n--- a/wallet-new/src/Cardano/Wallet/Kernel/DB/HdWallet.hs\n+++ b/wallet-new/src/Cardano/Wallet/Kernel/DB/HdWallet.hs\n@@ -1,4 +1,5 @@\n-{-# LANGUAGE RankNTypes #-}\n+{-# LANGUAGE DeriveGeneric #-}\n+{-# LANGUAGE RankNTypes    #-}\n -- TODO: Not sure about the best way to avoid the orphan instances here\n {-# OPTIONS_GHC -fno-warn-orphans #-}\n \n@@ -96,6 +97,9 @@ import           Universum\n \n import           Control.Lens (at, (+~), _Wrapped)\n import           Control.Lens.TH (makeLenses)\n+import           Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON,\n+                     genericToJSON)\n+import qualified Data.Aeson as Aeson\n import qualified Data.ByteString as BS\n import qualified Data.IxSet.Typed as IxSet (Indexable (..))\n import           Data.SafeCopy (SafeCopy (..), base, deriveSafeCopy)\n@@ -109,7 +113,7 @@ import qualified Pos.Core as Core\n import           Pos.Core.Chrono (NewestFirst (..))\n import qualified Pos.Crypto as Core\n \n-import           Cardano.Wallet.API.V1.Types (V1 (..))\n+import           Cardano.Wallet.API.V1.Types (V1 (..), unV1)\n import           Cardano.Wallet.Kernel.DB.InDb\n import           Cardano.Wallet.Kernel.DB.Spec\n import           Cardano.Wallet.Kernel.DB.Util.AcidState\n@@ -129,7 +133,13 @@ newtype AccountName = AccountName { getAccountName :: Text }\n \n -- | Account index\n newtype HdAccountIx = HdAccountIx { getHdAccountIx :: Word32 }\n-  deriving (Eq, Ord)\n+  deriving (Generic, Eq, Ord)\n+\n+instance ToJSON HdAccountIx where\n+    toJSON = genericToJSON Aeson.defaultOptions\n+\n+instance FromJSON HdAccountIx where\n+    parseJSON = genericParseJSON Aeson.defaultOptions\n \n -- NOTE(adn) if we need to generate only @hardened@ account indexes, we\n -- need to extend this arbitrary instance accordingly.\n@@ -209,7 +219,7 @@ eskToHdRootId = HdRootId . InDb . Core.makePubKeyAddressBoot . Core.encToPublic\n -- as a primary key. This however is a slightly larger refactoring we don't\n -- currently have time for.\n newtype HdRootId = HdRootId { getHdRootId :: InDb Core.Address }\n-  deriving (Eq, Ord)\n+  deriving (Generic, Eq, Ord)\n \n instance Arbitrary HdRootId where\n   arbitrary = do\n@@ -217,12 +227,18 @@ instance Arbitrary HdRootId where\n                                                <*> pure mempty\n       pure (eskToHdRootId esk)\n \n+instance ToJSON HdRootId where\n+    toJSON = genericToJSON Aeson.defaultOptions\n+\n+instance FromJSON HdRootId where\n+    parseJSON = genericParseJSON Aeson.defaultOptions\n+\n -- | HD wallet account ID\n data HdAccountId = HdAccountId {\n       _hdAccountIdParent :: HdRootId\n     , _hdAccountIdIx     :: HdAccountIx\n     }\n-  deriving (Eq)\n+  deriving (Generic, Eq)\n \n -- | We make sure to compare the account index first to avoid doing an\n -- unnecessary comparison of the root ID\n@@ -234,6 +250,12 @@ instance Ord HdAccountId where\n instance Arbitrary HdAccountId where\n   arbitrary = HdAccountId <$> arbitrary <*> arbitrary\n \n+instance ToJSON HdAccountId where\n+    toJSON = genericToJSON Aeson.defaultOptions\n+\n+instance FromJSON HdAccountId where\n+    parseJSON = genericParseJSON Aeson.defaultOptions\n+\n -- | HD wallet address ID\n data HdAddressId = HdAddressId {\n       _hdAddressIdParent :: HdAccountId\n@@ -473,13 +495,21 @@ data UnknownHdAccount =\n \n     -- | Unknown account (implies the root is known)\n   | UnknownHdAccount HdAccountId\n-  deriving Eq\n+  deriving (Generic, Eq)\n \n instance Arbitrary UnknownHdAccount where\n     arbitrary = oneof [ UnknownHdAccountRoot <$> arbitrary\n                       , UnknownHdAccount <$> arbitrary\n                       ]\n \n+instance ToJSON (V1 UnknownHdAccount) where\n+    toJSON = genericToJSON Aeson.defaultOptions . unV1\n+\n+instance FromJSON (V1 UnknownHdAccount) where\n+    parseJSON = fmap V1 . genericParseJSON Aeson.defaultOptions\n+\n+\n+\n -- | Unknown address\n data UnknownHdAddress =\n     -- | Unknown root ID\ndiff --git a/wallet-new/src/Cardano/Wallet/Kernel/DB/InDb.hs b/wallet-new/src/Cardano/Wallet/Kernel/DB/InDb.hs\nindex df02c38..54374b9 100644\n--- a/wallet-new/src/Cardano/Wallet/Kernel/DB/InDb.hs\n+++ b/wallet-new/src/Cardano/Wallet/Kernel/DB/InDb.hs\n@@ -8,6 +8,7 @@ module Cardano.Wallet.Kernel.DB.InDb (\n import           Universum\n \n import           Control.Lens.TH (makeLenses)\n+import           Data.Aeson (FromJSON (..), ToJSON (..))\n import           Data.SafeCopy (SafeCopy (..))\n \n import qualified Pos.Chain.Block as Core\n@@ -30,6 +31,12 @@ instance Applicative InDb where\n   pure = InDb\n   InDb f <*> InDb x = InDb (f x)\n \n+instance ToJSON a => ToJSON (InDb a) where\n+    toJSON = toJSON . _fromDb\n+\n+instance FromJSON a => FromJSON (InDb a) where\n+    parseJSON = fmap InDb . parseJSON\n+\n makeLenses ''InDb\n \n {-------------------------------------------------------------------------------\ndiff --git a/wallet-new/src/Cardano/Wallet/Kernel/WalletException.hs b/wallet-new/src/Cardano/Wallet/Kernel/WalletException.hs\nindex 2c2f3c2..51466cf 100644\n--- a/wallet-new/src/Cardano/Wallet/Kernel/WalletException.hs\n+++ b/wallet-new/src/Cardano/Wallet/Kernel/WalletException.hs\n@@ -1,42 +1,35 @@\n {-# LANGUAGE ExistentialQuantification #-}\n \n-module Cardano.Wallet.Kernel.WalletException where\n+module Cardano.Wallet.Kernel.WalletException\n+    ( WalletException(..)\n+    , throwWalletM\n+    ) where\n \n import           Universum\n \n-import           Data.Aeson (ToJSON, toJSON)\n-import           Data.Typeable (cast)\n-import           Formatting.Buildable (build)\n-import           Prelude (show)\n+import           Cardano.Wallet.API.Response.JSend (HasDiagnostic)\n+import           Cardano.Wallet.API.V1.Errors (ToHttpErrorStatus)\n \n-import           Cardano.Wallet.API.V1.Errors (ToHttpErrorStatus (..),\n-                     ToServantError (..))\n+import qualified Prelude\n \n-data WalletException = forall e . (ToHttpErrorStatus e, Exception e, Buildable e) => WalletException e\n \n--- FIXME: Generics somewhow?\n+data WalletException = forall e.\n+    ( Exception e\n+    , HasDiagnostic e\n+    , ToHttpErrorStatus e\n+    ) => WalletException { getWalletException :: e }\n \n-instance Show WalletException where\n+instance Prelude.Show WalletException where\n     show (WalletException e) = Prelude.show e\n \n-instance ToJSON WalletException where\n-    toJSON (WalletException e) = toJSON e\n-\n-instance ToHttpErrorStatus WalletException where\n-    toHttpErrorStatus (WalletException e) = toHttpErrorStatus e\n-\n-instance ToServantError WalletException where\n-    declareServantError (WalletException e) = declareServantError e\n-\n-instance Buildable WalletException where\n-    build (WalletException e) = build e\n-\n instance Exception WalletException\n \n-walletExceptionToException :: (ToHttpErrorStatus e, Exception e) => e -> SomeException\n-walletExceptionToException = toException . WalletException\n-\n-walletExceptionFromException :: Exception e => SomeException -> Maybe e\n-walletExceptionFromException x = do\n-    WalletException a <- fromException x\n-    cast a\n+-- | Wrap a wallet exception in a proper type that can be caught later\n+throwWalletM ::\n+    ( Exception e\n+    , MonadThrow m\n+    , HasDiagnostic e\n+    , ToHttpErrorStatus e\n+    ) => e -> m a\n+throwWalletM =\n+    throwM . WalletException\ndiff --git a/wallet-new/src/Cardano/Wallet/Server/Plugins.hs b/wallet-new/src/Cardano/Wallet/Server/Plugins.hs\nindex d391b56..51f6aec 100644\n--- a/wallet-new/src/Cardano/Wallet/Server/Plugins.hs\n+++ b/wallet-new/src/Cardano/Wallet/Server/Plugins.hs\n@@ -24,7 +24,7 @@ import qualified Cardano.Wallet.API.V1.Types as V1\n import           Cardano.Wallet.Kernel (PassiveWallet)\n import qualified Cardano.Wallet.Kernel.Diffusion as Kernel\n import qualified Cardano.Wallet.Kernel.Mode as Kernel\n-import           Cardano.Wallet.Kernel.WalletException (WalletException)\n+import           Cardano.Wallet.Kernel.WalletException (WalletException (..))\n import qualified Cardano.Wallet.LegacyServer as LegacyServer\n import qualified Cardano.Wallet.Server as Server\n import           Cardano.Wallet.Server.CLI (NewWalletBackendParams (..),\n@@ -162,7 +162,7 @@ legacyWalletBackend pm txpConfig WalletBackendParams {..} ntpStatus = pure $ \\di\n \n     exceptionHandler :: SomeException -> Response\n     exceptionHandler se =\n-        case asum [handleV1Errors se, handleWalletException <$> fromException se, handleV0Errors se] of\n+        case asum [handleV1Errors se, handleV0Errors se] of\n              Nothing -> handleGenericError se\n              Just r  -> r\n \n@@ -173,10 +173,6 @@ legacyWalletBackend pm txpConfig WalletBackendParams {..} ntpStatus = pure $ \\di\n                 responseLBS (V1.toHttpErrorStatus we) [applicationJson] .  encode $ we\n         in fmap reify (fromException se)\n \n-    handleWalletException :: WalletException -> Response\n-    handleWalletException e =\n-          responseLBS (V1.toHttpErrorStatus e) [applicationJson] .  encode $ e\n-\n     -- Handles domain-specific errors coming from the V0 API, but rewraps it\n     -- into a jsend payload. It doesn't explicitly handle 'InternalError' or\n     -- 'DecodeError', as they can come from any part of the stack or even\n@@ -236,6 +232,11 @@ walletBackend protocolMagic (NewWalletBackendParams WalletBackendParams{..}) (pa\n     lower :: env -> ReaderT env IO a -> IO a\n     lower env m = runReaderT m env\n \n+    handleWalletException :: WalletException -> Response\n+    handleWalletException (WalletException e) =\n+          responseLBS (V1.toHttpErrorStatus e) [applicationJson] . encode $ e\n+\n+\n -- | A @Plugin@ to resubmit pending transactions.\n resubmitterPlugin :: HasConfigurations\n                   => ProtocolMagic\ndiff --git a/wallet-new/src/Cardano/Wallet/WalletLayer.hs b/wallet-new/src/Cardano/Wallet/WalletLayer.hs\nindex 09a7f16..bbb8558 100644\n--- a/wallet-new/src/Cardano/Wallet/WalletLayer.hs\n+++ b/wallet-new/src/Cardano/Wallet/WalletLayer.hs\n@@ -1,3 +1,6 @@\n+{-# LANGUAGE DeriveGeneric #-}\n+{-# LANGUAGE LambdaCase    #-}\n+\n module Cardano.Wallet.WalletLayer\n     ( PassiveWalletLayer (..)\n     , ActiveWalletLayer (..)\n@@ -22,9 +25,12 @@ module Cardano.Wallet.WalletLayer\n \n import           Universum\n \n+import           Data.Aeson (FromJSON (..), ToJSON (..))\n import           Formatting (bprint, build, formatToString, (%))\n import qualified Formatting.Buildable\n+import           Generics.SOP.TH (deriveGeneric)\n import qualified Prelude\n+import           Servant (err400, err404)\n import           Test.QuickCheck (Arbitrary (..), oneof)\n \n import           Pos.Chain.Block (Blund)\n@@ -37,6 +43,11 @@ import           Cardano.Wallet.API.Request (RequestParams (..))\n import           Cardano.Wallet.API.Request.Filter (FilterOperations (..))\n import           Cardano.Wallet.API.Request.Sort (SortOperations (..))\n import           Cardano.Wallet.API.Response (SliceOf (..), WalletResponse)\n+import           Cardano.Wallet.API.Response.JSend (HasDiagnostic (..))\n+import           Cardano.Wallet.API.V1.Errors (ToHttpErrorStatus,\n+                     ToServantError (..))\n+import           Cardano.Wallet.API.V1.Generic (jsendErrorGenericParseJSON,\n+                     jsendErrorGenericToJSON)\n import           Cardano.Wallet.API.V1.Types (Account, AccountBalance,\n                      AccountIndex, AccountUpdate, Address, NewAccount,\n                      NewAddress, NewWallet, NodeInfo, NodeSettings,\n@@ -247,20 +258,40 @@ instance Buildable GetAccountError where\n data DeleteAccountError =\n       DeleteAccountError (V1 Kernel.UnknownHdAccount)\n     | DeleteAccountWalletIdDecodingFailed Text\n-    deriving Eq\n+    deriving (Generic, Eq)\n+\n+deriveGeneric ''DeleteAccountError\n \n -- | Unsound show instance needed for the 'Exception' instance.\n instance Show DeleteAccountError where\n     show = formatToString build\n \n-instance Exception DeleteAccountError\n-\n instance Buildable DeleteAccountError where\n     build (DeleteAccountError kernelError) =\n         bprint (\"DeleteAccountError \" % build) kernelError\n     build (DeleteAccountWalletIdDecodingFailed txt) =\n         bprint (\"DeleteAccountWalletIdDecodingFailed \" % build) txt\n \n+instance HasDiagnostic DeleteAccountError where\n+    getDiagnosticKey (DeleteAccountError _) = \"unknownAccount\"\n+    getDiagnosticKey (DeleteAccountWalletIdDecodingFailed _) = \"message\"\n+\n+instance ToServantError DeleteAccountError where\n+    declareServantError = \\case\n+        DeleteAccountError _ -> err404\n+        DeleteAccountWalletIdDecodingFailed _ -> err400\n+\n+instance ToHttpErrorStatus DeleteAccountError\n+\n+instance ToJSON DeleteAccountError where\n+    toJSON = jsendErrorGenericToJSON\n+\n+instance FromJSON DeleteAccountError where\n+    parseJSON = jsendErrorGenericParseJSON\n+\n+instance Exception DeleteAccountError\n+\n+\n data GetAccountsError =\n       GetAccountsError Kernel.UnknownHdRoot\n     | GetAccountsWalletIdDecodingFailed Text",
+                    "createdAt": "2018-08-24T09:59:45Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTcxMzg0Nw==",
+                    "bodyText": "What we are basically missing is all the HasDiagnostic, ToServantError, ToJSON and FromJSON instances for all errors and their inherent types.\nAlso, we will need to define a set of roundtrips Quickcheck tests for each errors the same we we do it here:\n\n\n  \n    \n      cardano-sl/wallet-new/test/MarshallingSpec.hs\n    \n    \n        Lines 57 to 59\n      in\n      ce0e232\n    \n    \n    \n    \n\n        \n          \n           aesonRoundtripProp @WalletError Proxy \n        \n\n        \n          \n           aesonRoundtripProp @JSONValidationError Proxy \n        \n\n        \n          \n           aesonRoundtripProp @MigrationError Proxy \n        \n    \n  \n\n\n\nand ideally, a set of golden tests as defined here:\n\nhttps://github.com/input-output-hk/cardano-sl/blob/ce0e2321a6d38363a590ccf3f7451e813315bdb2/wallet-new/test/WalletNewJson.hs",
+                    "createdAt": "2018-08-24T10:02:03Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNTA2OTM5",
+              "number": 3465,
+              "title": "[CBR-391] launcher: add a workingDir setting to the launcher config",
+              "createdAt": "2018-08-23T16:32:11Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T03:54:35Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T03:54:35Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MDVhMDcyMGQwMmQ5YTMyMTM0NWM3NjViYjI1ZGJhZDUwMzI1NDI2ZA==",
+                      "message": "[CBR-391] launcher: add a workingDir setting to the launcher config\n\nChanging to the working directory before starting cardano-node allows\nother paths (nodeDbPath in particular) to be supplied as relative\npaths. This allows us to work around unicode bugs in rocksdb.",
+                      "committedDate": "2018-08-23T14:07:19Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNTE4MDYy",
+              "number": 3466,
+              "title": "[CBR-349] Implement redemption",
+              "createdAt": "2018-08-23T17:16:46Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T05:07:39Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T05:07:39Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NDE3Yzk0ZGI1MzhmM2U4YTU4MjNmZTdkODQzOGRiY2Y0OGViMmRhMA==",
+                      "message": "[CBR-349] Implement redemption\n\nThe new implementation is _significantly_ simpler than the one in the legacy\nwallet. In particular, we do not bother to run coin selection. Instead, we\nsimply\n\n1. Check if there is a UTxO available to the redemption address in the node's UTxO\n   There can be at most 1; if 0, already redeemed.\n2. Construct a transaction containing a single input and a single output (to a\n   freshly generated address), for the full amount of the voucher.\n\nI've verified this approach with a bunch of people and tried to compare it to\nthe redemption transactions that actually currently exist on the blockchain,\nand it seems this is indeed the right approach.",
+                      "committedDate": "2018-08-23T16:55:31Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNTkxMjQ0",
+              "number": 3468,
+              "title": "[CHW] Implement basic handlers for work with external wallets.",
+              "createdAt": "2018-08-23T22:17:49Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T06:05:00Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T06:05:00Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzU2NDgyZTljOTJjMjlhZmFmZDIzZGRkOWM5ZDNlYTAxMWFlNjVhNw==",
+                      "message": "[CHW] Implement basic handlers for work with external wallets.",
+                      "committedDate": "2018-08-23T22:16:01Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTU4OTk1NA==",
+                    "bodyText": "Please note that integration tests for these endpoints already exist, but they will be added in the next PR.",
+                    "createdAt": "2018-08-23T22:22:20Z",
+                    "author": {
+                      "name": "Denis Shevchenko"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNjA2NzY0",
+              "number": 3469,
+              "title": "[CBR-366] Adding test for partial getters",
+              "createdAt": "2018-08-24T00:01:10Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T12:09:48Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T12:09:48Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YWJkZDZjZWFmMWJmMDA5ZmYyNTM5MDcxYjFiZWJlMDI2MTkzMTQ2Nw==",
+                      "message": "[CBR-366] Adding test for partial getters",
+                      "committedDate": "2018-08-23T23:51:51Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY1NzU2Nw==",
+                    "bodyText": "yes, in the integration test added the following is taken place:\n\nGenesis wallet and random wallet with 5 accounts are created\nBalances as obtained by getAccounts and by getAccountBalances are compared (here zero balances)\nMoney is transferred from genesis wallet to random wallet's accounts\ndelayThread is adopted to confirm transactions in the blockchain\nPoint 2 is repeated, this time for accounts with nonzero balances",
+                    "createdAt": "2018-08-24T05:45:36Z",
+                    "author": {
+                      "name": null
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY1ODI4Nw==",
+                    "bodyText": "Money is transferred from genesis wallet to random wallet's accounts\n\nYou mean in wallet-new/integration/AccountSpecs.hs right?",
+                    "createdAt": "2018-08-24T05:50:41Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY2MDk1NQ==",
+                    "bodyText": "yes this is the fragment responsible:\nlet payment amount toAddr = Payment\n{ pmtSource = PaymentSource\n{ psWalletId = walId genesis\n, psAccountIndex = accIndex fromAcct\n}\n, pmtDestinations = pure PaymentDistribution\n{ pdAddress = addrId toAddr\n, pdAmount = V1 (Core.mkCoin amount)\n}\n, pmtGroupingPolicy = Nothing\n, pmtSpendingPassword = Nothing\n}\namounts <- generate $ shuffle [1..5]\nlet addrAndAmount = zip (map (\\(addr : _) -> addr) $ map accAddresses accs) amounts\nforM_ addrAndAmount $ \\(addr, amount) ->\npostTransaction wc (payment amount addr)",
+                    "createdAt": "2018-08-24T06:07:22Z",
+                    "author": {
+                      "name": null
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY2MTM4Ng==",
+                    "bodyText": "Ok, sounds good. Ideally we'd modify the wallet tests themselves to be able to do something similar, perhaps hook it up to our blockchain infrastructure, but for now, this will do just fine :) Thanks!",
+                    "createdAt": "2018-08-24T06:10:08Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY4OTMzMA==",
+                    "bodyText": "NOT MERGING THIS YET. Wait for #3462 to get in develop",
+                    "createdAt": "2018-08-24T08:23:07Z",
+                    "author": {
+                      "name": "Matthias Benkort"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNjM1MDMx",
+              "number": 3470,
+              "title": "Matt noonan/restoration",
+              "createdAt": "2018-08-24T04:16:50Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-27T08:13:08Z",
+              "merged": true,
+              "mergedAt": "2018-08-27T08:13:08Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZDU0MTZjNGFjZWMwNGQzZmFiMTc5OTY3NmE1MjYwOWNhNWQ1NGFhNQ==",
+                      "message": "[CBR-243] Implement restoration",
+                      "committedDate": "2018-08-26T13:40:10Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY2NjY0Ng==",
+                    "bodyText": "Transaction history restoration is working, but the amounts on each tx are 0, and they are marked \"wontApply\". Also, the confirmation number stays at 0.\nAfter the wallet restores itself, addresses that we found by scanning the node's utxo set at the start of restoration are still marked as \"unused\".\n\nI'm still making my way through the PR, but these two together suggest to me that the block meta data is not set correctly, because the block metadata tells  the wallet when transactions get confirmed (and they are not confirmed and not pending they are marked as WontApply) and also records if addresses are used. That's unrelated to the amount though, that's separate. Anyway, will continue with the review, maybe something will jump out.",
+                    "createdAt": "2018-08-24T06:40:37Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTY3MzA3Ng==",
+                    "bodyText": "Transaction history restoration is working, but the amounts on each tx are 0, and they are marked \"wontApply\".\n\nAnother thought on this \"amount\" thing: I think the amount depends on recognizing which address are ours. Maybe that's where something is going wrong.\ncontinues reviewing",
+                    "createdAt": "2018-08-24T07:13:07Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTgyNTc2Mw==",
+                    "bodyText": "We should verify that when we try to restore the same wallet twice, we get an error the second time. (This currently does not seem to be the case.)",
+                    "createdAt": "2018-08-24T17:23:27Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNjAzOTc0OQ==",
+                    "bodyText": "Rebased.",
+                    "createdAt": "2018-08-26T13:40:18Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNjE1MDMxMw==",
+                    "bodyText": "@parsonsmatt @KtorZ I am going to force the hand and merge this PR anyway despite CI failing for the following reasons:\n\nThe AppVeyor failure is the \"usual one\" (build exceeded time limit)\nHydra one on the integration tests seems (but correct me if I'm wrong) a false positive as I'm not aware of the integration tests using our new layer yet and the failure seems totally unrelated to restoration (being delivered as part of this PR):\n\nFailures:\n\n  integration/Util.hs:118:5: \n  1) Transactions posted transactions appear in the index\n       predicate failed on: Left (ClientWalletError (UnknownError \"Request error (Cannot send transaction: Transaction creation error: not enough money, need 155382 coin(s) more)\"))\n\n  integration/Util.hs:118:5: \n  2) Transactions asset-locked wallets can receive funds and transactions are confirmed in index\n       predicate failed on: Left (ClientWalletError (UnknownError \"Request error (Cannot send transaction: Transaction creation error: Attempted to send 0 money)\"))\n\nRandomized with seed 1078454931\n\nFinished in 272.5982 seconds\n19 examples, 2 failures, 1 pending\nThe build failed with exit code 1\nmkdir: created directory '/nix/store/67w9w1sspzah6ynvxpngjjfymrjzcfg8-cardano-wallet-integration-tests'\nmkdir: created directory '/nix/store/67w9w1sspzah6ynvxpngjjfymrjzcfg8-cardano-wallet-integration-tests/nix-support'\nstate-demo/logs/\nstate-demo/logs/relay1.log\nstate-demo/logs/core3.json\nstate-demo/logs/core4.log\nstate-demo/logs/core2.json\nstate-demo/logs/node.pub\ntar: state-demo/logs/node.pub: file changed as we read it\nstate-demo/logs/core3.log\nstate-demo/logs/wallet.log\nstate-demo/logs/core2.log\nstate-demo/logs/relay1.json\nstate-demo/logs/node\ntar: state-demo/logs/node: file changed as we read it\nstate-demo/logs/core1.log\nstate-demo/logs/core4.json\nstate-demo/logs/core1.json\nbuilder for '/nix/store/rkc39mndri3m91mhd1k6ajbp1k605sn4-cardano-wallet-integration-tests.drv' failed with exit code 1\n\nTherefore, putting this on your radar as \"yet another round of investigation on integration tests\" (😁 ) and merging this bad boy.",
+                    "createdAt": "2018-08-27T08:12:32Z",
+                    "author": {
+                      "name": "Alfredo Di Napoli"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNjQ2MTQ3",
+              "number": 3471,
+              "title": "[CBR-390] Fix all TxMeta fields",
+              "createdAt": "2018-08-24T05:59:58Z",
+              "closed": true,
+              "state": "CLOSED",
+              "closedAt": "2018-08-24T11:15:09Z",
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzViMDQ3MmMxY2FjNDJmMTUyYjQxNGM0Nzc5MTc3NThmOTk0N2IzOA==",
+                      "message": "[CBR-390] Fixes TxMeta fields and tests",
+                      "committedDate": "2018-08-24T08:45:07Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTc0NTAzOQ==",
+                    "bodyText": "Obsoleted by #3473 .",
+                    "createdAt": "2018-08-24T12:32:12Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNjQ2OTQx",
+              "number": 3472,
+              "title": "[DEVOPS-999] explorer frontend: Replace @gitrev@ with actual rev",
+              "createdAt": "2018-08-24T06:06:03Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T11:09:34Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T11:09:34Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ODgzMGE3MmFiYjg4ZDI2YTAxMzlkY2MzZmU0NmJkZDRhYWI0NjdkMw==",
+                      "message": "[DEVOPS-398] explorer frontend: add shell.nix for dev\n\nCherry-picked from 994963fd36db5a76927094c839a9521196d59e35\non the release/1.3.1 branch.",
+                      "committedDate": "2018-08-24T05:19:37Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzExNjA1",
+              "number": 3473,
+              "title": "[CBR-390] Fixes TxMeta fields and tests",
+              "createdAt": "2018-08-24T11:16:31Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T13:20:26Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T13:20:26Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YzViMDQ3MmMxY2FjNDJmMTUyYjQxNGM0Nzc5MTc3NThmOTk0N2IzOA==",
+                      "message": "[CBR-390] Fixes TxMeta fields and tests",
+                      "committedDate": "2018-08-24T08:45:07Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTc1NjQzOQ==",
+                    "bodyText": "Going to merge this as-is because we need the results in the wallet restoration work. @kderme will submit a follow up PR addressing the above.",
+                    "createdAt": "2018-08-24T13:20:09Z",
+                    "author": {
+                      "name": "Edsko de Vries"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzE2NDY3",
+              "number": 3474,
+              "title": "[CHW] Restore and check external wallet, handlers.",
+              "createdAt": "2018-08-24T11:40:38Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MWI5MmVlODlhYmRlMjQ4ZDA0ZTA5MzViNDIwOWQ3YmZiMjEzNTYxMg==",
+                      "message": "[CHW] Restore and check external wallet, handlers.",
+                      "committedDate": "2018-08-25T10:01:47Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTczNDQzMg==",
+                    "bodyText": "DO NOT MERGE it now, work in progress.",
+                    "createdAt": "2018-08-24T11:41:28Z",
+                    "author": {
+                      "name": "Denis Shevchenko"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzQ4MDkz",
+              "number": 3475,
+              "title": "[CBR-386] Add document relating the Wallet Spec to the Cardano and DS…",
+              "createdAt": "2018-08-24T13:56:22Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-24T16:12:17Z",
+              "merged": true,
+              "mergedAt": "2018-08-24T16:12:17Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MjIyY2VkZmFiMzkyMTViYThjMTI5YTg5NThiNTJlNjMwYTk5NGY2OQ==",
+                      "message": "[CBR-386] Add document relating the Wallet Spec to the Cardano and DSL code",
+                      "committedDate": "2018-08-24T15:10:47Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzY3Mzgx",
+              "number": 3476,
+              "title": "[CBR-207] Remove log warper dependency",
+              "createdAt": "2018-08-24T15:04:01Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-25T07:40:18Z",
+              "merged": true,
+              "mergedAt": "2018-08-25T07:40:18Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YWY1YWE5YTk2ZWUyMmZhMWI2Y2I1ZTIwNTFhM2I4Nzg2ZjAxNDc1OQ==",
+                      "message": "[CBR-207] Remove dependency on log-warper",
+                      "committedDate": "2018-08-24T22:39:08Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzgxNzkw",
+              "number": 3477,
+              "title": "[CBR-207] introduce 'katip'",
+              "createdAt": "2018-08-24T15:57:17Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-25T20:04:59Z",
+              "merged": true,
+              "mergedAt": "2018-08-25T20:04:59Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6Y2Q2ZmVjOTA2MDI1MmI4ZjQ3NjI0YTZkNWIwNTRkMmU5YTY0ZDY0OA==",
+                      "message": "[CBR-207] introduce 'katip'\n\nSigned-off-by: Alexander Diemand <codieplusplus@apax.net>",
+                      "committedDate": "2018-08-24T20:52:56Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNTk5MzI3NQ==",
+                    "bodyText": "tested this PR #3477  and PR #3476 rebased on develop again (reverted commit 06b4f09..) for block syncing. it worked up to epoch 16 where develop anyway fails.",
+                    "createdAt": "2018-08-25T20:03:47Z",
+                    "author": {
+                      "name": "Alexander Diemand"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzgxNzk2",
+              "number": 3478,
+              "title": "[CBR-377] Separate Plugins into 'Plugins' and 'LegacyPlugins'",
+              "createdAt": "2018-08-24T15:57:18Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MzJiMWRiYWJhZGZhMDk4ZTAxNmY3Y2MxMzhlMGQ4YjNiOGMyZTU0NQ==",
+                      "message": "[CBR-377] Separate Plugins into 'Plugins' and 'LegacyPlugins'\n\nThis will make it easier to remove the legacy stuff once we move\nforward. Also, this commits adds the missing and (required) plugins to\nthe new wallet server. A few implementations are still missing (update\nnotifier and acid state snapshots) but will come.\n\nNote that the new kernel registers itself to the node and receives new\nblock directly, there's no more need for a syncing pluging. Similarly,\nthe kernel takes care of managing restoration of wallets, even after a\nnode restart. Regarding the re-submission, this is currently done in\nactiveLayer bracket and the submissionLayer. This could be moved in a\nlater stage to a plugin for more consistency",
+                      "committedDate": "2018-08-24T15:56:50Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwNzkwMzQz",
+              "number": 3479,
+              "title": "[CDEC-517] Parallelize the `generator`, `wallet-new` and `wallet` tests",
+              "createdAt": "2018-08-24T16:34:02Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZTIwOTNhOWVkZTZkOWUxODFkZDQ1YTBiOWY3OTdhYjAyZmNjMWRmMw==",
+                      "message": "[CDEC-517] Add `parallelize` function to `util` and parallelize tests in\n`generator`",
+                      "committedDate": "2018-08-24T22:17:01Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwODAyMjI3",
+              "number": 3480,
+              "title": "fixing names and comments",
+              "createdAt": "2018-08-24T17:29:37Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-25T12:45:35Z",
+              "merged": true,
+              "mergedAt": "2018-08-25T12:45:35Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NmU2M2Y0NDYxODZkNTgzOGYxZjVlOWM0YWFmYmI1NTczYzg4NjQ5Zg==",
+                      "message": "fixing names and comments",
+                      "committedDate": "2018-08-24T17:25:49Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwODEyOTM2",
+              "number": 3481,
+              "title": "[CBR-213] introduce 'Trace.Named'",
+              "createdAt": "2018-08-24T18:17:29Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6OGE4MGUwZWVjMzlmYzlhMzExMDIxZTA3ZDZkNjcyYTIxYzdmNGMwZQ==",
+                      "message": "[CBR-213] introduce 'Trace.Named'\n\nSigned-off-by: Alexander Diemand <codieplusplus@apax.net>",
+                      "committedDate": "2018-08-27T10:00:41Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwODQ0MDcy",
+              "number": 3482,
+              "title": "[CDEC-369] Remove HasProtocolConstants in favour of parameters",
+              "createdAt": "2018-08-24T20:42:33Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6NGVmNDE2NTJjODEwM2E4MjYxODNiZTc5NzVkNmMwNjFiOGVhYjZhZQ==",
+                      "message": "[CDEC-369] Remove HasProtocolConstants in favour of parameters",
+                      "committedDate": "2018-08-24T20:37:44Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwODQ1OTA0",
+              "number": 3483,
+              "title": "[CBR-97] pretty print 'SlotId'",
+              "createdAt": "2018-08-24T20:51:20Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZjI0YTY0YzI2NzljMjg5NjgxOTQxNGUyNjAyZDVhMzU0MGU2MGM5OQ==",
+                      "message": "[CBR-97] pretty print 'SlotId'\n\nSigned-off-by: Alexander Diemand <codieplusplus@apax.net>",
+                      "committedDate": "2018-08-27T09:59:22Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwODc3NzYz",
+              "number": 3484,
+              "title": "[CBR-365] Allow on-disk databases",
+              "createdAt": "2018-08-25T01:10:06Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6N2JkMGJmYjIyMjUxYjkyYzk0ZDA0NTVkN2Y5Y2VjZWQ2ZWU1ZTA1MA==",
+                      "message": "[CBR-365] Allow on-disk databases",
+                      "committedDate": "2018-08-25T01:07:39Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwOTI0MDc5",
+              "number": 3486,
+              "title": "[CBR-400] Fix wallet failing to start",
+              "createdAt": "2018-08-25T22:26:44Z",
+              "closed": true,
+              "state": "MERGED",
+              "closedAt": "2018-08-26T05:11:37Z",
+              "merged": true,
+              "mergedAt": "2018-08-26T05:11:37Z",
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MzY2NTY0NjU2YzYzYmFiN2Y5NTcyZDU3MTFjZjE2NWJkMzg3Y2M0OQ==",
+                      "message": "[CBR-400] Fix wallet failing to start",
+                      "committedDate": "2018-08-25T21:41:01Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": [
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNjAwMDg0OA==",
+                    "bodyText": "Hi my dear? How i can use p/s on my Galaxy S5?",
+                    "createdAt": "2018-08-25T22:34:41Z",
+                    "author": {
+                      "name": null
+                    }
+                  },
+                  {
+                    "id": "MDEyOklzc3VlQ29tbWVudDQxNjAxNDU4MA==",
+                    "bodyText": "Going to merge this.",
+                    "createdAt": "2018-08-26T05:11:32Z",
+                    "author": {
+                      "name": "Erik de Castro Lopo"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjEwOTQ1NzQ3",
+              "number": 3487,
+              "title": "Nightly acceptance test",
+              "createdAt": "2018-08-26T10:59:00Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6ZGYxNmY0MmJmMDUzMDBmNzZiM2FkNGIxOTEwMjUzZDhiZGQ0NTFhOQ==",
+                      "message": "demo-cluster: Remove some debug stuff\n\nI accidentally added some debug code to the demo-cluster script.",
+                      "committedDate": "2018-08-26T02:28:51Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjExMDQ0NzQ4",
+              "number": 3488,
+              "title": "[CBR-394] Reverted a28f62",
+              "createdAt": "2018-08-27T08:48:23Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6MDhiMTQyYjRlNmRmNjk4ZmM3NWJkZTg1MjJlOWI2ZjgxZTA3NGM4NQ==",
+                      "message": "[CBR-394] Reverted a28f62",
+                      "committedDate": "2018-08-27T10:19:42Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            },
+            {
+              "id": "MDExOlB1bGxSZXF1ZXN0MjExMDU3NDQ4",
+              "number": 3489,
+              "title": "[CBR-352] Delta compression for Checkpoints",
+              "createdAt": "2018-08-27T09:40:51Z",
+              "closed": false,
+              "state": "OPEN",
+              "closedAt": null,
+              "merged": false,
+              "mergedAt": null,
+              "commits": {
+                "nodes": [
+                  {
+                    "commit": {
+                      "id": "MDY6Q29tbWl0NzA5MTM5OTc6YjkwN2Y3NmRkNWRiZDhjZTFmZGZiZWJjZjM2YWY3MTMwYjQ4YTZlNA==",
+                      "message": "[CBR-352] Creating most delta and step functions",
+                      "committedDate": "2018-08-27T09:27:55Z"
+                    }
+                  }
+                ]
+              },
+              "comments": {
+                "nodes": []
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

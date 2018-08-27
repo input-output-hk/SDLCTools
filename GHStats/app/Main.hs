@@ -17,13 +17,18 @@ import           Extract
 import           Report
 
 main = do
-  respPr <- runQuery prQueryFilePath
-  let parsedPrJSON  = eitherDecode respPr  :: Either String PullRequestList
-  case parsedPrJSON of
-    Left e -> print $ "oops error occured :" ++ e
-    Right (PullRequestList prs) -> do
-      makeReport "Report.csv" $ getPrData <$> prs
+  respPrFstCommit  <- runQuery prQueryFilePathFC
+  respPrLastCommit <- runQuery prQueryFilePathLC
+  let parsedPrJSON1  = eitherDecode respPrFstCommit  :: Either String PullRequestList
+      parsedPrJSON2  = eitherDecode respPrLastCommit :: Either String PullRequestList
+  case (parsedPrJSON1, parsedPrJSON2) of
+    (Right (PullRequestList prs1), Right (PullRequestList prs2)) |
+       (prNumber <$> prs1) == (prNumber <$> prs2)-> do
+      let latestCommitTimes = getCommitTime <$> prs2
+      makeReport "PRAnalysis.csv" $ zipWith mkPRAnalysis latestCommitTimes prs1
       print "OK"
+
+    _ -> print $ "oops error occured "
 
 runQuery :: FilePath -> IO (BL8.ByteString)
 runQuery queryFilePath = do
@@ -47,6 +52,8 @@ tokenFilePath :: FilePath
 tokenFilePath = "/home/deepak/IOHK-work/github/copytoken"
 
 -- set it your sample graphql query file path for PullRequest
-prQueryFilePath :: FilePath
-prQueryFilePath = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequest"
+prQueryFilePathLC :: FilePath
+prQueryFilePathLC = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequestLC"
 
+prQueryFilePathFC :: FilePath
+prQueryFilePathFC = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequestFC"

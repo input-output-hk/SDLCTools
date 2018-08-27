@@ -76,6 +76,14 @@ type YoutrackIssueId = Text
 
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Date)
 
+data PRAnalysis = PRAnalysis {
+                  paPRNumber         :: Int
+                , paFirstCommitTime  :: Date
+                , paPRCreationTime   :: Date
+                , paLatestCommitTime :: Date
+                , paPRClosingTime    :: Date
+                } deriving ( Show, Eq, Generic)
+
 
 parseResponse :: Value -> Parser PullRequestList
 parseResponse = withObject "All PullRequests" $ \o -> do
