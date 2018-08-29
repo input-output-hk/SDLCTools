@@ -7,21 +7,20 @@ module Main where
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.ByteString.Lazy.Char8 as BL8
+import qualified Data.Text as T
+
 import           Network.HTTP.Simple
 import           Options.Applicative as OA
 import           System.FilePath.Posix
-
+import           Data.Monoid ((<>))
 import           Types
 import           Extract
 import           Report
 
-
-
 data CliOptions = MkCliOptions {
-  relPath :: String
-  , apiToken :: String
-  }
-  deriving (Show)
+                  relPath :: String
+                , apiToken :: String
+                } deriving (Show)
 
 optionParser :: OA.Parser CliOptions
 optionParser =
@@ -43,28 +42,36 @@ parseCliArgs = customExecParser (prefs showHelpOnError) (info optionParser fullD
 main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
+  queryPart1 <- BL8.readFile (relPath </> "queryPart1")
+  queryPart2 <- BL8.readFile (relPath </> "queryPart2")
+  let
+    loop n cursor acc =  do
+      respAllCommits  <- runQuery apiToken (BL8.init queryPart1 <> cursor <> queryPart2)
+      BL8.appendFile "resp.json" respAllCommits
+      let parserPrs      = eitherDecode respAllCommits :: Either String GHResponse
+      case parserPrs of
+        Right (GHResponse (PageInfo{..}, prs)) -> do
+          if hasPreviousPage
+            then
+              loop (n+1) (" , before : \\\"" <> (BL8.pack . T.unpack $ endCursor) <> "\\\" ") ((mkPRAnalysis <$> prs) <> acc)
+            else
+              do
+                makeReport "PRAnalysis.csv" $ (mkPRAnalysis <$> prs) <> acc
+                putStrLn $ "OK : made " <> show n <> " calls to Github"
+        Left e  -> do
+          makeReport "PRAnalysis.csv" acc
+          putStrLn $ "oops error occured" <> e
+  loop 0 "" []
 
-  respAllCommits  <- runQuery apiToken $ (relPath </> "queryPullRequestAll")
-  BL8.writeFile "resp.json" respAllCommits
-  let parserPrs      = eitherDecode respAllCommits :: Either String PullRequestList
-  case parserPrs of
-    Right (PullRequestList prs) -> do
-      makeReport "PRAnalysis.csv" $ map mkPRAnalysis prs
-      putStrLn "OK"
-
-    _ -> putStrLn "oops error occured"
-
-runQuery :: String -> FilePath -> IO (BL8.ByteString)
-runQuery token queryFilePath = do
---  authorization <- (("token " ++) . init) <$> readFile tokenFilePath
+runQuery :: String -> BL8.ByteString -> IO (BL8.ByteString)
+runQuery token query = do
   let authorization = "token " ++ token
-
   req' <- parseRequest "POST https://api.github.com/graphql"
   let req = setRequestHeaders [ ("User-Agent", "Firefox")
                               , ("Authorization", B8.pack authorization)
                               , ("Content-Type", "application/json")
                               ]
-          . setRequestBodyFile queryFilePath $ req'
+          . setRequestBodyLBS query $ req'
 
   response <- httpLBS req
   putStrLn $ "The status code was: " ++
@@ -72,14 +79,3 @@ runQuery token queryFilePath = do
   let responseBody = getResponseBody response
   return responseBody
 
--- set to your github personnel access token file path
-tokenFilePath :: FilePath
-tokenFilePath = "/home/deepak/IOHK-work/github/copytoken"
-
--- set it your sample graphql query file path for PullRequest
-prQueryFilePathLC :: FilePath
-prQueryFilePathLC = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequestLC"
---prQueryFilePathLC = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequestLC"
-
-prQueryFilePathFC :: FilePath
-prQueryFilePathFC = "/home/deepak/IOHK-work/SDLCTools/GHStats/extraData/queryPullRequestFC"

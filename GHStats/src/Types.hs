@@ -18,10 +18,10 @@ import           Data.Time.Format
 import           GHC.Exts (sortWith)
 
 
-newtype PullRequestList = PullRequestList [PullRequest]
+newtype GHResponse = GHResponse ( PageInfo , [PullRequest] )
   deriving ( Show )
 
-instance FromJSON PullRequestList where
+instance FromJSON GHResponse where
   parseJSON = parseResponse
 
 data PullRequest = PullRequest {
@@ -80,6 +80,7 @@ type Name            = Text
 type Message         = Text
 type BodyText        = Text
 type YoutrackIssueId = Text
+type Cursor          = Text
 
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
@@ -91,16 +92,32 @@ data PRAnalysis = PRAnalysis {
                 , paPRClosingTime    :: Maybe Date
                 } deriving ( Show, Eq, Generic)
 
+data PageInfo = PageInfo {
+                endCursor       :: Cursor
+              , hasNextPage     :: Bool
+              , hasPreviousPage :: Bool
+              , startCursor     :: Cursor
+              } deriving ( Show, Eq, Generic)
 
-parseResponse :: Value -> Parser PullRequestList
+instance FromJSON PageInfo where
+  parseJSON = withObject "PageInfo" $ \pageInfoNode -> do
+    endCursor       <- pageInfoNode .: "endCursor"
+    hasNextPage     <- pageInfoNode .: "hasNextPage"
+    hasPreviousPage <- pageInfoNode .: "hasPreviousPage"
+    startCursor     <- pageInfoNode .: "startCursor"
+    return PageInfo{..}
+
+
+parseResponse :: Value -> Parser GHResponse
 parseResponse = withObject "All PullRequests" $ \o -> do
   data_           <- o               .: "data"
   organisation    <- data_           .: "organization"
   repository      <- organisation    .: "repository"
   allPullRequests <- repository      .: "pullRequests"
+  pageInfo        <- allPullRequests .: "pageInfo"
   prNodes         <- allPullRequests .: "nodes"
   pullRequests    <- forM prNodes parsePullRequest
-  return $ PullRequestList pullRequests
+  return $ GHResponse (pageInfo, pullRequests)
 
 
 parsePullRequest :: Value -> Parser PullRequest
