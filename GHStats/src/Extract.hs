@@ -7,6 +7,7 @@
 
 module Extract where
 
+import qualified Data.List as L
 import qualified Data.Text as T
 
 import Types
@@ -35,6 +36,13 @@ getFirstCommitTime PullRequest{..} = cAuthoredDate . head $ prCommits
 getLastCommitTime :: PullRequest -> Date
 getLastCommitTime PullRequest{..} = cAuthoredDate . last $ prCommits
 
+-- | Splits commits between those created before the PR creation and those created after the PR creation
+splitCommits :: PullRequest -> ([Commit], [Commit])
+splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt) prCommits
+
+-- partition :: (a -> Bool) -> [a] -> ([a], [a])
+
+
 -- | given the latest commit time and a PR containing the first commit
 -- date, mkPRAnalysis returns a PRAnalysis
 mkPRAnalysis :: PullRequest -> PRAnalysis
@@ -47,4 +55,18 @@ mkPRAnalysis pr@PullRequest{..} =
         if (prMergedAt == Nothing)
           then prClosedAt
         else prMergedAt
-  in PRAnalysis prNum firstCommitTime prCreatedAt latestCommitTime prClosingDate
+      devReviewCommits = splitCommits pr
+  in PRAnalysis prNum firstCommitTime prCreatedAt latestCommitTime prClosingDate devReviewCommits prComments
+
+
+
+
+
+
+
+
+
+
+
+
+

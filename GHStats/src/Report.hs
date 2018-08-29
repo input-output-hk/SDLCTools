@@ -45,6 +45,10 @@ defaultPRACSVHeader = header
   -- we don't need this in the csv, makes no sense.
  -- , "Latest Commit Time"
   , "Closing Time"
+  , "State"
+  , "Dev Commits"
+  , "Review Commits"
+  , "Comments"
   ]
 
 instance ToNamedRecord PRAnalysis where
@@ -54,6 +58,10 @@ instance ToNamedRecord PRAnalysis where
                 , "PullRequest Creation Time" .= formatDate paPRCreationTime
                -- , "Latest Commit Time"        .= formatDate paLatestCommitTime
                 , "Closing Time"              .= maybe "" formatDate paPRClosingTime
+                , "State"                     .= maybe ("Review"::String) (const "Closed") paPRClosingTime
+                , "Dev Commits"               .= (length $ fst paDevReviewCommits)
+                , "Review Commits"            .= (length $ snd paDevReviewCommits)
+                , "Comments"                  .= length paComments
                 ]
 
 instance DefaultOrdered PRAnalysis where

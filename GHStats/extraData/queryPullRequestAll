@@ -1,1 +1,59 @@
-{"query":"query {  organization(login: \"input-output-hk\") {\n    repository(name: \"cardano-sl\") {\n      pullRequests(last: 100) {\n        nodes {\n          id\n          number\n          title\n          createdAt\n          closed\n          state\n          closedAt\n          merged\n          mergedAt\n          commits(first: 200) {\n            nodes {\n              commit {\n                id\n                message\n                committedDate authoredDate \n              }\n            }\n          }\n          comments(first: 100) {\n            nodes {\n              id\n              bodyText\n              createdAt\n              author {\n                ... on User {\n                  name\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n","variables":{}}
+{"query":"query {  organization(login: \"input-output-hk\") {
+  repository(name: \"cardano-sl\") {
+    pullRequests(last: 100) {
+      nodes {
+        id
+        number
+        title
+        createdAt
+        closed
+        state
+        closedAt
+        merged
+        mergedAt
+        commits(first: 200) {
+          nodes {
+            commit {
+              id
+              message
+              committedDate authoredDate
+            }
+          }
+        }
+
+        comments(first: 100) {
+          nodes {
+            id
+            bodyText
+            createdAt
+            author {
+              ... on User {
+                name
+              }
+            }
+          }
+        }
+
+        reviews(first: 100) {
+          nodes {
+            id
+            body
+            createdAt
+            author {
+              ... on User {
+                name
+              }
+            }
+          }
+        }
+
+      }
+    }
+  }
+}
+}
+","variables":{}}
+
+
+
+
