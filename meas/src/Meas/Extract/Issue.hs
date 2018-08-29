@@ -12,7 +12,7 @@
 module Meas.Extract.Issue
 where
 
-import Debug.Trace (trace)
+--import Debug.Trace (trace)
 
 import            Control.Lens hiding (element, (.=))
 

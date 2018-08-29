@@ -12,7 +12,7 @@
 module Meas.Extract.State
 where
 
-import Debug.Trace (trace)
+--import Debug.Trace (trace)
 
 import qualified  Data.List as L
 import            Data.Maybe (catMaybes)

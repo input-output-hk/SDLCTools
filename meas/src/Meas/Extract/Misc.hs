@@ -24,8 +24,8 @@ import            Data.Time.Format
 import            Options.Applicative
 
 
-head2 [] = error "head2 : empty list"
-head2 l = head l
+--head2 [] = error "head2 : empty list"
+--head2 l = head l
 
 toDay :: Int -> Day
 toDay n = utctDay $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)

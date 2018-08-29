@@ -21,14 +21,10 @@ import qualified  Data.Map.Strict as M
 import qualified  Data.Set as S
 import qualified  Data.Text as T
 import            Data.Time.Calendar
-import            Data.Time.Clock
 
 import            Meas.Extract.Efficiency
-import            Meas.Extract.Issue
 import            Meas.Extract.Misc
-import            Meas.Extract.State
 import            Meas.Extract.Types
-import            Meas.YouTrack.Queries
 
 
 
