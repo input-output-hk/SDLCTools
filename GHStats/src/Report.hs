@@ -1,7 +1,10 @@
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE OverloadedStrings      #-}
+{-# LANGUAGE DeriveGeneric          #-}
+{-# LANGUAGE DeriveAnyClass         #-}
+{-# LANGUAGE RecordWildCards        #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
+
+
 
 module Report where
 
@@ -26,6 +29,8 @@ defaultPRACSVHeader = header
   , "PullRequest Creation Time"
   , "Closing Time"
   , "State"
+  , "Was Merged"
+  , "Author"
   , "Dev Commits"
   , "Review Commits"
   , "Comments"
@@ -38,12 +43,32 @@ instance ToNamedRecord PRAnalysis where
                 , "PullRequest Creation Time" .= formatDate paPRCreationTime
                 , "Closing Time"              .= maybe "" formatDate paPRClosingTime
                 , "State"                     .= maybe ("Review"::String) (const "Closed") paPRClosingTime
+                , "Was Merged"                .= wasMergedSt
+                , "Author"                    .= maybe T.empty id paPrAuthor
                 , "Dev Commits"               .= (length $ fst paDevReviewCommits)
                 , "Review Commits"            .= (length $ snd paDevReviewCommits)
                 , "Comments"                  .= length paComments
                 ]
+    where
+    wasMergedSt :: String =
+      case (paPRClosingTime, paWasMerged) of
+      (Nothing, _)    -> ""
+      (Just _, True)  -> "true"
+      (Just _, False) -> "false"
 
 instance DefaultOrdered PRAnalysis where
   headerOrder _ = defaultPRACSVHeader
 
 formatDate = formatTime defaultTimeLocale "%Y%m%d"
+
+
+
+
+
+
+
+
+
+
+
+

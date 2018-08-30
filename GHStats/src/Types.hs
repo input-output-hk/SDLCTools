@@ -28,6 +28,7 @@ data PullRequest = PullRequest {
                    prId        :: Id
                  , prNumber    :: Int
                  , prTitle     :: Title
+                 , prAuthor    :: Author
                  , prCreatedAt :: Date
                  , prState     :: PRState
                  , prClosed    :: Bool
@@ -90,6 +91,8 @@ data PRAnalysis = PRAnalysis {
                 , paPRCreationTime      :: Date
                 , paLatestCommitTime    :: Date
                 , paPRClosingTime       :: Maybe Date
+                , paWasMerged           :: Bool
+                , paPrAuthor            :: Maybe Name
                 , paDevReviewCommits    :: ([Commit], [Commit])
                 , paComments            :: [Comment]
                 } deriving ( Show, Eq, Generic)
@@ -133,6 +136,7 @@ parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
   prClosedAt        <- pullRequest  .: "closedAt"
   prMerged          <- pullRequest  .: "merged"
   prMergedAt        <- pullRequest  .: "mergedAt"
+  prAuthor          <- pullRequest  .: "author"
   allCommits        <- pullRequest  .: "commits"
   commitNodes       <- allCommits   .: "nodes"
   unsortedPrCommits <- forM commitNodes parseCommit

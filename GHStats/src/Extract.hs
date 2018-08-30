@@ -33,10 +33,6 @@ getLastCommitTime PullRequest{..} =
 splitCommits :: PullRequest -> ([Commit], [Commit])
 splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt) prCommits
 
--- partition :: (a -> Bool) -> [a] -> ([a], [a])
-
-
-
 
 
 -- | given the latest commit time and a PR containing the first commit
@@ -46,12 +42,12 @@ mkPRAnalysis pr@PullRequest{..} =do
   let !prNum       = prNumber
   firstCommitTime  <- getFirstCommitTime pr
   latestCommitTime <- getLastCommitTime pr
-  let !prClosingDate    =
+  let (prClosingDate, wasMerged)    =
         if (prMergedAt == Nothing)
-          then prClosedAt
-        else prMergedAt
+          then (prClosedAt, False)
+        else (prMergedAt, True)
   let devReviewCommits = splitCommits pr
-  return $ PRAnalysis prNum firstCommitTime prCreatedAt latestCommitTime prClosingDate devReviewCommits prComments
+  return $ PRAnalysis prNum firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments
 
 
 

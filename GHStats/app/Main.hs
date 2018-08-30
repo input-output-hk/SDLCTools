@@ -46,26 +46,27 @@ main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
   queryTemplate <- filter (\c -> c /= '\n') <$> readFile (relPath </> "queryPullRequestAll")
-  let
-    loop n cursor acc = do
-      putStrLn ("n = " ++ show n)
-      let query = replace "###" (T.unpack cursor) queryTemplate
-      putStrLn query
-      respAllCommits  <- runQuery apiToken query
-      BL8.appendFile "resp.json" respAllCommits
-      let parserPrs      = eitherDecode respAllCommits :: Either String GHResponse
-      case parserPrs of
-        Right (GHResponse (PageInfo{..}, prs)) -> do
-          if hasNextPage
-            then
-              loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) ((catMaybes $ mkPRAnalysis <$> prs) <> acc)
-            else
-              do
-                makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> prs) <> acc
-                putStrLn $ "OK : made " <> show n <> " calls to Github"
-        Left e  -> do
-          makeReport "PRAnalysis.csv" acc
-          putStrLn $ "oops error occured" <> e
+  let loop :: Int -> T.Text -> [PRAnalysis] -> IO ()
+      loop n cursor acc = do
+        putStrLn ("n = " ++ show n)
+        let query = replace "###" (T.unpack cursor) queryTemplate
+        putStrLn query
+        respAllCommits  <- runQuery apiToken query
+        BL8.appendFile "resp.json" respAllCommits
+        let parserPrs      = eitherDecode respAllCommits :: Either String GHResponse
+        case parserPrs of
+          Right (GHResponse (PageInfo{..}, prs)) -> do
+            if hasNextPage
+              then
+                loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) ((catMaybes $ mkPRAnalysis <$> prs) <> acc)
+              else
+                do
+                  makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> prs) <> acc
+                  putStrLn $ "OK : made " <> show n <> " calls to Github"
+          Left e  -> do
+            makeReport "PRAnalysis.csv" acc
+            putStrLn $ "oops error occured" <> e
+
   loop 0 "" []
 
 runQuery :: String -> String -> IO (BL8.ByteString)

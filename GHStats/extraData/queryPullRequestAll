@@ -18,6 +18,12 @@
         closedAt
         merged
         mergedAt
+        author {
+          ... on User {
+            name
+          }
+          }
+
         commits(first: 200) {
           nodes {
             commit {
