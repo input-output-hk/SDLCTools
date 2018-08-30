@@ -25,6 +25,10 @@ defaultPRACSVHeader = header
   , "First Commit Time"
   , "PullRequest Creation Time"
   , "Closing Time"
+  , "State"
+  , "Dev Commits"
+  , "Review Commits"
+  , "Comments"
   ]
 
 instance ToNamedRecord PRAnalysis where
@@ -33,6 +37,10 @@ instance ToNamedRecord PRAnalysis where
                 , "First Commit Time"         .= formatDate paFirstCommitTime
                 , "PullRequest Creation Time" .= formatDate paPRCreationTime
                 , "Closing Time"              .= maybe "" formatDate paPRClosingTime
+                , "State"                     .= maybe ("Review"::String) (const "Closed") paPRClosingTime
+                , "Dev Commits"               .= (length $ fst paDevReviewCommits)
+                , "Review Commits"            .= (length $ snd paDevReviewCommits)
+                , "Comments"                  .= length paComments
                 ]
 
 instance DefaultOrdered PRAnalysis where

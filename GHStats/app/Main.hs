@@ -66,12 +66,13 @@ main = do
 runQuery :: String -> BL8.ByteString -> IO (BL8.ByteString)
 runQuery token query = do
   let authorization = "token " ++ token
+  body <- BL8.readFile queryFilePath >>= (return . BL8.filter (\c -> c /= '\n'))
   req' <- parseRequest "POST https://api.github.com/graphql"
   let req = setRequestHeaders [ ("User-Agent", "Firefox")
                               , ("Authorization", B8.pack authorization)
                               , ("Content-Type", "application/json")
                               ]
-          . setRequestBodyLBS query $ req'
+          . setRequestBodyLBS body $ req'
 
   response <- httpLBS req
   putStrLn $ "The status code was: " ++

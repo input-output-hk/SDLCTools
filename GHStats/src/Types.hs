@@ -85,11 +85,13 @@ type Cursor          = Text
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
 data PRAnalysis = PRAnalysis {
-                  paPRNumber         :: Int
-                , paFirstCommitTime  :: Date
-                , paPRCreationTime   :: Date
-                , paLatestCommitTime :: Date
-                , paPRClosingTime    :: Maybe Date
+                  paPRNumber            :: Int
+                , paFirstCommitTime     :: Date
+                , paPRCreationTime      :: Date
+                , paLatestCommitTime    :: Date
+                , paPRClosingTime       :: Maybe Date
+                , paDevReviewCommits    :: ([Commit], [Commit])
+                , paComments            :: [Comment]
                 } deriving ( Show, Eq, Generic)
 
 data PageInfo = PageInfo {
