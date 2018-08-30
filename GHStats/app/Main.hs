@@ -7,12 +7,14 @@ module Main where
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.ByteString.Lazy.Char8 as BL8
+import           Data.Maybe (catMaybes)
+import           Data.Monoid ((<>))
+import           Data.List.Utils (replace)
 import qualified Data.Text as T
-
 import           Network.HTTP.Simple
 import           Options.Applicative as OA
 import           System.FilePath.Posix
-import           Data.Monoid ((<>))
+
 import           Types
 import           Extract
 import           Report
@@ -42,37 +44,38 @@ parseCliArgs = customExecParser (prefs showHelpOnError) (info optionParser fullD
 main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
-  queryPart1 <- BL8.readFile (relPath </> "queryPart1")
-  queryPart2 <- BL8.readFile (relPath </> "queryPart2")
+  queryTemplate <- filter (\c -> c /= '\n') <$> readFile (relPath </> "queryPullRequestAll")
   let
-    loop n cursor acc =  do
-      respAllCommits  <- runQuery apiToken (BL8.init queryPart1 <> cursor <> queryPart2)
+    loop n cursor acc = do
+      putStrLn ("n = " ++ show n)
+      let query = replace "###" (T.unpack cursor) queryTemplate
+      putStrLn query
+      respAllCommits  <- runQuery apiToken query
       BL8.appendFile "resp.json" respAllCommits
       let parserPrs      = eitherDecode respAllCommits :: Either String GHResponse
       case parserPrs of
         Right (GHResponse (PageInfo{..}, prs)) -> do
-          if hasPreviousPage
+          if hasNextPage
             then
-              loop (n+1) (" , before : \\\"" <> (BL8.pack . T.unpack $ endCursor) <> "\\\" ") ((mkPRAnalysis <$> prs) <> acc)
+              loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) ((catMaybes $ mkPRAnalysis <$> prs) <> acc)
             else
               do
-                makeReport "PRAnalysis.csv" $ (mkPRAnalysis <$> prs) <> acc
+                makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> prs) <> acc
                 putStrLn $ "OK : made " <> show n <> " calls to Github"
         Left e  -> do
           makeReport "PRAnalysis.csv" acc
           putStrLn $ "oops error occured" <> e
   loop 0 "" []
 
-runQuery :: String -> BL8.ByteString -> IO (BL8.ByteString)
+runQuery :: String -> String -> IO (BL8.ByteString)
 runQuery token query = do
   let authorization = "token " ++ token
-  body <- BL8.readFile queryFilePath >>= (return . BL8.filter (\c -> c /= '\n'))
   req' <- parseRequest "POST https://api.github.com/graphql"
   let req = setRequestHeaders [ ("User-Agent", "Firefox")
                               , ("Authorization", B8.pack authorization)
                               , ("Content-Type", "application/json")
                               ]
-          . setRequestBodyLBS body $ req'
+          . setRequestBodyLBS (BL8.pack query) $ req'
 
   response <- httpLBS req
   putStrLn $ "The status code was: " ++

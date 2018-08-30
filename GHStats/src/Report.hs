@@ -15,7 +15,7 @@ import           Types
 
 
 makeReport :: (ToNamedRecord a, DefaultOrdered a) => FilePath -> [a] -> IO ()
-makeReport filePath values = BS.appendFile filePath $ content
+makeReport filePath values = BS.writeFile filePath $ content
   where
     content = encodeDefaultOrderedByName values
 

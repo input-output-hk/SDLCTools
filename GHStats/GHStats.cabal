@@ -56,9 +56,11 @@ executable GHStats-exe
     , aeson
     , bytestring
     , http-conduit
+    , MissingH
     , optparse-applicative
     , filepath
     , text
+    , text-format
     , unordered-containers
   other-modules:
       Paths_GHStats

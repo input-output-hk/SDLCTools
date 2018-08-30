@@ -1,6 +1,13 @@
+
 {"query":"query {  organization(login: \"input-output-hk\") {
   repository(name: \"cardano-sl\") {
-    pullRequests(last: 100) {
+    pullRequests(first: 100, after: ### )  {
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
       nodes {
         id
         number
@@ -16,7 +23,8 @@
             commit {
               id
               message
-              committedDate authoredDate
+              committedDate
+              authoredDate
             }
           }
         }
@@ -34,26 +42,11 @@
           }
         }
 
-        reviews(first: 100) {
-          nodes {
-            id
-            body
-            createdAt
-            author {
-              ... on User {
-                name
-              }
-            }
-          }
-        }
 
       }
     }
   }
 }
 }
-","variables":{}}
-
-
-
+","variables":{ }}
 
