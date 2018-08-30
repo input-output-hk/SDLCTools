@@ -19,6 +19,7 @@ import           Types
 import           Extract
 import           Report
 
+
 data CliOptions = MkCliOptions {
                   relPath :: String
                 , apiToken :: String
