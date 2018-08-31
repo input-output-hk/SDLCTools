@@ -36,6 +36,7 @@ library
     , http-conduit
     , text
     , time
+    , optparse-applicative
     , unordered-containers
   exposed-modules:
       Extract
