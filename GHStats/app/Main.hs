@@ -12,48 +12,26 @@ import           Data.Monoid ((<>))
 import           Data.List.Utils (replace)
 import qualified Data.Text as T
 import           Network.HTTP.Simple
-import           Options.Applicative as OA
 import           System.FilePath.Posix
 
 import           Types
 import           Extract
 import           Report
-
-
-data CliOptions = MkCliOptions {
-                  relPath :: String
-                , apiToken :: String
-                } deriving (Show)
-
-optionParser :: OA.Parser CliOptions
-optionParser =
-  MkCliOptions
-        <$> strOption (
-              long "relativePath"
-              <> short 'p'
-              <> (help "Relative Path to Query and Token Directory"))
-        <*> strOption (
-              long "Api Token"
-              <> short 't'
-              <> (help "GitHub APi Token"))
-
--- | Parse command line options
-parseCliArgs :: IO CliOptions
-parseCliArgs = customExecParser (prefs showHelpOnError) (info optionParser fullDesc)
+import           Misc
 
 
 main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
-  queryTemplate <- filter (\c -> c /= '\n') <$> readFile (relPath </> "queryPullRequestAll")
+  queryTemplate <- (replace "#repoName#" repoName . filter (\c -> c /= '\n')) <$> readFile (relPath </> "queryPullRequestAll")
   let loop :: Int -> T.Text -> [PRAnalysis] -> IO ()
       loop n cursor acc = do
         putStrLn ("n = " ++ show n)
-        let query = replace "###" (T.unpack cursor) queryTemplate
+        let query = replace "###" (T.unpack cursor) $ queryTemplate
         putStrLn query
         respAllCommits  <- runQuery apiToken query
         BL8.appendFile "resp.json" respAllCommits
-        let parserPrs      = eitherDecode respAllCommits :: Either String GHResponse
+        let parserPrs = eitherDecode respAllCommits :: Either String GHResponse
         case parserPrs of
           Right (GHResponse (PageInfo{..}, prs)) -> do
             if hasNextPage

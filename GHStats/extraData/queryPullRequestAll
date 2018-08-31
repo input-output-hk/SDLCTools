@@ -1,6 +1,6 @@
 
 {"query":"query {  organization(login: \"input-output-hk\") {
-  repository(name: \"cardano-sl\") {
+  repository(name: \"#repoName#\") {
     pullRequests(first: 100, after: ### )  {
         pageInfo {
           endCursor

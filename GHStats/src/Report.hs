@@ -11,7 +11,6 @@ module Report where
 import qualified Data.ByteString.Lazy as BS
 import           Data.Csv
 import qualified Data.Text as T
-import           Data.Time.Clock
 import           Data.Time.Format
 
 import           Types
@@ -59,16 +58,6 @@ instance ToNamedRecord PRAnalysis where
 instance DefaultOrdered PRAnalysis where
   headerOrder _ = defaultPRACSVHeader
 
+formatDate :: Date -> String
 formatDate = formatTime defaultTimeLocale "%Y%m%d"
-
-
-
-
-
-
-
-
-
-
-
 
