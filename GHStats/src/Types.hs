@@ -74,14 +74,14 @@ instance FromJSON Author where
 data PRState = OPEN | CLOSED | MERGED
   deriving ( Show, Eq, Generic, FromJSON)
 
-type Title           = Text
-type Id              = Text
-type Date            = UTCTime
-type Name            = Text
-type Message         = Text
-type BodyText        = Text
-type YoutrackIssueId = Text
-type Cursor          = Text
+type Title     = Text
+type Id        = Text
+type Date      = UTCTime
+type Name      = Text
+type Message   = Text
+type BodyText  = Text
+type YtIssueId = Text
+type Cursor    = Text
 
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 

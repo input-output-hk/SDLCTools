@@ -35,13 +35,18 @@ library
     , cassava
     , http-conduit
     , text
+    , regex-tdfa
     , time
+    , array
     , optparse-applicative
+    , containers
     , unordered-containers
   exposed-modules:
       Extract
       Report
       Types
+      Regex
+      Misc
   other-modules:
       Paths_GHStats
   default-language: Haskell2010
@@ -53,7 +58,7 @@ executable GHStats-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
      base >=4.7 && <5
-    ,  GHStats
+    , GHStats
     , aeson
     , bytestring
     , http-conduit
@@ -62,6 +67,8 @@ executable GHStats-exe
     , filepath
     , text
     , text-format
+    , regex-tdfa
+    , containers
     , unordered-containers
   other-modules:
       Paths_GHStats
