@@ -24,6 +24,7 @@ makeReport filePath values = BS.writeFile filePath $ content
 defaultPRACSVHeader :: Header
 defaultPRACSVHeader = header
   [ "PullRequest Number ID"
+  , "YouTrack Issue ID"
   , "First Commit Time"
   , "PullRequest Creation Time"
   , "Closing Time"
@@ -38,6 +39,7 @@ defaultPRACSVHeader = header
 instance ToNamedRecord PRAnalysis where
   toNamedRecord PRAnalysis{..} =
     namedRecord [ "PullRequest Number ID"     .= (T.pack . show $ paPRNumber)
+                , "YouTrack Issue ID"         .= maybe T.empty id paYTIssueId
                 , "First Commit Time"         .= formatDate paFirstCommitTime
                 , "PullRequest Creation Time" .= formatDate paPRCreationTime
                 , "Closing Time"              .= maybe "" formatDate paPRClosingTime

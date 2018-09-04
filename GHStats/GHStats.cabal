@@ -68,7 +68,6 @@ executable GHStats-exe
     , text
     , text-format
     , regex-tdfa
-    , containers
     , unordered-containers
   other-modules:
       Paths_GHStats

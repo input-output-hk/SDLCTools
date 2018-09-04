@@ -35,32 +35,24 @@ splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt
 mkPRAnalysis :: PullRequest -> Maybe PRAnalysis
 mkPRAnalysis pr@PullRequest{..} =do
   let !prNum       = prNumber
+      !prYTID      = either (const Nothing) pure $ extractIssueId prTitle
   firstCommitTime  <- getFirstCommitTime pr
   latestCommitTime <- getLastCommitTime pr
-  let (prClosingDate, wasMerged)    =
+  let (prClosingDate, wasMerged) =
         if (prMergedAt == Nothing)
           then (prClosedAt, False)
         else (prMergedAt, True)
   let devReviewCommits = splitCommits pr
-  return $ PRAnalysis prNum firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments
+  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments
 
-
-extractIssueId :: Commit -> Either T.Text YtIssueId
-extractIssueId Commit{..} = do
+extractIssueId :: T.Text -> Either T.Text YtIssueId
+extractIssueId text = do
   regex <- compileRegex issueIdRegExp
   matchWithCapture <- maybeToEither "IssueId not found!" $ matchOnce regex string
-  pure . T.pack . LBSC.unpack $ getOneMatch string matchWithCapture
+  pure .T.dropEnd 1 . T.drop 1 . T.pack . LBSC.unpack $ getOneMatch string matchWithCapture
   where
-    string = LBSC.pack . T.unpack $ cMessage
+    string = LBSC.pack . T.unpack $ text
 
 issueIdRegExp :: LBS.ByteString
 issueIdRegExp = "\\[ *[A-Z]+\\-[0-9]+ *\\]"
-
-
-
-
-
-
-
-
 

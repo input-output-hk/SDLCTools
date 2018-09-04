@@ -87,6 +87,7 @@ newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
 data PRAnalysis = PRAnalysis {
                   paPRNumber            :: Int
+                , paYTIssueId           :: Maybe YtIssueId
                 , paFirstCommitTime     :: Date
                 , paPRCreationTime      :: Date
                 , paLatestCommitTime    :: Date

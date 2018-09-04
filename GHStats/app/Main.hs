@@ -13,7 +13,6 @@ import           Data.List.Utils (replace)
 import qualified Data.Text as T
 import           Network.HTTP.Simple
 import           System.FilePath.Posix
-import           Control.Monad
 
 import           Types
 import           Extract
@@ -35,10 +34,7 @@ main = do
         let parserPrs = eitherDecode respAllCommits :: Either String GHResponse
         case parserPrs of
           Right (GHResponse (PageInfo{..}, prs)) -> do
-            forM_ prs $ \ PullRequest{..} -> do
-              forM_ prCommits $ \c -> print $ (T.pack . show $ prNumber ) <> ", " <>
-                 (either (const "") id $ extractIssueId c)
-            if hasNextPage
+            if (hasNextPage && n < maxRequestCount)
               then
                 loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) ((catMaybes $ mkPRAnalysis <$> prs) <> acc)
               else

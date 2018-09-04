@@ -4,9 +4,10 @@ import           Options.Applicative
 import           Data.Monoid ((<>))
 
 data CliOptions = MkCliOptions {
-                  relPath  :: String
-                , apiToken :: String
-                , repoName :: String
+                  relPath         :: String
+                , apiToken        :: String
+                , repoName        :: String
+                , maxRequestCount :: Int
                 } deriving (Show)
 
 optionParser :: Parser CliOptions
@@ -24,6 +25,11 @@ optionParser =
               long "Repository Name"
               <> short 'r'
               <> (help "Name of Repository to query"))
+        <*> option auto (
+              long "MaxRequestCount"
+              <> showDefault
+              <> short 'm'
+              <> (help "Maximum Count of Github Requests to be made"))
 
 -- | Parse command line options
 parseCliArgs :: IO CliOptions
