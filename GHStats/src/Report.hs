@@ -20,6 +20,33 @@ makeReport filePath values = BS.writeFile filePath $ content
   where
     content = encodeDefaultOrderedByName values
 
+defaultPRCDCSVHeader :: Header
+defaultPRCDCSVHeader = header
+  [ "PullRequest Number ID"
+  , "PullRequest Author"
+  , "Authored Date"
+  , "Commit Author"
+  , "Commit Author Email"
+  , "Yt Issue ID in PR Title"
+  , "Yt Issue ID in Commit"
+  , "Commit ID"
+  ]
+
+instance ToNamedRecord PRCDetails where
+  toNamedRecord PRCDetails{..} =
+    namedRecord [ "PullRequest Number ID"   .= (T.pack . show $ pcdPRNumber)
+                , "PullRequest Author"      .= maybe T.empty id pcdPRAuthor
+                , "Authored Date"           .= formatDate pcdCoAuthoredDate
+                , "Commit Author"           .= maybe T.empty id pcdCoAuthor
+                , "Commit Author Email"     .= maybe T.empty id pcdCoAuthorEmail
+                , "Yt Issue ID in PR Title" .= maybe T.empty id pcdPRYTIssueId
+                , "Yt Issue ID in Commit"   .= maybe T.empty id pcdCommitYTId
+                , "Commit ID"               .= pcdCommitId
+                ]
+
+instance DefaultOrdered PRCDetails where
+  headerOrder _ = defaultPRCDCSVHeader
+
 defaultPRACSVHeader :: Header
 defaultPRACSVHeader = header
   [ "PullRequest Number ID"

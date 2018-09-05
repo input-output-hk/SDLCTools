@@ -48,6 +48,8 @@ data Commit = Commit {
             , cCommittedDate :: Date
             , cAuthoredDate  :: Date
             , cMessage       :: Message
+            , cAuthor        :: Maybe Name
+            , cAuthorEmail   :: Maybe Email
             } deriving ( Show, Eq, Generic)
 
 instance FromJSON Commit where
@@ -84,9 +86,9 @@ type BodyText   = Text
 type YtIssueId  = Text
 type BranchName = Text
 type Cursor     = Text
+type Email      = Text
 
-newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
-
+-- | Pull Request Analysis
 data PRAnalysis = PRAnalysis {
                   paPRNumber          :: Int
                 , paYTIssueId         :: Maybe YtIssueId
@@ -102,6 +104,18 @@ data PRAnalysis = PRAnalysis {
                 , paTargetBranch      :: Text
                 , paYtIssueIdPresence :: Bool
                 } deriving ( Show, Eq, Generic)
+
+-- | Pull Request Commit Details
+data PRCDetails = PRCDetails {
+                 pcdPRNumber       :: Int
+               , pcdPRAuthor       :: Maybe Name
+               , pcdCoAuthoredDate :: Date
+               , pcdCoAuthor       :: Maybe Name
+               , pcdCoAuthorEmail  :: Maybe Email
+               , pcdPRYTIssueId    :: Maybe YtIssueId
+               , pcdCommitYTId     :: Maybe YtIssueId
+               , pcdCommitId       :: Text
+               } deriving ( Show, Eq, Generic)
 
 data PageInfo = PageInfo {
                 endCursor       :: Cursor
@@ -156,11 +170,14 @@ parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
 
 parseCommit :: Value -> Parser Commit
 parseCommit = withObject "Commit" $ \commitNode -> do
-  commit         <- commitNode .: "commit"
-  cId            <- commit     .: "id"
-  cCommittedDate <- commit     .: "committedDate"
-  cAuthoredDate  <- commit     .: "authoredDate"
-  cMessage       <- commit     .: "message"
+  commit         <- commitNode    .: "commit"
+  cId            <- commit        .: "id"
+  cCommittedDate <- commit        .: "committedDate"
+  cAuthoredDate  <- commit        .: "authoredDate"
+  cMessage       <- commit        .: "message"
+  cAuthorObject  <- commit        .: "author"
+  cAuthor        <- cAuthorObject .: "name"
+  cAuthorEmail   <- cAuthorObject .: "email"
   return Commit{..}
 
 parseComment :: Value -> Parser Comment

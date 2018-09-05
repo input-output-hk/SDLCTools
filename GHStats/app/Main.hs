@@ -24,7 +24,7 @@ main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
   queryTemplate <- (replace "#repoName#" repoName . filter (\c -> c /= '\n')) <$> readFile (relPath </> "queryPullRequestAll")
-  let loop :: Int -> T.Text -> [PRAnalysis] -> IO ()
+  let loop :: Int -> T.Text -> [PullRequest] -> IO ()
       loop n cursor acc = do
         putStrLn ("n = " ++ show n)
         let query = replace "###" (T.unpack cursor) $ queryTemplate
@@ -36,13 +36,16 @@ main = do
           Right (GHResponse (PageInfo{..}, prs)) -> do
             if (hasNextPage && n < maxRequestCount)
               then
-                loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) ((catMaybes $ mkPRAnalysis <$> prs) <> acc)
+                loop (n+1) ("\\\"" <> endCursor <> "\\\"" ) (prs <> acc)
               else
                 do
-                  makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> prs) <> acc
-                  putStrLn $ "OK : made " <> show n <> " calls to Github"
+                  let allprs = prs <> acc
+                  makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> allprs)
+                  makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> allprs)
+                  putStrLn $ "OK : made " <> show (n+1) <> " calls to Github"
           Left e  -> do
-            makeReport "PRAnalysis.csv" acc
+            makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> acc)
+            makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> acc)
             putStrLn $ "oops error occured" <> e
 
   loop 0 "" []

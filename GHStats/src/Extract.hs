@@ -9,6 +9,7 @@ import qualified Data.List as L
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy            as LBS
 import qualified Data.ByteString.Lazy.Char8      as LBSC
+import           Control.Monad
 import           Types
 import           Regex
 
@@ -30,21 +31,25 @@ getLastCommitTime PullRequest{..} =
 splitCommits :: PullRequest -> ([Commit], [Commit])
 splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt) prCommits
 
--- | given the latest commit time and a PR containing the first commit
--- date, mkPRAnalysis returns a PRAnalysis.
 mkPRAnalysis :: PullRequest -> Maybe PRAnalysis
-mkPRAnalysis pr@PullRequest{..} =do
-  let !prNum       = prNumber
-      !prYTID      = either (const Nothing) pure $ extractIssueId prTitle
+mkPRAnalysis pr@PullRequest{..} = do
   firstCommitTime  <- getFirstCommitTime pr
   latestCommitTime <- getLastCommitTime pr
-  let (prClosingDate, wasMerged) =
+  let !prYTID      = either (const Nothing) pure $ extractIssueId prTitle
+      (prClosingDate, wasMerged) =
         if (prMergedAt == Nothing)
           then (prClosedAt, False)
         else (prMergedAt, True)
-  let devReviewCommits = splitCommits pr
+      devReviewCommits = splitCommits pr
       ytIssuseIdPresence = chkAllEithers $ extractIssueId <$> ( prTitle : (cMessage <$> prCommits))
-  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence
+  return $ PRAnalysis prNumber prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence
+
+mkPRCDetails :: PullRequest -> Maybe [PRCDetails]
+mkPRCDetails PullRequest{..} = do
+  let !prYTID = either (const Nothing) pure $ extractIssueId prTitle
+  forM prCommits $ \ Commit{..} -> do
+    let !prcYTID = either (const Nothing) pure $ extractIssueId cMessage
+    pure $ PRCDetails prNumber (auName prAuthor) cAuthoredDate cAuthor cAuthorEmail prYTID prcYTID cId
 
 extractIssueId :: T.Text -> Either T.Text YtIssueId
 extractIssueId text = do
