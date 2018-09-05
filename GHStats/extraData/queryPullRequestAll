@@ -18,6 +18,8 @@
         closedAt
         merged
         mergedAt
+        headRefName
+        baseRefName
         author {
           ... on User {
             name

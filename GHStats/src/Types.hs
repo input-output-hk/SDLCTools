@@ -25,18 +25,20 @@ instance FromJSON GHResponse where
   parseJSON = parseResponse
 
 data PullRequest = PullRequest {
-                   prId        :: Id
-                 , prNumber    :: Int
-                 , prTitle     :: Title
-                 , prAuthor    :: Author
-                 , prCreatedAt :: Date
-                 , prState     :: PRState
-                 , prClosed    :: Bool
-                 , prClosedAt  :: Maybe Date
-                 , prMerged    :: Bool
-                 , prMergedAt  :: Maybe Date
-                 , prCommits   :: [Commit]
-                 , prComments  :: [Comment]
+                   prId           :: Id
+                 , prNumber       :: Int
+                 , prTitle        :: Title
+                 , prAuthor       :: Author
+                 , prCreatedAt    :: Date
+                 , prState        :: PRState
+                 , prClosed       :: Bool
+                 , prClosedAt     :: Maybe Date
+                 , prMerged       :: Bool
+                 , prMergedAt     :: Maybe Date
+                 , prCommits      :: [Commit]
+                 , prComments     :: [Comment]
+                 , prSourceBranch :: BranchName
+                 , prTargetBranch :: BranchName
                  } deriving ( Show, Eq, Generic)
 
 instance FromJSON PullRequest where
@@ -74,28 +76,31 @@ instance FromJSON Author where
 data PRState = OPEN | CLOSED | MERGED
   deriving ( Show, Eq, Generic, FromJSON)
 
-type Title     = Text
-type Id        = Text
-type Date      = UTCTime
-type Name      = Text
-type Message   = Text
-type BodyText  = Text
-type YtIssueId = Text
-type Cursor    = Text
+type Title      = Text
+type Id         = Text
+type Date       = UTCTime
+type Name       = Text
+type Message    = Text
+type BodyText   = Text
+type YtIssueId  = Text
+type BranchName = Text
+type Cursor     = Text
 
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
 data PRAnalysis = PRAnalysis {
-                  paPRNumber            :: Int
-                , paYTIssueId           :: Maybe YtIssueId
-                , paFirstCommitTime     :: Date
-                , paPRCreationTime      :: Date
-                , paLatestCommitTime    :: Date
-                , paPRClosingTime       :: Maybe Date
-                , paWasMerged           :: Bool
-                , paPrAuthor            :: Maybe Name
-                , paDevReviewCommits    :: ([Commit], [Commit])
-                , paComments            :: [Comment]
+                  paPRNumber         :: Int
+                , paYTIssueId        :: Maybe YtIssueId
+                , paFirstCommitTime  :: Date
+                , paPRCreationTime   :: Date
+                , paLatestCommitTime :: Date
+                , paPRClosingTime    :: Maybe Date
+                , paWasMerged        :: Bool
+                , paPrAuthor         :: Maybe Name
+                , paDevReviewCommits :: ([Commit], [Commit])
+                , paComments         :: [Comment]
+                , paSourceBranch     :: Text
+                , paTargetBranch     :: Text
                 } deriving ( Show, Eq, Generic)
 
 data PageInfo = PageInfo {
@@ -145,6 +150,8 @@ parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
   allComments       <- pullRequest  .: "comments"
   commentNodes      <- allComments  .: "nodes"
   prComments        <- forM commentNodes parseComment
+  prSourceBranch    <- pullRequest  .: "headRefName"
+  prTargetBranch    <- pullRequest  .: "baseRefName"
   return PullRequest{..}
 
 parseCommit :: Value -> Parser Commit

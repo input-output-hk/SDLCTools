@@ -34,6 +34,8 @@ defaultPRACSVHeader = header
   , "Dev Commits"
   , "Review Commits"
   , "Comments"
+  , "Source Branch Name"
+  , "Target Branch Name"
   ]
 
 instance ToNamedRecord PRAnalysis where
@@ -49,6 +51,8 @@ instance ToNamedRecord PRAnalysis where
                 , "Dev Commits"               .= (length $ fst paDevReviewCommits)
                 , "Review Commits"            .= (length $ snd paDevReviewCommits)
                 , "Comments"                  .= length paComments
+                , "Source Branch Name"        .= paSourceBranch
+                , "Target Branch Name"        .= paTargetBranch
                 ]
     where
     wasMergedSt :: String =

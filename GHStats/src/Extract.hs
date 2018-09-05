@@ -43,7 +43,7 @@ mkPRAnalysis pr@PullRequest{..} =do
           then (prClosedAt, False)
         else (prMergedAt, True)
   let devReviewCommits = splitCommits pr
-  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments
+  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch
 
 extractIssueId :: T.Text -> Either T.Text YtIssueId
 extractIssueId text = do
