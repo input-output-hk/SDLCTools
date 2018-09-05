@@ -4,10 +4,9 @@
 {-# LANGUAGE RecordWildCards        #-}
 {-# LANGUAGE ScopedTypeVariables    #-}
 
-
-
 module Report where
 
+import           Data.Char (toLower)
 import qualified Data.ByteString.Lazy as BS
 import           Data.Csv
 import qualified Data.Text as T
@@ -36,6 +35,7 @@ defaultPRACSVHeader = header
   , "Comments"
   , "Source Branch Name"
   , "Target Branch Name"
+  , "Yt Issue Id Presence"
   ]
 
 instance ToNamedRecord PRAnalysis where
@@ -53,6 +53,7 @@ instance ToNamedRecord PRAnalysis where
                 , "Comments"                  .= length paComments
                 , "Source Branch Name"        .= paSourceBranch
                 , "Target Branch Name"        .= paTargetBranch
+                , "Yt Issue Id Presence"      .= (toLower <$> show paYtIssueIdPresence)
                 ]
     where
     wasMergedSt :: String =

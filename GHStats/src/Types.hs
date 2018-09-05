@@ -7,7 +7,6 @@
 
 module Types where
 
-import qualified Data.ByteString.Char8 as B8
 import           Control.Monad
 import           GHC.Generics
 import           Data.Aeson
@@ -89,18 +88,19 @@ type Cursor     = Text
 newtype PRCSVData = PRCSVData ( Text, Date, Date, Maybe Date)
 
 data PRAnalysis = PRAnalysis {
-                  paPRNumber         :: Int
-                , paYTIssueId        :: Maybe YtIssueId
-                , paFirstCommitTime  :: Date
-                , paPRCreationTime   :: Date
-                , paLatestCommitTime :: Date
-                , paPRClosingTime    :: Maybe Date
-                , paWasMerged        :: Bool
-                , paPrAuthor         :: Maybe Name
-                , paDevReviewCommits :: ([Commit], [Commit])
-                , paComments         :: [Comment]
-                , paSourceBranch     :: Text
-                , paTargetBranch     :: Text
+                  paPRNumber          :: Int
+                , paYTIssueId         :: Maybe YtIssueId
+                , paFirstCommitTime   :: Date
+                , paPRCreationTime    :: Date
+                , paLatestCommitTime  :: Date
+                , paPRClosingTime     :: Maybe Date
+                , paWasMerged         :: Bool
+                , paPrAuthor          :: Maybe Name
+                , paDevReviewCommits  :: ([Commit], [Commit])
+                , paComments          :: [Comment]
+                , paSourceBranch      :: Text
+                , paTargetBranch      :: Text
+                , paYtIssueIdPresence :: Bool
                 } deriving ( Show, Eq, Generic)
 
 data PageInfo = PageInfo {
@@ -171,4 +171,5 @@ parseComment = withObject "Comment" $ \comment -> do
   coAuthor    <- comment .: "author"
   return Comment{..}
 
+parseDate :: String -> Date
 parseDate = parseTimeOrError True defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%SZ"))

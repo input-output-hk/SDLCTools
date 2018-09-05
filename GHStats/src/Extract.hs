@@ -43,7 +43,8 @@ mkPRAnalysis pr@PullRequest{..} =do
           then (prClosedAt, False)
         else (prMergedAt, True)
   let devReviewCommits = splitCommits pr
-  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch
+      ytIssuseIdPresence = chkAllEithers $ extractIssueId <$> ( prTitle : (cMessage <$> prCommits))
+  return $ PRAnalysis prNum prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence
 
 extractIssueId :: T.Text -> Either T.Text YtIssueId
 extractIssueId text = do
@@ -55,4 +56,15 @@ extractIssueId text = do
 
 issueIdRegExp :: LBS.ByteString
 issueIdRegExp = "\\[ *[A-Z]+\\-[0-9]+ *\\]"
+
+
+-- | auxilliary function to merge all the eithers and return False if any of
+-- them contain Left something.
+chkAllEithers :: [Either a b] -> Bool
+chkAllEithers []       = True
+chkAllEithers (x : xs) = case x of
+  Left _ -> False
+  _      -> chkAllEithers xs
+
+
 
