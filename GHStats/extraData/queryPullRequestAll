@@ -1,0 +1,64 @@
+
+{"query":"query {  organization(login: \"input-output-hk\") {
+  repository(name: \"#repoName#\") {
+    pullRequests(first: 100, after: ### )  {
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+      nodes {
+        id
+        number
+        title
+        createdAt
+        closed
+        state
+        closedAt
+        merged
+        mergedAt
+        headRefName
+        baseRefName
+        author {
+          ... on User {
+            name
+          }
+          }
+
+        commits(first: 200) {
+          nodes {
+            commit {
+              id
+              message
+              committedDate
+              authoredDate
+              author {
+                name
+                email
+                  }
+            }
+          }
+        }
+
+        comments(first: 100) {
+          nodes {
+            id
+            bodyText
+            createdAt
+            author {
+              ... on User {
+                name
+              }
+            }
+          }
+        }
+
+
+      }
+    }
+  }
+}
+}
+","variables":{ }}
+
