@@ -63,6 +63,8 @@ defaultPRACSVHeader = header
   , "Source Branch Name"
   , "Target Branch Name"
   , "Yt Issue Id Presence"
+  , "Yt Type"
+  , "Yt State Status"
   ]
 
 instance ToNamedRecord PRAnalysis where
@@ -81,6 +83,8 @@ instance ToNamedRecord PRAnalysis where
                 , "Source Branch Name"        .= paSourceBranch
                 , "Target Branch Name"        .= paTargetBranch
                 , "Yt Issue Id Presence"      .= (toLower <$> show paYtIssueIdPresence)
+                , "Yt Type"                   .= show paYtType
+                , "Yt State Status"           .= show paYtState
                 ]
     where
     wasMergedSt :: String =

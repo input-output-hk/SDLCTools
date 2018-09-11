@@ -47,6 +47,7 @@ library
     , vector
     , xml-to-json-fast
   exposed-modules:
+      Meas
       Meas.Extract.Efficiency
       Meas.Extract.Iohks.Extractor
       Meas.Extract.Iohks.Issue

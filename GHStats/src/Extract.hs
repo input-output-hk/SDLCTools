@@ -12,6 +12,7 @@ import qualified Data.ByteString.Lazy.Char8      as LBSC
 import           Control.Monad
 import           Types
 import           Regex
+import           YtIntegration
 
 -- | given a PullRequest returns the authored date of the earliest commit.
 getFirstCommitTime :: PullRequest -> Maybe Date
@@ -31,18 +32,20 @@ getLastCommitTime PullRequest{..} =
 splitCommits :: PullRequest -> ([Commit], [Commit])
 splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt) prCommits
 
-mkPRAnalysis :: PullRequest -> Maybe PRAnalysis
-mkPRAnalysis pr@PullRequest{..} = do
+mkPRAnalysis :: PullRequest -> Maybe YtInfo -> Maybe PRAnalysis
+mkPRAnalysis pr@PullRequest{..} yi = do
   firstCommitTime  <- getFirstCommitTime pr
   latestCommitTime <- getLastCommitTime pr
-  let !prYTID      = either (const Nothing) pure $ extractIssueId prTitle
+  let !prYTID      = either (const Nothing) Just $ extractIssueId prTitle
       (prClosingDate, wasMerged) =
         if (prMergedAt == Nothing)
           then (prClosedAt, False)
         else (prMergedAt, True)
       devReviewCommits = splitCommits pr
       ytIssuseIdPresence = chkAllEithers $ extractIssueId <$> ( prTitle : (cMessage <$> prCommits))
-  return $ PRAnalysis prNumber prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence
+      paytTypeVal        = maybe Nothing (Just . yiYtTypeVal) yi
+      paytStateVal       = maybe Nothing (Just . yiYtStateStatus) yi
+  return $ PRAnalysis prNumber prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence paytTypeVal paytStateVal
 
 mkPRCDetails :: PullRequest -> Maybe [PRCDetails]
 mkPRCDetails PullRequest{..} = do

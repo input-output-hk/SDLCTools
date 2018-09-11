@@ -13,11 +13,14 @@ import           Data.List.Utils (replace)
 import qualified Data.Text as T
 import           Network.HTTP.Simple
 import           System.FilePath.Posix
+import           Control.Monad
+
 
 import           Types
 import           Extract
 import           Report
 import           Misc
+import           YtIntegration
 
 
 main :: IO ()
@@ -40,11 +43,13 @@ main = do
               else
                 do
                   let allprs = prs <> acc
-                  makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> allprs)
+                  maybeYtInfos <- forM allprs $ \ PullRequest{..} -> (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle))
+                  makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith mkPRAnalysis allprs maybeYtInfos)
                   makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> allprs)
                   putStrLn $ "OK : made " <> show (n+1) <> " calls to Github"
           Left e  -> do
-            makeReport "PRAnalysis.csv" $ (catMaybes $ mkPRAnalysis <$> acc)
+            maybeYtInfos <- forM acc $ \PullRequest{..} -> (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle) )
+            makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith mkPRAnalysis acc maybeYtInfos)
             makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> acc)
             putStrLn $ "oops error occured" <> e
 

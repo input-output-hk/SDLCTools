@@ -21,6 +21,7 @@ resolver: lts-11.13
 # Various formats can be used as shown in the example below.
 #
 # packages:
+  #  - ../meas
 # - some-directory
 # - https://example.com/foo/bar/baz-0.0.2.tar.gz
 # - location:
@@ -39,8 +40,8 @@ resolver: lts-11.13
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: [
-]
+extra-deps:
+  - ../meas
 
 
 # Override default flag values for local packages and extra-deps

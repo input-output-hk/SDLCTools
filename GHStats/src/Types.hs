@@ -16,6 +16,7 @@ import           Data.Time.Clock
 import           Data.Time.Format
 import           GHC.Exts (sortWith)
 
+import qualified Meas as M
 
 newtype GHResponse = GHResponse ( PageInfo , [PullRequest] )
   deriving ( Show )
@@ -77,16 +78,17 @@ instance FromJSON Author where
 data PRState = OPEN | CLOSED | MERGED
   deriving ( Show, Eq, Generic, FromJSON)
 
-type Title      = Text
-type Id         = Text
-type Date       = UTCTime
-type Name       = Text
-type Message    = Text
-type BodyText   = Text
-type YtIssueId  = Text
-type BranchName = Text
-type Cursor     = Text
-type Email      = Text
+type Title          = Text
+type Id             = Text
+type Date           = UTCTime
+type Name           = Text
+type Message        = Text
+type BodyText       = Text
+type YtIssueId      = Text
+type BranchName     = Text
+type Cursor         = Text
+type Email          = Text
+type YtAuthorization = String
 
 -- | Pull Request Analysis
 data PRAnalysis = PRAnalysis {
@@ -103,6 +105,8 @@ data PRAnalysis = PRAnalysis {
                 , paSourceBranch      :: Text
                 , paTargetBranch      :: Text
                 , paYtIssueIdPresence :: Bool
+                , paYtType            :: Maybe M.TypeValue
+                , paYtState           :: Maybe M.StateValue
                 } deriving ( Show, Eq, Generic)
 
 -- | Pull Request Commit Details
@@ -132,6 +136,10 @@ instance FromJSON PageInfo where
     startCursor     <- pageInfoNode .: "startCursor"
     return PageInfo{..}
 
+data YtInfo = YtInfo {
+              yiYtTypeVal     :: M.TypeValue
+            , yiYtStateStatus :: M.StateValue
+            } deriving (Show, Eq, Generic)
 
 parseResponse :: Value -> Parser GHResponse
 parseResponse = withObject "All PullRequests" $ \o -> do

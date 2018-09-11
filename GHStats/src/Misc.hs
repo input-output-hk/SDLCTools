@@ -8,6 +8,7 @@ data CliOptions = MkCliOptions {
                 , apiToken        :: String
                 , repoName        :: String
                 , maxRequestCount :: Int
+                , ytAuthorization :: String
                 } deriving (Show)
 
 optionParser :: Parser CliOptions
@@ -30,6 +31,11 @@ optionParser =
               <> showDefault
               <> short 'm'
               <> (help "Maximum Count of Github Requests to be made"))
+        <*> strOption (
+              long "yt authorization"
+              <> short 'a'
+              <> (help "YouTrack authorization"))
+
 
 -- | Parse command line options
 parseCliArgs :: IO CliOptions

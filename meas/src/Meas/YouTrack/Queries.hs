@@ -68,10 +68,6 @@ singleIssueJson authorization issueId = do
   req <- HTTP.parseRequest ("https://iohk.myjetbrains.com/youtrack/rest/issue/" ++ issueId)
   let req' =  ((HTTP.setRequestHeaders
                 [("Authorization", BS8.pack authorization)])
---              . (HTTP.setRequestQueryString
---                  [ ("max", Just "4000")
---                  , ("filter", Just $ BS8.pack query)
---                  ])
               ) req
   resp <- httpBS req'
   let xmlBs = getResponseBody resp
@@ -79,6 +75,15 @@ singleIssueJson authorization issueId = do
   let st = L.concat $ xmlStreamToJSON (BS8.unpack xmlBs)
   let jsonBs = LBS.fromStrict $ BS8.pack $ st
   return jsonBs
+
+
+singleIssue :: String -> String -> IO GenericIssue
+singleIssue authorization issueId = do
+  jsonBs <- singleIssueJson authorization issueId
+  let (d :: Either String GenericIssue) = eitherDecode jsonBs
+  case d of
+    Left err -> error err
+    Right gIssue -> return $ gIssue
 
 
 allIssues :: String -> String -> String -> IO [GenericIssue]
