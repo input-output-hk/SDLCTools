@@ -50,7 +50,6 @@ instance DefaultOrdered PRCDetails where
 defaultPRACSVHeader :: Header
 defaultPRACSVHeader = header
   [ "PullRequest Number ID"
-  , "YouTrack Issue ID"
   , "First Commit Time"
   , "PullRequest Creation Time"
   , "Closing Time"
@@ -65,6 +64,7 @@ defaultPRACSVHeader = header
   , "Yt Issue Id Presence"
   , "Yt Type"
   , "Yt State Status"
+  , "YouTrack Issue ID"
   ]
 
 instance ToNamedRecord PRAnalysis where
