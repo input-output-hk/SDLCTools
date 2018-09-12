@@ -77,13 +77,14 @@ singleIssueJson authorization issueId = do
   return jsonBs
 
 
-singleIssue :: String -> String -> IO GenericIssue
+singleIssue :: String -> String -> IO (Either String GenericIssue)
 singleIssue authorization issueId = do
   jsonBs <- singleIssueJson authorization issueId
-  let (d :: Either String GenericIssue) = eitherDecode jsonBs
-  case d of
-    Left err -> error err
-    Right gIssue -> return $ gIssue
+  return $ eitherDecode jsonBs
+--  let (d :: Either String GenericIssue) = eitherDecode jsonBs
+--  case d of
+--    Left err -> error err
+--    Right gIssue -> return $ gIssue
 
 
 allIssues :: String -> String -> String -> IO [GenericIssue]

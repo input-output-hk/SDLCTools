@@ -29,9 +29,14 @@ nbTouchedDays = 0
 
 getSingleIssue :: String -> String -> IO ([YtTask], [YtIssue])
 getSingleIssue authorization issueId = do
- gissues <- singleIssue authorization issueId
- let (tasks, issues) = extractAllIssues [gissues]
- return (tasks, issues)
+ res <- singleIssue authorization issueId
+ case res of
+    Right gissues -> do
+      let (tasks, issues) = extractAllIssues [gissues]
+      return (tasks, issues)
+    Left err -> do
+      putStrLn ("Errorcannot parse: "++ issueId )
+      return ([], [])
 
 getAllNoHistory :: String -> [(String, String)] -> IO [(String, [YtTask], [YtIssue])]
 getAllNoHistory authorization projects = do
