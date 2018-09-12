@@ -218,6 +218,7 @@ instance FromText StateValue where
   fromText "Waiting to be merged into `master`" = InProgress
   fromText "To be deployed to staging"          = InProgress
   fromText "To be deployed to production"       = InProgress
+  fromText "Ready to Solve"                     = Selected
 
   fromText s                                    = error $ ("Unknow State: "++T.unpack s)
 
