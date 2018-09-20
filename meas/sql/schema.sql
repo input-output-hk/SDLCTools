@@ -131,7 +131,75 @@ insert into input_static_valueChangeTypeDomain values
   , ('State Changed')
   , ('Wait Changed');
 
-CREATE TABLE input_dynamic_YtIssue (
+CREATE TABLE input_dynamic_developers (
+  developerName text NOT NULL,
+  otherDetails text,
+  CONSTRAINT PKC_input_dynamic_developers PRIMARY KEY (developerName)
+);
+
+CREATE TABLE input_dynamic_squads (
+  squadId Integer NOT NULL,
+  squadLead text NOT NULL,
+  squadSize Integer NOT NULL,
+  CONSTRAINT PKC_input_dynamic_squads PRIMARY KEY (squadId),
+  FOREIGN KEY (squadLead) REFERENCES input_dynamic_developers (developerName)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE input_dynamic_squadDetails (
+  squadId Integer NOT NULL,
+  squadMember text NOT NULL,
+  CONSTRAINT PKC_input_dynamic_squadDetails PRIMARY KEY (squadId,squadMember),
+  FOREIGN KEY (squadId) REFERENCES input_dynamic_squads (squadId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (squadMember) REFERENCES input_dynamic_developers (developerName)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE input_dynamic_targetVersionDomain (
+  targetVersion text NOT NULL,
+  CONSTRAINT PKC_input_dynamic_targetVersionDomain PRIMARY KEY (targetVersion)
+);
+
+CREATE TABLE aux_dynamic_targetVersionGroups (
+  targetVersionGroupId Integer NOT NULL,
+  CONSTRAINT PKC_input_dynamic_targetVersionGroups PRIMARY KEY (targetVersionGroupId)
+);
+
+CREATE TABLE input_dynamic_targetVersionGroupDetails (
+  targetVersionGroupId Integer NOT NULL,
+  targetVersion text NOT NULL,
+  CONSTRAINT PKC_input_dynamic_targetVersionGroupDetails PRIMARY KEY (targetVersionGroupId, targetVersion),
+  FOREIGN KEY (targetVersionGroupId) REFERENCES aux_dynamic_targetVersionGroups (targetVersionGroupId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (targetVersion) REFERENCES input_dynamic_targetVersionDomain (targetVersion)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE aux_dynamic_linkGroups (
+  linkGroupId Integer NOT NULL,
+  CONSTRAINT PKC_input_dynamic_linkGroups PRIMARY KEY (linkGroupId)
+);
+
+CREATE TABLE input_dynamic_linkGroupDetails (
+  linkGroupId Integer NOT NULL,
+  linkType text NOT NULL,
+  linkedTicketId text NOT NULL,
+  CONSTRAINT PKC_input_dynamic_linkGroupDetails PRIMARY KEY (linkGroupId,linkType,linkedTicketId),
+  FOREIGN KEY (linkGroupId) REFERENCES aux_dynamic_linkGroups (linkGroupId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (linkType) REFERENCES input_static_linkTypeDomain (linkType)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE input_dynamic_ytgErrors (
+  ytgTicketId text NOT NULL,
+  ytError     text NOT NULL,
+  CONSTRAINT PKC_input_dynamic_ytgErrors PRIMARY KEY (ytgTicketId,ytError)
+  -- later to add FK 
+);
+
+CREATE TABLE input_dynamic_ytIssueDetails (
   ytiIssueId text NOT NULL,
   ytiType    text NOT NULL,
   ytiSummary text NOT NULL,
@@ -147,26 +215,28 @@ CREATE TABLE input_dynamic_YtIssue (
   ytiPriority1 Integer NOT NULL,
   ytiPriority2 Integer NOT NULL,
   ytiPriority3 Integer NOT NULL,
-  ytiSquad   text,
+  ytiSquadId Integer,
+  ytiTargetVersionGroupId Integer,
   ytiowner   text,
   ytiResolution text NOT NULL,
-  ytiStateTransitionId Integer NOT NULL,
+  ytiLinkGroupId Integer,
+  ytiStateTransitionId Integer NOT NULL,     -- todo : to add tables related to this
   ytiBlockedDays Integer NOT NULL,
-  CONSTRAINT PKC_input_dynamic_YtIssue PRIMARY KEY (ytiIssueId)
+  CONSTRAINT PKC_input_dynamic_YtIssueDetails PRIMARY KEY (ytiIssueId),
+  FOREIGN KEY (ytiType) REFERENCES input_static_typeValueDomain (typeValue)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiState) REFERENCES input_static_stateValueDomain (stateValue)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiWait) REFERENCES input_static_waitValueDomain (waitValue)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiROMManDay) REFERENCES input_static_romManDaysValueDomain (romManDaysValue)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiResolution) REFERENCES input_static_resolutionValueDomain (resolutionValue)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiSquadId) REFERENCES input_dynamic_squads (squadId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiTargetVersionGroupId) REFERENCES aux_dynamic_targetVersionGroups (targetVersionGroupId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
 );
-  
-  
-  
 
-
-
-select * from input_static_priorityValueDomain;
-select * from input_static_iohksStateValueDomain;
-select * from input_static_stateValueDomain;
-select * from input_static_waitValueDomain;
-select * from input_static_typeValueDomain;
-select * from input_static_threeDValueDomain;
-select * from input_static_romManDaysValueDomain;
-select * from input_static_resolutionValueDomain;
-select * from input_static_linkTypeDomain;
 
