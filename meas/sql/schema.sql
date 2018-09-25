@@ -127,6 +127,15 @@ CREATE TABLE developers (
   CONSTRAINT PKC_developers PRIMARY KEY (developerName)
 );
 
+/*
+squadId: we use text to identify squads
+squadSize : duplicate information: we can get it from squadDetails
+
+What to do in case of a 1 person squad:
+squadLead should be there and then we have to decide whether or not adding him as a squad member.
+It a subjective choice.
+But if we do, then we have to ensure, via a constraint, that the squad lead is a squad member as well.
+*/
 CREATE TABLE squads (
   squadId Integer NOT NULL,
   squadLead text NOT NULL,
@@ -141,12 +150,36 @@ CREATE TABLE squadDetails (
   squadId Integer NOT NULL,
   squadMember text NOT NULL,
   CONSTRAINT PKC_squadDetails PRIMARY KEY (squadId,squadMember),
-  CONSTRAINT CHK_nonNegative CHECK  (squadId > 0),
+  CONSTRAINT CHK_nonNegative CHECK  (squadId > 0),  -- redundant, the FB takes care of that.
   FOREIGN KEY (squadId) REFERENCES squads (squadId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (squadMember) REFERENCES developers (developerName)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+
+/*
+There is a alternative model here, which is more RM in my opinion.
+
+The reasoning is based on the fact assigneeGroups doed not have an existence by itself.
+and on the fact that assignees are related to Tasks only.
+
+CREATE TABLE TaskAssignee (
+  yttTaskId  text NOT NULL,
+  developerName text NOT NULL,  -- let's reuse same names
+
+  CONSTRAINT PKC_TaskAssignee PRIMARY KEY (yttTaskId, developerName),
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (developerName) REFERENCES developers (developerName)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
+The associate predicate is then (see the book: Database in Depth)
+
+The developer {developerName} is/was assigned to task identified by {yttTaskId}
+
+*/
 
 CREATE TABLE assigneeGroups (
   assigneeGroupId Integer NOT NULL,
@@ -157,23 +190,35 @@ CREATE TABLE assigneeGroupDetails (
   assigneeGroupId Integer NOT NULL,
   assignee text NOT NULL,
   CONSTRAINT PKC_assigneeGroupDetails PRIMARY KEY (assigneeGroupId, assignee),
-  CONSTRAINT CHK_nonNegative CHECK  (assigneeGroupId >= 0),
+  CONSTRAINT CHK_nonNegative CHECK  (assigneeGroupId >= 0), -- usually, we do not care about properties of such technical ids.
   FOREIGN KEY (assigneeGroupId) REFERENCES assigneeGroups (assigneeGroupId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (assignee) REFERENCES developers (developerName)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+/*
+Generic type is a temprorary data structure used in the code, not sure it should be in the DB.
+*/
 CREATE TABLE aux_ytGenericTickets (
   ytgTicketId text NOT NULL,
   typeValue text NOT NULL,
   CONSTRAINT PKC_aux_ytgTicketId PRIMARY KEY (ytgTicketId)
 );
 
+
+/*
+target versions is a multi-valued field in YT.
+This is non-sense and should be modified in YT.
+But you could not really know
+So, for the sake of simplicity, we can make it a single-valued field.
+*/
+
 CREATE TABLE targetVersionDomain (
   targetVersion text NOT NULL,
   CONSTRAINT PKC_targetVersionDomain PRIMARY KEY (targetVersion)
 );
+
 
 CREATE TABLE aux_targetVersionGroups (
   targetVersionGroupId Integer NOT NULL,
@@ -191,6 +236,50 @@ CREATE TABLE targetVersionGroupDetails (
   FOREIGN KEY (targetVersion) REFERENCES targetVersionDomain (targetVersion)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+
+/*
+Here too, there is a more idiomatic way to model this.
+
+Since links are a property of tickets of any kind, the trick is to use a super-entity/sub-entity scheme.
+(see book Database in Depth)
+
+table Ticket -- super entity
+(
+  ticketId
+  ticketType
+
+  PK : ticketId
+)
+
+table Issue -- table for issues
+(
+  issueId -- with FK to Ticket.ticketId
+  specific fields
+)
+
+table Task -- table for tasks
+(
+  taskId -- with FK to Ticket.ticketId
+  specific fields
+)
+
+Then we have the links
+
+table link
+(
+  ticketId,
+  linkType,
+  linkedTicketId
+  PK : (ticketId, linkType, linkedTicketId)
+)
+
+with FK to Ticket table.
+
+With predicate : ticket {linkedTicketId} is linked to {ticketId} with a link of type {linkType}
+
+*/
+
 
 CREATE TABLE aux_linkGroups (
   linkGroupId Integer NOT NULL,
@@ -216,6 +305,30 @@ CREATE TABLE aux_changeGroups (
   CONSTRAINT CHK_nonNegative CHECK  (changeGroupId >= 0)
 );
 
+/*
+1) Here also : more idiomatic solution which does not use a 'group'. Groups are ok if they  have a) an independent
+existence or b) we need to express FKs between table and views (sth SQL does not accept).
+
+2) the Changes tables mixes 2 concepts: changes of State and change of Wait. The general rule is that
+a table only captures 1 and only 1 concept and a concept is captured by just 1 and only 1 table.
+
+A more idiomatic solution could be :
+
+table IssueStateChange
+(
+  issueId   -- FK to issue table
+  updateTime
+  updater       -- FK to dev
+  oldStateVal text,  -- FK to stateValueDomain table etc
+  newStateVal text
+)
+
+The predicate is:
+
+At time {updateTime}, the value of the state field of the issue {issueId} has transitioned from
+{oldStateVal} to {newStateVal} and the change was done by {updater}
+*/
+
 CREATE TABLE Changes (
   changeId Integer NOT NULL,
   changeGroupId Integer NOT NULL,
@@ -239,6 +352,9 @@ CREATE TABLE Changes (
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+
+
+
 CREATE TABLE stateTransitionValueDomain (
   stateTransitionValue text NOT NULL,
   CONSTRAINT PKC_stateTransitionValue PRIMARY KEY (stateTransitionValue)
@@ -252,6 +368,27 @@ insert into stateTransitionValueDomain values
   , ('STDone')
   , ('STIllegalStateTransitions');
 
+
+/*
+
+data StateTransitions =
+    STBacklog Int
+  | STSelected Int Int
+  | STInProgress Int Int Int
+  | STInReview Int Int Int Int
+  | STDone Int Int Int Int Int
+  | STIllegalStateTransitions
+
+  This data type is hard to model in RM.
+
+  I think you have found the right way to do it.
+
+But we have to clear about the predicate as the meaning of the ***Time attributes depends
+on the value of stateTransitionValue
+
+BTW: in this case, it makes sense to have a reference from  issue/task to stateTransitions
+Thus ok for the surrogate key stateTransitionId
+*/
 
 CREATE TABLE stateTransitions (
   stateTransitionId Integer NOT NULL,
@@ -271,6 +408,16 @@ CREATE TABLE stateTransitions (
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+/*
+Not sure we have to report errors in the DB.
+If there are errors, the importer (code) can report them on the screen.
+No need to complexify the DB here
+Or just use a simple text field to store the error.
+
+And another question : if an error occurs for an issue, then we simply do not have any info about it.
+So if we have to store errors, it should be at the level of the super entiry (Ticket, see above).
+*/
+
 CREATE TABLE ytErrorGroups (
   ytErrorGroupId Integer NOT NULL,
   CONSTRAINT PKC_ytgErrorGroups PRIMARY KEY (ytErrorGroupId),
@@ -286,6 +433,10 @@ CREATE TABLE ytErrorDetails (
   FOREIGN KEY (ytErrorGroupId) REFERENCES ytErrorGroups (ytErrorGroupId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+/*
+Optional: We might want to drop priority fields: no one uses them.
+*/
 
 CREATE TABLE ytIssueDetails (
   ytiIssueId text NOT NULL,
