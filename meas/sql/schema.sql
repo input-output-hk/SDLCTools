@@ -4,38 +4,38 @@ CREATE DATABASE sdlc_db;
 
 \c sdlc_db;
 
-CREATE TABLE priorityValueDomain (
-  priorityValue text,
+CREATE TABLE priorityDomain (
+  priorityVal text,
 
-  CONSTRAINT PKC_priorityValueDomain PRIMARY KEY (priorityValue)
+  CONSTRAINT PKC_priorityDomain PRIMARY KEY (priorityVal)
 );
 
-insert into priorityValueDomain values
+insert into priorityDomain values
     ('ShowStopper')
   , ('Critical')
   , ('Major')
   , ('Normal')
   , ('Minor');
 
-CREATE TABLE iohksStateValueDomain (
-  iohksStateValue text,
+CREATE TABLE iohksStateDomain (
+  iohksStateVal text,
 
-  CONSTRAINT PKC_iohksStateValueDomain PRIMARY KEY (iohksStateValue)
+  CONSTRAINT PKC_iohksStateDomain PRIMARY KEY (iohksStateVal)
 );
 
-insert into iohksStateValueDomain values
+insert into iohksStateDomain values
     ('IohksSubmitted')
   , ('IohksReadyToSolve')
   , ('IohksFixed')
   , ('IohksDone');
 
-CREATE TABLE stateValueDomain (
-  stateValue text,
+CREATE TABLE stateDomain (
+  stateVal text,
 
-  CONSTRAINT PKC_stateValueDomain PRIMARY KEY (stateValue)
+  CONSTRAINT PKC_stateDomain PRIMARY KEY (stateVal)
 );
 
-insert into stateValueDomain values
+insert into stateDomain values
     ('Backlog')
   , ('Planning')
   , ('Selected')
@@ -43,58 +43,58 @@ insert into stateValueDomain values
   , ('Review')
   , ('Done');
 
-CREATE TABLE waitValueDomain (
-  waitValue text,
+CREATE TABLE waitDomain (
+  waitVal text,
 
-  CONSTRAINT PKC_waitValueDomain PRIMARY KEY (waitValue)
+  CONSTRAINT PKC_waitDomain PRIMARY KEY (waitVal)
 );
 
-insert into waitValueDomain values
+insert into waitDomain values
     ('Running')
   , ('Waiting');
 
-CREATE TABLE typeValueDomain (
-  typeValue text,
+CREATE TABLE typeDomain (
+  typeVal text,
 
-  CONSTRAINT PKC_typeValueDomain PRIMARY KEY (typeValue)
+  CONSTRAINT PKC_typeDomain PRIMARY KEY (typeVal)
 );
 
-insert into typeValueDomain values
+insert into typeDomain values
     ('TaskType')
   , ('IssueType')
   , ('OtherType');
 
-CREATE TABLE threeDValueDomain (
-  threeDValue text,
+CREATE TABLE threeDDomain (
+  threeDVal text,
 
-  CONSTRAINT PKC_threeDValueDomain PRIMARY KEY (threeDValue)
+  CONSTRAINT PKC_threeDDomain PRIMARY KEY (threeDVal)
 );
 
-insert into threeDValueDomain values
+insert into threeDDomain values
     ('Design')
   , ('Development')
   , ('Documentation')
   , ('Test');
 
-CREATE TABLE romManDaysValueDomain (
-  romManDaysValue text,
+CREATE TABLE romManDaysDomain (
+  romManDaysVal text,
 
-  CONSTRAINT PKC_romManDaysValueDomain PRIMARY KEY (romManDaysValue)
+  CONSTRAINT PKC_romManDaysDomain PRIMARY KEY (romManDaysVal)
 );
 
-insert into romManDaysValueDomain values
+insert into romManDaysDomain values
     ('Days')
   , ('Weeks')
   , ('Months')
   , ('Quarters');
 
-CREATE TABLE resolutionValueDomain (
-  resolutionValue text,
+CREATE TABLE resolutionDomain (
+  resolutionVal text,
 
-  CONSTRAINT PKC_resolutionValueDomain PRIMARY KEY (resolutionValue)
+  CONSTRAINT PKC_resolutionDomain PRIMARY KEY (resolutionVal)
 );
 
-insert into resolutionValueDomain values
+insert into resolutionDomain values
     ('Successful')
   , ('Aborted')
   , ('Duplicate')
@@ -222,7 +222,7 @@ CREATE TABLE tickets (
   ticketType text NOT NULL,
 
   CONSTRAINT PKC_ticketId PRIMARY KEY (ticketId),
-  FOREIGN KEY (ticketType) REFERENCES typeValueDomain (typeValue)
+  FOREIGN KEY (ticketType) REFERENCES typeDomain (typeVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -257,7 +257,7 @@ table IssueStateChange
   issueId   -- FK to issue table
   updateTime
   updater       -- FK to dev
-  oldStateVal text,  -- FK to stateValueDomain table etc
+  oldStateVal text,  -- FK to stateDomain table etc
   newStateVal text
 )
 
@@ -279,9 +279,9 @@ CREATE TABLE issueStateChanges (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (updater) REFERENCES developers (developerName)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (oldStateVal) REFERENCES stateValueDomain (stateValue)
+  FOREIGN KEY (oldStateVal) REFERENCES stateDomain (stateVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (newStateVal) REFERENCES stateValueDomain (stateValue)
+  FOREIGN KEY (newStateVal) REFERENCES stateDomain (stateVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -297,18 +297,18 @@ CREATE TABLE issueWaitChanges (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (updater) REFERENCES developers (developerName)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (oldWaitVal) REFERENCES waitValueDomain (waitValue)
+  FOREIGN KEY (oldWaitVal) REFERENCES waitDomain (waitVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (newWaitVal) REFERENCES waitValueDomain (waitValue)
+  FOREIGN KEY (newWaitVal) REFERENCES waitDomain (waitVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE stateTransitionValueDomain (
-  stateTransitionValue text NOT NULL,
-  CONSTRAINT PKC_stateTransitionValue PRIMARY KEY (stateTransitionValue)
+CREATE TABLE stateTransitionDomain (
+  stateTransitionVal text NOT NULL,
+  CONSTRAINT PKC_stateTransition PRIMARY KEY (stateTransitionVal)
 );
 
-insert into stateTransitionValueDomain values
+insert into stateTransitionDomain values
     ('STBacklog')
   , ('STSelected')
   , ('STInProgress')
@@ -331,7 +331,7 @@ data StateTransitions =
   I think you have found the right way to do it.
 
 But we have to clear about the predicate as the meaning of the ***Time attributes depends
-on the value of stateTransitionValue
+on the value of stateTransition
 
 BTW: in this case, it makes sense to have a reference from  issue/task to stateTransitions
 Thus ok for the surrogate key stateTransitionId
@@ -340,7 +340,7 @@ Thus ok for the surrogate key stateTransitionId
 CREATE TABLE stateTransitions (
   stateTransitionId    Integer NOT NULL,
   ticketId             text    NOT NULL,
-  stateTransitionValue text    NOT NULL,
+  stateTransitionVal text    NOT NULL,
   backlogTime          Integer,
   selectedTime         Integer,
   progressStartTime    Integer,
@@ -350,7 +350,7 @@ CREATE TABLE stateTransitions (
   CONSTRAINT PKC_stateTransitions PRIMARY KEY (stateTransitionId),
   FOREIGN KEY (ticketId) REFERENCES tickets (ticketId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (stateTransitionValue) REFERENCES stateTransitionValueDomain (stateTransitionValue)
+  FOREIGN KEY (stateTransitionVal) REFERENCES stateTransitionDomain (stateTransitionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -395,15 +395,15 @@ CREATE TABLE ytIssueDetails (
   CONSTRAINT PKC_YtIssueDetails PRIMARY KEY (ytiIssueId),
   FOREIGN KEY (ytiIssueId) REFERENCES tickets (ticketId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiType) REFERENCES typeValueDomain (typeValue)
+  FOREIGN KEY (ytiType) REFERENCES typeDomain (typeVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiState) REFERENCES stateValueDomain (stateValue)
+  FOREIGN KEY (ytiState) REFERENCES stateDomain (stateVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiWait) REFERENCES waitValueDomain (waitValue)
+  FOREIGN KEY (ytiWait) REFERENCES waitDomain (waitVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiROMManDay) REFERENCES romManDaysValueDomain (romManDaysValue)
+  FOREIGN KEY (ytiROMManDay) REFERENCES romManDaysDomain (romManDaysVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiResolution) REFERENCES resolutionValueDomain (resolutionValue)
+  FOREIGN KEY (ytiResolution) REFERENCES resolutionDomain (resolutionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (ytiSquadId) REFERENCES squads (squadId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -423,7 +423,7 @@ CREATE TABLE ytTaskDetails (
   yttNumber            Integer NOT NULL,
   yttState             text    NOT NULL,
   yttWait              text    NOT NULL,
-  yttThreeDValue       text    NOT NULL,
+  yttThreeDVal       text    NOT NULL,
   yttStateTransitionId Integer NOT NULL,
   yttBlockedDays       Integer NOT NULL,
   yttParent            text    NOT NULL,
@@ -431,9 +431,9 @@ CREATE TABLE ytTaskDetails (
   CONSTRAINT PKC_ytTaskDetails PRIMARY KEY (yttTaskId),
   FOREIGN KEY (yttTaskId) REFERENCES tickets (ticketId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (yttState) REFERENCES stateValueDomain (stateValue)
+  FOREIGN KEY (yttState) REFERENCES stateDomain (stateVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (yttWait) REFERENCES waitValueDomain (waitValue)
+  FOREIGN KEY (yttWait) REFERENCES waitDomain (waitVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttStateTransitionId) REFERENCES stateTransitions (stateTransitionId)
   ON DELETE RESTRICT ON UPDATE CASCADE
@@ -450,8 +450,150 @@ CREATE TABLE TaskAssignee (
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-/*
-Here too, there is a more idiomatic way to model this.
-dk : fixed ^^
+-- Tables specific for Testing Projects :-
 
-*/
+CREATE TABLE yttpTypeDomain (
+  yttpTypeVal text NOT NULL,
+
+  CONSTRAINT PKC_yttpTypeDomain PRIMARY KEY (yttpTypeVal)
+);
+
+insert into yttpTypeDomain values
+    ('Review')
+  , ('Document Request')
+  , ('Risk')
+  , ('Action')
+  , ('Issue')
+  , ('Test Case')
+  , ('Decision');
+
+CREATE TABLE yttpStateDomain (
+  yttpStateVal text NOT NULL,
+
+  CONSTRAINT PKC_yttpStateDomain PRIMARY KEY (yttpStateVal)
+);
+
+insert into yttpStateDomain values
+    ('Open')
+  , ('Obsolete')
+  , ('Verified')
+  , ('Blocking')
+  , ('Done')
+  , ('Selected');
+
+CREATE TABLE yttpPriorityDomain (
+  yttpPriorityVal text,
+
+  CONSTRAINT PKC_yttpPriorityDomain PRIMARY KEY (yttpPriorityVal)
+);
+
+insert into yttpPriorityDomain values
+    ('ShowStopper')
+  , ('High')
+  , ('Major')
+  , ('Medium')
+  , ('Low')
+  , ('Normal')
+  , ('Critical')
+  , ('Minor');
+
+CREATE TABLE yttpReviewStatusDomain (
+  yttpReviewStatusVal text,
+
+  CONSTRAINT PKC_yttpReviewStatusDomain PRIMARY KEY (yttpReviewStatusVal)
+);
+
+insert into yttpReviewStatusDomain values
+    ('WIP')
+  , ('To be reviewed')
+  , ('Review done')
+  , ('Needs Update')
+  , ('To be deleted');
+
+CREATE TABLE yttpAutomationStatusDomain (
+  yttpAutomationStatusVal text,
+
+  CONSTRAINT PKC_yttpAutomationStatusDomain PRIMARY KEY (yttpAutomationStatusVal)
+);
+
+insert into yttpAutomationStatusDomain values
+    ('Manual')
+  , ('Automated')
+  , ('To be automated');
+
+CREATE TABLE yttpTestResultDomain (
+  yttpTestResultVal text,
+
+  CONSTRAINT PKC_yttpTestResultDomain PRIMARY KEY (yttpTestResultVal)
+);
+
+insert into yttpTestResultDomain values
+    ('Passed')
+  , ('Failed');
+
+
+CREATE TABLE yttpTargetOSDomain (
+  yttpTargetOSVal text,
+
+  CONSTRAINT PKC_yttpTargetOSVal PRIMARY KEY (yttpTargetOSVal)
+);
+
+insert into yttpTargetOSDomain values
+    ('Linux')
+  , ('Windows')
+  , ('All Platforms')
+  , ('MacOS')
+  , ('AnySingle');
+
+CREATE TABLE yttpTestingTypeDomain (
+  yttpTestingTypeVal text,
+
+  CONSTRAINT PKC_yttpTestingTypeDomain PRIMARY KEY (yttpTestingTypeVal)
+);
+
+insert into yttpTestingTypeDomain values
+    ('Integration Test')
+  , ('UI Test')
+  , ('E2E Test')
+  , ('API Test')
+  , ('Component Test')
+  , ('UX Test')
+  , ('NFT');
+
+CREATE TABLE yttpBrowserVersionDomain (
+  yttpBrowserVersionVal text,
+
+  CONSTRAINT PKC_yttpBrowserVersionDomain PRIMARY KEY (yttpBrowserVersionVal)
+);
+
+insert into yttpBrowserVersionDomain values
+    ('Google Chrome 68')
+  , ('Opera 55')
+  , ('Google Chrome 69');
+
+CREATE TABLE yttpIssueDetails (
+  yttpiIssueId           text    NOT NULL,
+  yttpiType              text    NOT NULL,
+  yttpiSummary           text    NOT NULL,
+  yttpiDescription       text    NOT NULL,
+  yttpiCreated           Integer NOT NULL,
+  yttpiUpdatedAt         Integer,
+  yttpiProject           text    NOT NULL,
+  yttpiNumber            Integer NOT NULL,
+  yttpiState             text    NOT NULL,
+  yttpiPriority          text    NOT NULL,
+  yttpiReviewStatus      text    NOT NULL,
+  yttpiAutomationStatus  text    NOT NULL,
+  yttpiInRegressionSuite Bool    NOT NULL,
+  yttpiInSmokeTest       Bool    NOT NULL,
+  yttpiExecutiontime     Integer,
+  yttpiTestResult        text,
+  yttpiTargetOS          text,
+  yttpiTestingType       text
+
+  -- not complete 
+
+
+);
+  
+
