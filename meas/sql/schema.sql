@@ -589,11 +589,92 @@ CREATE TABLE yttpIssueDetails (
   yttpiExecutiontime     Integer,
   yttpiTestResult        text,
   yttpiTargetOS          text,
-  yttpiTestingType       text
+  yttpiTestingType       text,
 
-  -- not complete 
-
+  CONSTRAINT PKC_yttpIssueDetails PRIMARY KEY (yttpiIssueId),
+  FOREIGN KEY (yttpiType) REFERENCES yttpTypeDomain (yttpTypeVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiState) REFERENCES yttpStateDomain (yttpStateVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiPriority) REFERENCES yttpPriorityDomain (yttpPriorityVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiReviewStatus) REFERENCES yttpReviewStatusDomain (yttpReviewStatusVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiAutomationStatus) REFERENCES yttpAutomationStatusDomain (yttpAutomationStatusVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiTestResult) REFERENCES yttpTestResultDomain (yttpTestResultVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpiTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE
 
 );
-  
 
+CREATE TABLE yttpAssignee (
+  yttpiIssueId  text NOT NULL,
+  developerName text NOT NULL,
+
+  CONSTRAINT PKC_yttpAssignee PRIMARY KEY (yttpiIssueId, developerName),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (developerName) REFERENCES developers (developerName)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
+CREATE TABLE yttpPassedVersions (
+  yttpiIssueId  text NOT NULL,
+  yttpVersion text NOT NULL,
+
+  CONSTRAINT PKC_yttpPassedVersions PRIMARY KEY (yttpiIssueId, yttpVersion),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE yttpFailedVersions (
+  yttpiIssueId  text NOT NULL,
+  yttpVersion text NOT NULL,
+
+  CONSTRAINT PKC_yttpFailedVersions PRIMARY KEY (yttpiIssueId, yttpVersion),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE yttpBlockedVersions (
+  yttpiIssueId  text NOT NULL,
+  yttpVersion text NOT NULL,
+
+  CONSTRAINT PKC_yttpBlockedVersions PRIMARY KEY (yttpiIssueId, yttpVersion),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE yttpCoveredComponents (
+  yttpiIssueId  text NOT NULL,
+  yttpComponent text NOT NULL,
+
+  CONSTRAINT PKC_yttpCoveredComponents PRIMARY KEY (yttpiIssueId, yttpComponent),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE yttpBrowserAndVersions (
+  yttpiIssueId  text NOT NULL,
+  yttpBrowserVersionVal text NOT NULL,
+
+  CONSTRAINT PKC_yttpBrowserAndVersions PRIMARY KEY (yttpiIssueId, yttpBrowserVersionVal),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpBrowserVersionVal) REFERENCES yttpBrowserVersionDomain (yttpBrowserVersionVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE yttpLinks (
+  yttpiIssueId  text NOT NULL,
+  yttpLinkedTicketId text NOT NULL,
+
+  CONSTRAINT PKC_yttpLinks PRIMARY KEY (yttpiIssueId, yttpLinkedTicketId),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
