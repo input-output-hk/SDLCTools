@@ -49,7 +49,7 @@ run authorization = do
 
        --    ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 
-
+--          ("CSM", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")

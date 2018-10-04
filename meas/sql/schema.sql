@@ -571,6 +571,20 @@ insert into yttpBrowserVersionDomain values
   , ('Opera 55')
   , ('Google Chrome 69');
 
+
+/*
+This is the table for all "test" projects , right
+
+Comments:
+* use date/datetime (UTC-0) for all time attributes
+* use DT (Daedalus Testing ) as an example for for the fields.
+* I.E yttpiTestResult is not used , replaced by Passed in Versions and Failed in Versions
+* So make sure the db corresponds to DT https://iohk.myjetbrains.com/youtrack/issues/DT .
+Anatoli will adapt the other test projects in YT so that all projects conform to DT.
+
+For the future: capture history of Passed in Versions, Failed in Versions and Blocked in Versions.
+*/
+
 CREATE TABLE yttpIssueDetails (
   yttpiIssueId           text    NOT NULL,
   yttpiType              text    NOT NULL,
@@ -678,3 +692,4 @@ CREATE TABLE yttpLinks (
   FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
+

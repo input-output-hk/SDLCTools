@@ -95,6 +95,8 @@ data LinkType =
   |RelatesTo
   |IsDuplicatedBy
   |IsRequiredFor
+  |TestOf
+  |TestedBy
   deriving (Eq, Show, Generic, NFData)
 
 data ValueChange =
@@ -270,6 +272,8 @@ instance FromText LinkType where
   fromText "relates to"             = RelatesTo
   fromText "is duplicated by"       = IsDuplicatedBy
   fromText "is required for"        = IsRequiredFor
+  fromText "tested by"              = TestedBy
+  fromText "test of"                = TestOf
   fromText s                        = error ("unknow link role: "++T.unpack s)
 
 
