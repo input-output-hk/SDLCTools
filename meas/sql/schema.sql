@@ -507,7 +507,7 @@ insert into yttpReviewStatusDomain values
     ('WIP')
   , ('To be reviewed')
   , ('Review done')
-  , ('Needs Update')
+  , ('Needs update')
   , ('To be deleted');
 
 CREATE TABLE yttpAutomationStatusDomain (
