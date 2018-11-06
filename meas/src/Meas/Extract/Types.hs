@@ -51,6 +51,7 @@ data StateValue =
   |InProgress
   |Review
   |Done
+  |Neutral
   deriving (Eq, Show, Generic, NFData)
 
 data WaitValue =
@@ -221,6 +222,11 @@ instance FromText StateValue where
   fromText "To be deployed to staging"          = InProgress
   fromText "To be deployed to production"       = InProgress
   fromText "Ready to Solve"                     = Selected
+  fromText "Ready"                              = Selected
+  fromText "Blocked"                            = Neutral
+  fromText "Merged"                             = Done
+  fromText "Duplicate"                          = Done
+  fromText "Cancel"                             = Done
 
   fromText s                                    = error $ ("Unknow State: "++T.unpack s)
 

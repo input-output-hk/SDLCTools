@@ -36,6 +36,8 @@ run :: String -> IO ()
 run authorization = do
   res <- getAll authorization
           [
+--    ("CE", "Type:Task #{User Story} sort by: {issue id} asc")
+      ("GMC", "Type: {User Story} #Bug #Task sort by: {issue id} asc")
 
             --("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
            -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
@@ -50,15 +52,15 @@ run authorization = do
        --    ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 
 --          ("CSM", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
-          , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          , ("QA", "Type:Task sort by: {issue id} asc")
+--          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
+--          , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("QA", "Type:Task sort by: {issue id} asc")
 
           ]
 
