@@ -64,6 +64,7 @@ I.E
 -}
 waitingBacklog :: [(Int, StateValue)] -> StateTransitions
 waitingBacklog [] = STIllegalStateTransitions
+waitingBacklog ((_, Neutral):rest) = waitingBacklog rest
 waitingBacklog ((t, Backlog):rest) = foundBacklog t rest
 waitingBacklog ((t, Planning):rest) = foundBacklog t rest
 waitingBacklog ((t, Selected):rest) = foundSelected t t rest
@@ -75,6 +76,7 @@ waitingBacklog ((t, Done):_) = STDone t t t t t
 -- ignoring all backwards state transitions
 foundBacklog :: Int -> [(Int, StateValue)] -> StateTransitions
 foundBacklog tBacklog [] = STBacklog tBacklog
+foundBacklog tBacklog ((_, Neutral):rest) = foundBacklog tBacklog rest
 foundBacklog tBacklog ((_, Backlog):rest) = foundBacklog tBacklog rest
 foundBacklog tBacklog ((_, Planning):rest) = foundBacklog tBacklog rest
 foundBacklog tBacklog ((t, Selected):rest) = foundSelected tBacklog t rest
@@ -86,6 +88,7 @@ foundBacklog tBacklog ((t, Done):_) = STDone tBacklog t t t t
 -- ignoring all backwards state transitions
 foundSelected :: Int -> Int -> [(Int, StateValue)] -> StateTransitions
 foundSelected tBacklog tSelected [] = STSelected tBacklog tSelected
+foundSelected tBacklog tSelected ((_, Neutral):rest) = foundSelected tBacklog tSelected rest
 foundSelected tBacklog tSelected ((_, Backlog):rest) = foundSelected tBacklog tSelected rest
 foundSelected tBacklog tSelected ((_, Planning):rest) = foundSelected tBacklog tSelected rest
 foundSelected tBacklog tSelected ((_, Selected):rest) = foundSelected tBacklog tSelected rest
@@ -116,13 +119,15 @@ enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   else
     case (rest1, timeInProgress, timeInReview, firstWipState) of
     -- Not Done state found
-    ([], 0, 0, InProgress)    ->  STInProgress tBacklog tSelected tEnterWip
-    ([], 0, 0, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, 0, InProgress)    -> STInProgress tBacklog tSelected tEnterWip
+    ([], 0, 0, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], 0, _, InProgress)    ->  STIllegalStateTransitions -- should never happen by construction
-    ([], 0, _, Review)        ->  STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, _, InProgress)    -> STIllegalStateTransitions -- should never happen by construction
+    ([], 0, _, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], tip, 0, _)           ->  STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
+    ([], tip, 0, _)           -> STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
+
+   -- ([], _, _, Neutral)       -> STInProgress tBacklog tSelected tEnterWip
 
     ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
 
