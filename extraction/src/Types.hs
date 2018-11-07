@@ -17,7 +17,6 @@ import           Data.Aeson.Types
 import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy as BL
-import           Data.Vector (toList)
 import qualified Data.Char as C
 import           Control.Lens
 import           Control.Lens.TH

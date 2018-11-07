@@ -29,7 +29,6 @@ dependencies:
 - http-conduit
 - optparse-applicative
 - time
-- vector
 
 
 
