@@ -8,30 +8,31 @@
 
 module Main where
 
-import            Data.Aeson
-import qualified  Data.ByteString as BS
-import qualified  Data.ByteString.Char8 as BS8
-import qualified  Data.ByteString.Lazy as LBS
-import qualified  Data.List as L
-import qualified  Data.Text as T
-import            Database.PostgreSQL.Simple
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BS8
+import qualified Data.ByteString.Lazy as LBS
+import qualified Data.List as L
+import qualified Data.Text as T
+import           Options.Applicative
+import           Data.Monoid ((<>))
+import           Database.PostgreSQL.Simple
 
-import            Network.HTTP.Simple as HTTP
+import           Network.HTTP.Simple as HTTP
+import           Data.Aeson
 
-import            Data.Time.Calendar
-import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
-import            Data.Time.Format
-
-
-
-import            Types
-import            Database
+import           Database
+import           Misc
+import           Types
 
 main :: IO ()
-main = print 3 -- dummy
+main = do
+  (MkCliOptions {..}) <- parseCliArgs
+  run ytAuthorization projectName
 
-
+run :: String -> String -> IO ()
+run auth pName = do
+  issues <- allIssuesForProjectJson auth pName ""
+  print issues
 
 doit =  do
   issues <- allIssuesForProjectJson  "your key here"
@@ -53,7 +54,7 @@ allIssuesForProjectJson :: String -> String -> String -> IO [YttpIssue] -- LBS.B
 allIssuesForProjectJson authorization1 projectName query = do
   req <- HTTP.parseRequest ("https://iohk.myjetbrains.com/youtrack/rest/issue/byproject/" ++ projectName)
   let req' =  (HTTP.setRequestHeaders
-                [ ("Authorization", BS8.pack authorization1)
+                [ ("Authorization", "Bearer " <> (BS8.pack authorization1))
                 , ("Accept", "application/json")
                 ])
 

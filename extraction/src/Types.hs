@@ -420,7 +420,7 @@ modifyYttpIssue (name,field) = case (name, field) of
   ("Test Result"           , F19 val )  -> yttpiTestResult        .~ val
   ("Target OS"             , F20 val )  -> yttpiTargetOS          .~ val
   ("Testing Type"          , F21 val )  -> yttpiTestingType       .~ val
-  ("Browser and Version"   , F22 val )  -> ytttpBrowserVersion    .~  val
+  ("Browser and Version"   , F22 val )  -> ytttpBrowserVersion    .~ val
   _                                     -> id
 
 dummyYttpIssue :: YttpIssue
