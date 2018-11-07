@@ -8,6 +8,8 @@
 
 module Types where
 
+import Debug.Trace (trace)
+
 import           Control.Monad
 import           GHC.Generics
 import           Data.Aeson
@@ -114,8 +116,8 @@ data YttpIssue = MkYttpIssue
   , _yttpiBlockedInVersions :: [Version]
   , _yttpiCoveredComponents :: [Component]
   , _yttpiTestResult        :: Maybe TestResult
-  , _yttpiTargetOS          :: Maybe TargetOS
-  , _yttpiTestingType       :: Maybe TestingType
+  , _yttpiTargetOS          :: [TargetOS]
+  , _yttpiTestingType       :: [TestingType]
   , _ytttpBrowserVersion    :: Maybe [BrowserVersion]
   }
   deriving (Show, Eq, Generic)
@@ -155,8 +157,8 @@ data YTField =
   | F17 [Version]              -- blocked
   | F18 [Component]
   | F19 (Maybe TestResult)
-  | F20 (Maybe TargetOS)
-  | F21 (Maybe TestingType)
+  | F20 [TargetOS]
+  | F21 [TestingType]
   | F22 (Maybe [BrowserVersion])
   | NotRequired
   deriving (Eq, Show, Generic)
@@ -176,12 +178,15 @@ pYTField o@(Object oo) = do
         "State"             -> pState o
         "Priority"          -> pPriority o
         "Review status"     -> pReviewStatus o
+
         "Automation status" -> pAutomationStatus o
         "In regression suite"    -> pInRegressionSuite o
         "In Smoke Test"          -> pInSmokeTest o
+
         "Execution time (hours)" -> pExecutionTime o
         "Passed in Versions"     -> pPassedVersions o
         "Failed  in Versions"    -> pFailedVersions o
+
         "Blocked in Versions"    -> pBlockedVersions o
         "Covered Components"     -> pCoveredComponents o
         "Test Result"            -> pTestResult o
@@ -267,7 +272,7 @@ pReviewStatus = withObject "Object" $ \o -> do
   [value] <- o .: "value" :: Parser [Text]
   pure . F10 $ case value of
     "WIP"            -> Wip
-    "To Be reviewed" -> ToBeReviewed
+    "To be reviewed" -> ToBeReviewed
     "Review done"    -> ReviewDone
     "Needs update"   -> NeedsUpdate
     "To be deleted"  -> ToBeDeleted
@@ -299,7 +304,7 @@ pInSmokeTest = withObject "Object" $ \o -> do
 
 pExecutionTime :: Value -> Parser YTField
 pExecutionTime = withObject "Object" $ \o -> do
-  value <- o .: "value" :: Parser String
+  [value] <- o .: "value" :: Parser [String]
   pure . F14 $ case value of
     num | all C.isDigit num -> pure (read num :: Int)
     _ -> Nothing
@@ -334,8 +339,10 @@ pTestResult = withObject "Test Result" $ \o -> do
 
 pTargetOS :: Value -> Parser YTField
 pTargetOS = withObject "Target OS" $ \o -> do
-  [value] <- o .: "value" :: Parser [String]
-  pure . F20 . pure $ case value of
+  values <- o .: "value" :: Parser [String]
+  return $ F20 $ map decodeOS values
+  where
+  decodeOS value = case value of
     "Linux"         -> Linux
     "Windows"       -> Windows
     "All Platforms" -> AllPlatforms
@@ -344,8 +351,10 @@ pTargetOS = withObject "Target OS" $ \o -> do
 
 pTestingType :: Value -> Parser YTField
 pTestingType = withObject "Testing Type" $ \o -> do
-  [value] <- o .: "value" :: Parser [String]
-  pure . F21 . pure $ case value of
+  values <- o .: "value" :: Parser [String]
+  return $ F21 $ map decode values
+  where
+  decode value = case value of
     "Integration Test" -> IntegrationTest
     "UI Test"          -> UITest
     "E2E Test"         -> E2ETest
@@ -423,7 +432,7 @@ dummyYttpIssue = MkYttpIssue
   []
   []
   Nothing
-  Nothing
-  Nothing
+  []
+  []
   Nothing
 

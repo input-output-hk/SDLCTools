@@ -21,18 +21,28 @@ import            Data.Aeson
 main :: IO ()
 main = print 3 -- dummy
 
+
+
+
 allIssuesForProjectJson :: String -> String -> String -> IO () -- LBS.ByteString
 allIssuesForProjectJson authorization1 projectName query = do
   req <- HTTP.parseRequest ("https://iohk.myjetbrains.com/youtrack/rest/issue/byproject/" ++ projectName)
-  let req' =  HTTP.setRequestHeaders
+  let req' =  (HTTP.setRequestHeaders
                 [ ("Authorization", BS8.pack authorization1)
                 , ("Accept", "application/json")
-                ]
+                ])
+
+              . (HTTP.setRequestQueryString
+                  [ ("max", Just "4000")
+                  , ("filter", Just $ BS8.pack query)
+                  ])
+
               $ req
   resp <- httpBS req'
-  let !xmlBs = getResponseBody resp
+  let !jsonBs = getResponseBody resp
+  --BS.writeFile "res.json" jsonBs
   --print xmlBs
-  print (eitherDecodeStrict xmlBs :: Either String [YttpIssue])
+  print (eitherDecodeStrict jsonBs :: Either String [YttpIssue])
   return ()
 
 
