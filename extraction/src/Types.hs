@@ -10,17 +10,30 @@ module Types where
 
 import Debug.Trace (trace)
 
-import           Control.Monad
-import           GHC.Generics
-import           Data.Aeson
-import           Data.Aeson.Types
-import           Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.ByteString.Lazy as BL
-import           Data.Vector (toList)
-import qualified Data.Char as C
-import           Control.Lens
-import           Control.Lens.TH
+import            Control.Monad
+import            GHC.Generics
+import            Data.Aeson
+import            Data.Aeson.Types
+import            Data.Text (Text)
+import qualified  Data.Text as T
+import qualified  Data.ByteString.Lazy as BL
+import            Data.Vector (toList)
+import qualified  Data.Char as C
+import            Control.Lens
+import            Control.Lens.TH
+
+import            Data.Time.Calendar
+import            Data.Time.Clock
+import            Data.Time.Clock.POSIX
+import            Data.Time.Format
+
+-- TODO : move them in a misc module or wait until everything is moved in the "meas" package
+toDay :: Int -> Day
+toDay n = utctDay $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
+
+toUTCTime :: Int -> UTCTime
+toUTCTime n = posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
+
 
 data TypeVal =
   Review
@@ -118,14 +131,14 @@ data YttpIssue = MkYttpIssue
   , _yttpiTestResult        :: Maybe TestResult
   , _yttpiTargetOS          :: [TargetOS]
   , _yttpiTestingType       :: [TestingType]
-  , _ytttpBrowserVersion    :: Maybe [BrowserVersion]
+  , _ytttpBrowserVersion    :: [BrowserVersion]
   }
   deriving (Show, Eq, Generic)
 
 type Summary           = Text
 type Description       = Text
-type Created           = Int
-type UpdatedAt         = Int
+type Created           = UTCTime
+type UpdatedAt         = UTCTime
 type Project           = Text
 type Number            = Int
 type InRegressionSuite = Bool
@@ -159,7 +172,7 @@ data YTField =
   | F19 (Maybe TestResult)
   | F20 [TargetOS]
   | F21 [TestingType]
-  | F22 (Maybe [BrowserVersion])
+  | F22 [BrowserVersion]
   | NotRequired
   deriving (Eq, Show, Generic)
 
@@ -223,14 +236,14 @@ pDescription = withObject "Object" $ \o -> do
 pCreated :: Value -> Parser YTField
 pCreated = withObject "Object" $ \o -> do
   value <- o .: "value"
-  pure $ F4 (read value)
+  pure $ F4 $ toUTCTime (read value)
 
 
 pUpdated :: Value -> Parser YTField
 pUpdated = withObject "Object" $ \o -> do
   value <- o .: "value" :: Parser String
   pure . F5 $ case value of
-    num | all C.isDigit num -> pure (read num :: Int)
+    num | all C.isDigit num -> pure $ toUTCTime (read num :: Int)
     _ -> Nothing
 
 pProject :: Value -> Parser YTField
@@ -367,7 +380,7 @@ pTestingType = withObject "Testing Type" $ \o -> do
 pBrowserAndVersion :: Value -> Parser YTField
 pBrowserAndVersion  = withObject "Browser and Version" $ \o -> do
   values <- o .: "value"
-  pure . F22 . pure $ toBwv <$> values
+  return $ F22 $ map toBwv values
   where
     toBwv :: Text -> BrowserVersion
     toBwv val = case val of
@@ -407,7 +420,7 @@ modifyYttpIssue (name,field) = case (name, field) of
   ("Test Result"           , F19 val )  -> yttpiTestResult        .~ val
   ("Target OS"             , F20 val )  -> yttpiTargetOS          .~ val
   ("Testing Type"          , F21 val )  -> yttpiTestingType       .~ val
-  ("Browser and Version"   , F22 val )  -> ytttpBrowserVersion    .~ val
+  ("Browser and Version"   , F22 val )  -> ytttpBrowserVersion    .~  val
   _                                     -> id
 
 dummyYttpIssue :: YttpIssue
@@ -416,7 +429,7 @@ dummyYttpIssue = MkYttpIssue
   TestCase
   "Dummy ISSUE "
   ""
-  1
+  (UTCTime (ModifiedJulianDay 0) 0)
   Nothing
   ""
   1
@@ -434,5 +447,5 @@ dummyYttpIssue = MkYttpIssue
   Nothing
   []
   []
-  Nothing
+  []
 

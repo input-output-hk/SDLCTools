@@ -4,6 +4,9 @@
 {-# LANGUAGE RecordWildCards   #-}
 module Main where
 
+
+import Debug.Trace (trace)
+
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as B8
 import qualified Data.ByteString.Lazy.Char8 as BL8
@@ -43,7 +46,7 @@ main = do
               else
                 do
                   let allprs = prs <> acc
-                  maybeYtInfos <- forM allprs $ \ PullRequest{..} -> (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle))
+                  maybeYtInfos <- forM allprs $ \ PullRequest{..} -> trace ("YT: "++ show (extractIssueId prTitle)) $ (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle))
                   makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith mkPRAnalysis allprs maybeYtInfos)
                   makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> allprs)
                   putStrLn $ "OK : made " <> show (n+1) <> " calls to Github"

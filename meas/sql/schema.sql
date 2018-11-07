@@ -1,8 +1,11 @@
 
-DROP DATABASE IF EXISTS sdlc_db;
-CREATE DATABASE sdlc_db;
+-- DROP DATABASE IF EXISTS sdlc_db;
+-- CREATE DATABASE sdlc_db;
 
-\c sdlc_db;
+
+
+
+-- \c sdlc_db;
 
 CREATE TABLE priorityDomain (
   priorityVal text,
@@ -62,6 +65,7 @@ CREATE TABLE typeDomain (
 insert into typeDomain values
     ('TaskType')
   , ('IssueType')
+  , ('TestCase')
   , ('OtherType');
 
 CREATE TABLE threeDDomain (
@@ -590,8 +594,8 @@ CREATE TABLE yttpIssueDetails (
   yttpiType              text    NOT NULL,
   yttpiSummary           text    NOT NULL,
   yttpiDescription       text    NOT NULL,
-  yttpiCreated           Integer NOT NULL,
-  yttpiUpdatedAt         Integer,
+  yttpiCreated           timestamp NOT NULL,
+  yttpiUpdatedAt         timestamp,
   yttpiProject           text    NOT NULL,
   yttpiNumber            Integer NOT NULL,
   yttpiState             text    NOT NULL,
@@ -602,8 +606,8 @@ CREATE TABLE yttpIssueDetails (
   yttpiInSmokeTest       Bool    NOT NULL,
   yttpiExecutiontime     Integer,
   yttpiTestResult        text,
-  yttpiTargetOS          text,
-  yttpiTestingType       text,
+--  yttpiTargetOS          text,
+--  yttpiTestingType       text,
 
   CONSTRAINT PKC_yttpIssueDetails PRIMARY KEY (yttpiIssueId),
   FOREIGN KEY (yttpiType) REFERENCES yttpTypeDomain (yttpTypeVal)
@@ -617,13 +621,38 @@ CREATE TABLE yttpIssueDetails (
   FOREIGN KEY (yttpiAutomationStatus) REFERENCES yttpAutomationStatusDomain (yttpAutomationStatusVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttpiTestResult) REFERENCES yttpTestResultDomain (yttpTestResultVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+--  FOREIGN KEY (yttpiTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
+--  ON DELETE RESTRICT ON UPDATE CASCADE,
+--  FOREIGN KEY (yttpiTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
+--  ON DELETE RESTRICT ON UPDATE CASCADE
+
+);
+
+CREATE TABLE yttpTargetOS (
+  yttpiIssueId  text NOT NULL,
+  yttpTargetOS text NOT NULL,
+
+  CONSTRAINT PKC_yttpTargetOS PRIMARY KEY (yttpiIssueId, yttpTargetOS),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (yttpiTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (yttpiTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
+  FOREIGN KEY (yttpTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 
 );
+
+
+CREATE TABLE yttpTestingType (
+  yttpiIssueId  text NOT NULL,
+  yttpTestingType text NOT NULL,
+
+  CONSTRAINT PKC_yttpTestingType PRIMARY KEY (yttpiIssueId, yttpTestingType),
+  FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (yttpTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 
 CREATE TABLE yttpAssignee (
   yttpiIssueId  text NOT NULL,
