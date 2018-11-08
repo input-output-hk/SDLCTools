@@ -18,6 +18,7 @@ import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
 import            Data.Time.Calendar
 
+import            Data.Time.Clock
 
 
 import Meas.Extract.Misc
@@ -26,7 +27,7 @@ import Meas.Extract.Types
 
 
 
-getStateTransitions :: Int -> [(Int, [ValueChange])] -> StateTransitions
+getStateTransitions :: UTCTime -> [(UTCTime, [ValueChange])] -> StateTransitions
 getStateTransitions createTime changes =
   waitingBacklog $ removeConstantTransitions $ L.sortOn fst stateChanges'
   where
@@ -38,11 +39,11 @@ getStateTransitions createTime changes =
     (_, os, _):_ ->
       -- we use the old state of the first transition to get the initial state.
       -- And we prefix with state=Backlog.
-      (createTime-1, Backlog) : (createTime, os) : L.map (\(t, _, ns) -> (t, ns)) stateChanges
+      (previousSecond createTime, Backlog) : (createTime, os) : L.map (\(t, _, ns) -> (t, ns)) stateChanges
   stateChanges = getStateChanges changes
 
 -- extract unique state changes
-getStateChanges :: [(Int, [ValueChange])] -> [(Int, StateValue, StateValue)]
+getStateChanges :: [(UTCTime, [ValueChange])] -> [(UTCTime, StateValue, StateValue)]
 getStateChanges changes = do
   (t, cgs) <- changes
   e <-  case catMaybes $ L.map getStateChange cgs of
@@ -62,7 +63,7 @@ The sequence of state transitions can be not complete.
 I.E
 ~Backlog -> Backlog -> InProgress -> ~Done
 -}
-waitingBacklog :: [(Int, StateValue)] -> StateTransitions
+waitingBacklog :: [(UTCTime, StateValue)] -> StateTransitions
 waitingBacklog [] = STIllegalStateTransitions
 waitingBacklog ((_, Neutral):rest) = waitingBacklog rest
 waitingBacklog ((t, Backlog):rest) = foundBacklog t rest
@@ -74,7 +75,7 @@ waitingBacklog ((t, Done):_) = STDone t t t t t
 
 -- Backlog is found, try to find Selected
 -- ignoring all backwards state transitions
-foundBacklog :: Int -> [(Int, StateValue)] -> StateTransitions
+foundBacklog :: UTCTime -> [(UTCTime, StateValue)] -> StateTransitions
 foundBacklog tBacklog [] = STBacklog tBacklog
 foundBacklog tBacklog ((_, Neutral):rest) = foundBacklog tBacklog rest
 foundBacklog tBacklog ((_, Backlog):rest) = foundBacklog tBacklog rest
@@ -86,7 +87,7 @@ foundBacklog tBacklog ((t, Done):_) = STDone tBacklog t t t t
 
 -- Selected is found, try to find WIP
 -- ignoring all backwards state transitions
-foundSelected :: Int -> Int -> [(Int, StateValue)] -> StateTransitions
+foundSelected :: UTCTime -> UTCTime -> [(UTCTime, StateValue)] -> StateTransitions
 foundSelected tBacklog tSelected [] = STSelected tBacklog tSelected
 foundSelected tBacklog tSelected ((_, Neutral):rest) = foundSelected tBacklog tSelected rest
 foundSelected tBacklog tSelected ((_, Backlog):rest) = foundSelected tBacklog tSelected rest
@@ -107,7 +108,7 @@ Transitions are sorted by ascending transition time.
 No 2 consecutive transitions have the same state.
 -}
 
-enterWip :: Int -> Int -> [(Int, StateValue)] -> StateTransitions
+enterWip :: UTCTime -> UTCTime -> [(UTCTime, StateValue)] -> StateTransitions
 enterWip _ _ [] = error "should not happen"
 enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   if isBacklogWhileInWip trs
@@ -119,22 +120,44 @@ enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   else
     case (rest1, timeInProgress, timeInReview, firstWipState) of
     -- Not Done state found
-    ([], 0, 0, InProgress)    -> STInProgress tBacklog tSelected tEnterWip
-    ([], 0, 0, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, 0, InProgress) -> STInProgress tBacklog tSelected tEnterWip
+    ([], 0, 0, Review)     -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], 0, _, InProgress)    -> STIllegalStateTransitions -- should never happen by construction
-    ([], 0, _, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, _, InProgress) -> STIllegalStateTransitions -- should never happen by construction
+    ([], 0, _, Review)     -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], tip, 0, _)           -> STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
+    ([], tip, 0, _)        -> STInReview tBacklog tSelected tEnterWip (addUTCTime tip tEnterWip)
 
    -- ([], _, _, Neutral)       -> STInProgress tBacklog tSelected tEnterWip
 
     ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
-
     -- At least one Done state found
-    ((_, Done):_, 0, 0, _)    -> STIllegalStateTransitions
-    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
+    ((_, Done):_, 0, 0, _)  -> STIllegalStateTransitions
+    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (addUTCTime tip tEnterWip) td
     _                         -> STIllegalStateTransitions
+
+--    -- At least one Done state found
+--    ((_, Done):_, tip, tir, _) | tip == defUTCTime && tir == defUTCTime  -> STIllegalStateTransitions
+--    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
+--    _                         -> STIllegalStateTransitions
+--
+--    ([], tip, tir, InProgress) | tip == defUTCTime && tir == defUTCTime -> STInProgress tBacklog tSelected tEnterWip
+--    ([], tip, tir , Review)    | tip == defUTCTime && tir == defUTCTime -> STInReview tBacklog tSelected tEnterWip tEnterWip
+--
+--    ([], tip, _, InProgress) | tip == defUTCTime -> STIllegalStateTransitions -- should never happen by construction
+--    ([], tip, _, Review)     | tip == defUTCTime -> STInReview tBacklog tSelected tEnterWip tEnterWip
+--
+--    ([], tip, tir, _) | tir == defUTCTime        -> STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
+--
+--   -- ([], _, _, Neutral)       -> STInProgress tBacklog tSelected tEnterWip
+--
+--    ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
+--
+--    -- At least one Done state found
+--    ((_, Done):_, tip, tir, _) | tip == defUTCTime && tir == defUTCTime  -> STIllegalStateTransitions
+--    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
+--    _                         -> STIllegalStateTransitions
+
 
   where
   -- keep all transitions until we find a Done transition
@@ -143,13 +166,13 @@ enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   trs2 = L.filter (\(_, s) -> s == InProgress || s == Review) trs1
   trs3 = if L.null rest1 then trs2 else trs2 ++ [L.head rest1]
   -- compute period between 2 consecutive transitions
-  trPeriods = L.zipWith (\(t0, s0) (t1, _) -> (t1-t0, s0)) trs3 $ L.tail trs3
+  trPeriods = L.zipWith (\(t0, s0) (t1, _) -> (diffUTCTime t1 t0, s0)) trs3 $ L.tail trs3
   -- sum periods where state = InProgress
   timeInProgress =  timeInState InProgress trPeriods
   timeInReview =  timeInState Review trPeriods
 
 -- Is there a backlog state (Backlog|Selected|Planning)
-isBacklogWhileInWip :: [(Int, StateValue)] -> Bool
+isBacklogWhileInWip :: [(UTCTime, StateValue)] -> Bool
 isBacklogWhileInWip =
   go
   where
@@ -164,7 +187,7 @@ isBacklogWhileInWip =
 When encountering 2 consecutive transitions with same State, remove the second.
 This guarantees that each transition has a original state different from the target state
 -}
-removeConstantTransitions :: Eq a => [(Int, a)] -> [(Int, a)]
+removeConstantTransitions :: Eq a => [(UTCTime, a)] -> [(UTCTime, a)]
 removeConstantTransitions trs =
   case trs of
   []  -> []
@@ -182,7 +205,7 @@ removeConstantTransitions trs =
 
 Sum the period of times when `state'` is active.
 -}
-timeInState :: Eq s => s -> [(Int, s)] -> Int
+timeInState :: Eq s => s -> [(NominalDiffTime, s)] -> NominalDiffTime
 timeInState state trPeriods = L.sum $ L.map fst $ L.filter (\(_, s) -> s == state) trPeriods
 
 --lastUpdatedTime :: [(Int, a)] -> Maybe Int
@@ -190,25 +213,25 @@ timeInState state trPeriods = L.sum $ L.map fst $ L.filter (\(_, s) -> s == stat
 --lastUpdatedTime changes = Just $ L.maximum $ L.map fst changes
 
 -- compute the age of the issue in its current state
-timeOfCurrentState :: Int ->  [(Int, [ValueChange])] -> Int
+timeOfCurrentState :: UTCTime ->  [(UTCTime, [ValueChange])] -> UTCTime
 timeOfCurrentState createdTime changes =
   L.last $ L.map fst stateChanges
   where
   stateChanges =  removeConstantTransitions $ L.sortOn fst ((createdTime, Backlog) : (L.map (\(t, _, ns) -> (t, ns)) $ getStateChanges changes))
 
-ageInCurrentState :: Day -> Int -> [(Int, [ValueChange])] -> Integer
+ageInCurrentState :: Day -> UTCTime -> [(UTCTime, [ValueChange])] -> Integer
 ageInCurrentState currentDay createdTime changes =
   diffDays currentDay dayCurrentState
   where
-  dayCurrentState = toDay $ timeOfCurrentState createdTime changes
+  dayCurrentState = utctDay $ timeOfCurrentState createdTime changes
 
 
 cycleTime :: Day -> StateTransitions -> Maybe Integer
 cycleTime _          (STBacklog _)              = Nothing
 cycleTime _          (STSelected _ _)           = Nothing
-cycleTime currentDay (STInProgress _ _ t)       = Just $ diffDays currentDay $ toDay t
-cycleTime currentDay (STInReview _ _ t _)       = Just $ diffDays currentDay $ toDay t
-cycleTime currentDay (STDone _ _ t _ _)         = Just $ diffDays currentDay $ toDay t
+cycleTime currentDay (STInProgress _ _ t)       = Just $ diffDays currentDay $ utctDay t
+cycleTime currentDay (STInReview _ _ t _)       = Just $ diffDays currentDay $ utctDay t
+cycleTime currentDay (STDone _ _ t _ _)         = Just $ diffDays currentDay $ utctDay t
 cycleTime _          STIllegalStateTransitions  = Nothing
 
 

@@ -21,11 +21,13 @@ import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
 import qualified  Data.Text as T
+import            Data.Time.Clock
 
 import            Network.HTTP.Simple as HTTP
 
 import            Text.XML.JSON.StreamingXmlToJson
 
+import            Meas.Extract.Misc
 import            Meas.Extract.Types
 import            Meas.YouTrack.Parser
 
@@ -96,7 +98,7 @@ allIssues authorization projectId query = do
     Right (GenericIssues gIssues) -> do
       return $ gIssues
 
-allChangesForIssue :: String -> T.Text -> IO [(Int, [ValueChange])]
+allChangesForIssue :: String -> T.Text -> IO [(UTCTime, [ValueChange])]
 allChangesForIssue authorization issueId = do
   jsonBs <- changesForIssueJson authorization issueId
   let (d :: Either String Hist) = eitherDecode jsonBs
@@ -110,7 +112,7 @@ Group changes by update (change) time. Sort the resulting list by asceding times
 Precondition:
 * each `[ValueChange]` contains one and only one `UpdateTime`.
 -}
-groupChanges :: [[ValueChange]] -> [(Int, [ValueChange])]
+groupChanges :: [[ValueChange]] -> [(UTCTime, [ValueChange])]
 groupChanges allChanges =
   L.sortOn fst $ L.map go allChanges
   where
@@ -118,7 +120,7 @@ groupChanges allChanges =
     case L.foldl proc (Nothing, []) l of
     (Just t, changes) -> (t, changes)
     _ -> error "Bad YouTrack changes"
-  proc (_, changes) (UpdateTime t) = (Just t, changes)
+  proc (_, changes) (UpdateTime t) = (Just (toUTCTime t), changes)
   proc (time, changes) change = (time, change:changes)
 
 

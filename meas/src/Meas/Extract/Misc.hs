@@ -23,21 +23,25 @@ import            Data.Time.Format
 
 import            Options.Applicative
 
-
-toDay :: Int -> Day
-toDay n = utctDay $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
-
+defUTCTime :: UTCTime
+defUTCTime = UTCTime (ModifiedJulianDay 0) 0
 
 
-intToDateText :: Int -> T.Text
-intToDateText n = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
+toUTCTime :: Int -> UTCTime
+toUTCTime n = posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
 
-intToStdDateText :: Int -> T.Text
-intToStdDateText n = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) $ posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
+previousSecond :: UTCTime -> UTCTime
+previousSecond t = addUTCTime  (-1) t
+
+intToDateText :: UTCTime -> T.Text
+intToDateText t = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" t
+
+
+utcTimeToStdDateText :: UTCTime -> T.Text
+utcTimeToStdDateText t = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) t
 
 dayToStdDateText :: Day -> T.Text
 dayToStdDateText d = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) d
-
 
 
 data Options = MkOptions {

@@ -563,6 +563,9 @@ insert into yttpTestingTypeDomain values
   , ('Component Test')
   , ('UX Test')
   , ('NFT');
+  , ('Unit Test');
+
+
 
 CREATE TABLE yttpBrowserVersionDomain (
   yttpBrowserVersionVal text,

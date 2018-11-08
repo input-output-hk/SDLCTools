@@ -53,7 +53,7 @@ instance ToNamedRecord TaskReport where
         , "Assignee-2"    .= a2
         , "Assignee-3"    .= a3
         , "Parent"        .= _yttParent
-        , "Last Updated"    .= (maybe T.empty intToStdDateText  _yttUpdated)
+        , "Last Updated"    .= (maybe T.empty utcTimeToStdDateText  _yttUpdated)
         ]
         where
         (a1:a2:a3:_) = _yttAssignees ++ L.repeat ""
@@ -100,8 +100,8 @@ instance ToNamedRecord IssueReport where
         , "Squad"           .= _ytiSquad
         , "Owner"           .= _ytiOwner
         , "Target Version"  .= tv
-        , "Due Date"        .= intToStdDateText _ytiDueDate
-        , "Last Updated"    .= (maybe T.empty intToStdDateText  _ytiUpdated)
+        , "Due Date"        .= utcTimeToStdDateText _ytiDueDate
+        , "Last Updated"    .= (maybe T.empty utcTimeToStdDateText  _ytiUpdated)
         ]
         where
         (tv:_) = _ytiTargetVersions ++ L.repeat ""

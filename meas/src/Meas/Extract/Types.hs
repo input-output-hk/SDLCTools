@@ -22,6 +22,7 @@ import qualified  Data.List as L
 import            Data.Text.Conversions
 import qualified  Data.Text as T
 
+import            Data.Time.Clock
 
 import            GHC.Generics (Generic)
 
@@ -112,11 +113,11 @@ data ValueChange =
 All possible histories of state transition for an issue.
 -}
 data StateTransitions =
-    STBacklog Int
-  | STSelected Int Int
-  | STInProgress Int Int Int
-  | STInReview Int Int Int Int
-  | STDone Int Int Int Int Int
+    STBacklog UTCTime
+  | STSelected UTCTime UTCTime
+  | STInProgress UTCTime UTCTime UTCTime
+  | STInReview UTCTime UTCTime UTCTime UTCTime
+  | STDone UTCTime UTCTime UTCTime UTCTime UTCTime
   | STIllegalStateTransitions
   deriving (Eq, Show, Generic, NFData)
 
@@ -125,13 +126,13 @@ data YtIssue = MkYtIssue
   , _ytiType              :: T.Text
   , _ytiSummary           :: T.Text
   , _ytiDescription       :: T.Text
-  , _ytiCreated           :: Int
-  , _ytiUpdated           :: Maybe Int
+  , _ytiCreated           :: UTCTime
+  , _ytiUpdated           :: Maybe UTCTime
   , _ytiProject           :: T.Text
   , _ytiNumber            :: Int
   , _ytiState             :: StateValue
   , _ytiWait              :: WaitValue
-  , _ytiDueDate           :: Int
+  , _ytiDueDate           :: UTCTime
   , _ytiROMManday         :: Maybe ROMMandaysValue
   , _ytiPPriorities       :: (Int, Int, Int)
   , _ytiSquad             :: Maybe T.Text
@@ -140,7 +141,7 @@ data YtIssue = MkYtIssue
   , _ytiTargetVersions    :: [T.Text]
   , _ytiResolution        :: ResolutionValue
   , _ytiLinks             :: [(LinkType, T.Text)]
-  , _ytiChanges           :: [(Int, [ValueChange])]
+  , _ytiChanges           :: [(UTCTime, [ValueChange])]
   , _ytiStateTransitions  :: StateTransitions
   , _ytiBlockedDays       :: Integer
   , _ytiErrors            :: [String]
@@ -151,7 +152,7 @@ makeLenses ''YtIssue
 
 defaultIssue :: YtIssue
 defaultIssue = MkYtIssue
-  T.empty T.empty T.empty T.empty 0 Nothing T.empty 0 Backlog Running 0 Nothing (0, 0, 0)
+  T.empty T.empty T.empty T.empty defUTCTime Nothing T.empty 0 Backlog Running defUTCTime Nothing (0, 0, 0)
   Nothing Nothing [] [] Successful [] [] STIllegalStateTransitions 0 []
 
 
@@ -159,8 +160,8 @@ data YtTask = MkYtTask
   { _yttTaskId            :: T.Text
   , _yttSummary           :: T.Text
   , _yttDescription       :: T.Text
-  , _yttCreated           :: Int
-  , _yttUpdated           :: Maybe Int
+  , _yttCreated           :: UTCTime
+  , _yttUpdated           :: Maybe UTCTime
   , _yttProject           :: T.Text
   , _yttNumber            :: Int
   , _yttState             :: StateValue
@@ -168,7 +169,7 @@ data YtTask = MkYtTask
   , _ytt3D                :: ThreeDValue
   , _yttAssignees         :: [T.Text]
   , _yttLinks             :: [(LinkType, T.Text)]
-  , _yttChanges           :: [(Int, [ValueChange])]
+  , _yttChanges           :: [(UTCTime, [ValueChange])]
   , _yttStateTransitions  :: StateTransitions
   , _yttBlockedDays       :: Integer
   , _yttParent            :: T.Text
@@ -179,7 +180,7 @@ data YtTask = MkYtTask
 makeLenses ''YtTask
 
 defaultTask :: YtTask
-defaultTask = MkYtTask T.empty T.empty T.empty 0 Nothing T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
+defaultTask = MkYtTask T.empty T.empty T.empty defUTCTime Nothing T.empty 0 Backlog Running Development [] [] [] STIllegalStateTransitions 0 T.empty []
 
 
 instance FromText StateValue where
@@ -225,7 +226,6 @@ instance FromText StateValue where
   fromText "Ready"                              = Selected
   fromText "Blocked"                            = Neutral
   fromText "Merged"                             = Done
-  fromText "Duplicate"                          = Done
   fromText "Cancel"                             = Done
 
   fromText s                                    = error $ ("Unknow State: "++T.unpack s)
@@ -317,7 +317,7 @@ instance Show IohksStateValue where
 
 
 
-getBacklogTime :: StateTransitions -> Maybe Int
+getBacklogTime :: StateTransitions -> Maybe UTCTime
 getBacklogTime (STBacklog t)              = Just t
 getBacklogTime (STSelected t _)           = Just t
 getBacklogTime (STInProgress t _ _)       = Just t
@@ -325,7 +325,7 @@ getBacklogTime (STInReview t _ _ _)       = Just t
 getBacklogTime (STDone t _ _ _ _)         = Just t
 getBacklogTime STIllegalStateTransitions  = Nothing
 
-getSelectedTime :: StateTransitions -> Maybe Int
+getSelectedTime :: StateTransitions -> Maybe UTCTime
 getSelectedTime (STBacklog _)             = Nothing
 getSelectedTime (STSelected _ t)          = Just t
 getSelectedTime (STInProgress _ t _)      = Just t
@@ -333,7 +333,7 @@ getSelectedTime (STInReview _ t _ _)      = Just t
 getSelectedTime (STDone _ t _ _ _)        = Just t
 getSelectedTime STIllegalStateTransitions = Nothing
 
-getInProgressTime :: StateTransitions -> Maybe Int
+getInProgressTime :: StateTransitions -> Maybe UTCTime
 getInProgressTime (STBacklog _)             = Nothing
 getInProgressTime (STSelected _ _)          = Nothing
 getInProgressTime (STInProgress _ _ t)      = Just t
@@ -341,7 +341,7 @@ getInProgressTime (STInReview _ _ t _)      = Just t
 getInProgressTime (STDone _ _ t _ _)        = Just t
 getInProgressTime STIllegalStateTransitions = Nothing
 
-getReviewTime :: StateTransitions -> Maybe Int
+getReviewTime :: StateTransitions -> Maybe UTCTime
 getReviewTime (STBacklog _)             = Nothing
 getReviewTime (STSelected _ _)          = Nothing
 getReviewTime (STInProgress _ _ _)      = Nothing
@@ -349,7 +349,7 @@ getReviewTime (STInReview _ _ _ t)      = Just t
 getReviewTime (STDone _ _ _ t _)        = Just t
 getReviewTime STIllegalStateTransitions = Nothing
 
-getDoneTime :: StateTransitions -> Maybe Int
+getDoneTime :: StateTransitions -> Maybe UTCTime
 getDoneTime (STBacklog _)             = Nothing
 getDoneTime (STSelected _ _)          = Nothing
 getDoneTime (STInProgress _ _ _)      = Nothing

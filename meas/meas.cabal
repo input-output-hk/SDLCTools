@@ -41,6 +41,7 @@ library
     , http-conduit
     , lens
     , optparse-applicative
+    , postgresql-simple
     , text
     , text-conversions
     , time

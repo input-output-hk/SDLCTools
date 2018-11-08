@@ -64,7 +64,7 @@ instance ToNamedRecord IohksReport where
       where
       iohksRecord = namedRecord
         [ "Iohks IssueId"             .= _ytIohksIssueId
-        , "Iohks Created"             .= intToStdDateText _ytIohksCreated
+        , "Iohks Created"             .= utcTimeToStdDateText _ytIohksCreated
         , "Iohks Summary"             .= _ytIohksSummary
         , "Iohks Description"         .= _ytIohksDescription
         , "Iohks State"               .= show _ytIohksState

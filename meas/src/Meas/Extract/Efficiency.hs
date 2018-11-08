@@ -16,7 +16,11 @@ where
 
 import qualified  Data.List as L
 import qualified  Data.Set as S
+
 import            Data.Time.Calendar
+import            Data.Time.Clock
+import            Data.Time.Clock.POSIX
+import            Data.Time.Format
 
 import Meas.Extract.Misc
 import Meas.Extract.Types
@@ -29,13 +33,13 @@ Everytime a change occurs at a given update time t, we consider the issue has be
 during the period [day-n, day] where day corresponds to the update time.
 
 -}
-getBlockedDays :: Day -> Integer -> StateTransitions -> [(Int, [ValueChange])] -> Integer
+getBlockedDays :: Day -> Integer -> StateTransitions -> [(UTCTime, [ValueChange])] -> Integer
 getBlockedDays currentDay nDays stateTransitions changes =
   max nbBlockedDays 0
   where
   (tipDay, tdDay) = getWipPeriod currentDay stateTransitions
   wipDays = diffDays tdDay tipDay
-  updateDays = L.map (toDay . fst) changes
+  updateDays = L.map (utctDay . fst) changes
   wipUpdateDays = L.filter (\t -> tipDay <= t && t <= tdDay) updateDays
   touchedDays = S.fromList $ do
     day <- wipUpdateDays
@@ -43,25 +47,25 @@ getBlockedDays currentDay nDays stateTransitions changes =
   nbBlockedDays = wipDays - fromIntegral (S.size touchedDays)
 
 getWipPeriod :: Day -> StateTransitions -> (Day, Day)
-getWipPeriod _          (STBacklog _)             = (toDay 0, toDay 0)
-getWipPeriod _          (STSelected _ _)          = (toDay 0, toDay 0)
-getWipPeriod currentDay (STInProgress _ _ tip)    = (toDay tip, currentDay)
-getWipPeriod currentDay (STInReview _ _ tip _)    = (toDay tip, currentDay)
-getWipPeriod _          (STDone _ _ tip _ td)     = (toDay tip, toDay td)
-getWipPeriod _          STIllegalStateTransitions = (toDay 0, toDay 0)
+getWipPeriod _          (STBacklog _)             = (utctDay defUTCTime, utctDay defUTCTime)
+getWipPeriod _          (STSelected _ _)          = (utctDay defUTCTime, utctDay defUTCTime)
+getWipPeriod currentDay (STInProgress _ _ tip)    = (utctDay tip, currentDay)
+getWipPeriod currentDay (STInReview _ _ tip _)    = (utctDay tip, currentDay)
+getWipPeriod _          (STDone _ _ tip _ td)     = (utctDay tip, utctDay td)
+getWipPeriod _          STIllegalStateTransitions = (utctDay defUTCTime, utctDay defUTCTime)
 
 
 {-
 Given a period of time, compute the set of touched days while the issue is in WIP.
 -}
 
-touchedDaysInPeriod :: Day -> Integer -> (Day, Day) -> StateTransitions -> [(Int, [ValueChange])] -> S.Set Day
+touchedDaysInPeriod :: Day -> Integer -> (Day, Day) -> StateTransitions -> [(UTCTime, [ValueChange])] -> S.Set Day
 touchedDaysInPeriod currentDay nDays (startPeriod, endPeriod) stateTransitions changes =
   touchedDays
   where
   (tipDay, tdDay) = getWipPeriod currentDay stateTransitions
   (tipDay', tdDay') = (max tipDay startPeriod, min tdDay endPeriod)
-  updateDays = L.map (toDay . fst) changes
+  updateDays = L.map (utctDay . fst) changes
   wipUpdateDays = L.filter (\t -> tipDay' <= t && t <= tdDay') updateDays
   touchedDays = S.fromList $ do
     day <- wipUpdateDays

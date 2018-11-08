@@ -18,11 +18,13 @@ import            Control.DeepSeq
 import            Control.Lens hiding (element, (.=))
 
 import qualified  Data.Text as T
+import            Data.Time.Clock
 
 
 import            GHC.Generics (Generic)
 
 import Meas.Extract.Types
+import Meas.Extract.Misc
 
 
 
@@ -30,7 +32,7 @@ data YtIohksIssue = MkYtIohksIssue
   { _ytIohksIssueId          :: T.Text
   , _ytIohksSummary          :: T.Text
   , _ytIohksDescription      :: T.Text
-  , _ytIohksCreated          :: Int
+  , _ytIohksCreated          :: UTCTime
   , _ytIohksProject          :: T.Text
   , _ytIohksNumber           :: Int
   , _ytIohksState            :: IohksStateValue
@@ -53,7 +55,7 @@ makeLenses ''YtIohksIssue
 
 defaultIohksIssue :: YtIohksIssue
 defaultIohksIssue = MkYtIohksIssue
-  T.empty T.empty T.empty 0 T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] [] Nothing
+  T.empty T.empty T.empty defUTCTime T.empty 0 IohksSubmitted Normal [] T.empty [] [] T.empty T.empty T.empty [] [] [] Nothing
 
 
 
