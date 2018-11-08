@@ -60,6 +60,8 @@ instance ToField TestingType where
   toField ComponentTest     = toField ("Component Test"::String)
   toField UXTest            = toField ("UX Test"::String)
   toField NFT               = toField ("NFT"::String)
+  toField UnitTest          = toField ("Unit Test"::String)
+
 
 
 instance ToField BrowserVersion where

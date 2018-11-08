@@ -35,8 +35,8 @@ run auth pName = do
   print issues
 
 doit =  do
-  issues <- allIssuesForProjectJson  "your key here"
-              "DT"
+  issues <- allIssuesForProjectJson  "your key"
+              "CST" -- "DT"
               "sort by: {issue id}"
               --"issue id: DT-278  sort by: {issue id} "
   conn <- connectPostgreSQL "host=localhost port=5432 dbname=sdlc_db user=postgres"

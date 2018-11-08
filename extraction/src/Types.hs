@@ -100,6 +100,7 @@ data TestingType =
   |ComponentTest
   |UXTest
   |NFT
+  |UnitTest
   deriving (Show, Eq, Generic)
 
 data BrowserVersion =
@@ -375,6 +376,7 @@ pTestingType = withObject "Testing Type" $ \o -> do
     "Component Test"   -> ComponentTest
     "UX Test"          -> UXTest
     "NFT"              -> NFT
+    "Unit Test"        -> UnitTest
 
 
 pBrowserAndVersion :: Value -> Parser YTField
