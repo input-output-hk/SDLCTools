@@ -109,6 +109,14 @@ data BrowserVersion =
   |GoogleChrome69
   deriving (Show, Eq, Generic)
 
+data Link = MkLink
+  { lValue :: Text
+  , lType  :: Text
+  , lRole  :: Text
+  }
+  deriving (Show, Eq, Generic)
+
+
 data YttpIssue = MkYttpIssue
   { _yttpiIssueId           :: Text
   , _yttpiType              :: TypeVal
@@ -132,7 +140,8 @@ data YttpIssue = MkYttpIssue
   , _yttpiTestResult        :: Maybe TestResult
   , _yttpiTargetOS          :: [TargetOS]
   , _yttpiTestingType       :: [TestingType]
-  , _ytttpBrowserVersion    :: [BrowserVersion]
+  , _yttpBrowserVersion     :: [BrowserVersion]
+  , _yttpLinks              :: [Link]
   }
   deriving (Show, Eq, Generic)
 
@@ -174,6 +183,7 @@ data YTField =
   | F20 [TargetOS]
   | F21 [TestingType]
   | F22 [BrowserVersion]
+  | F23 [Link]
   | NotRequired
   deriving (Eq, Show, Generic)
 
@@ -207,6 +217,7 @@ pYTField o@(Object oo) = do
         "Target OS"              -> pTargetOS o
         "Testing Type"           -> pTestingType o
         "Browser and Version"    -> pBrowserAndVersion o
+        "links"                  -> pLinks o
         _ -> pure NotRequired
 
 
@@ -390,6 +401,19 @@ pBrowserAndVersion  = withObject "Browser and Version" $ \o -> do
       "Opera 55"         -> Opera55
       "Google Chrome 69" -> GoogleChrome69
 
+pLinks :: Value -> Parser YTField
+pLinks = withObject "links" $ \o -> do
+  values <- o .: "value" :: Parser [Value]
+  links <- sequence $  toLink <$> values
+  return $ F23 links
+  where
+    toLink :: Value -> Parser Link
+    toLink = withObject "link" $ \obj -> do
+      lValue <- obj .: "value"
+      lType  <- obj .: "type"
+      lRole  <- obj .: "role"
+      return MkLink{..}
+
 
 instance FromJSON YttpIssue where
   parseJSON = withObject "sdsdsd" $ \yttpIssue -> do
@@ -422,7 +446,8 @@ modifyYttpIssue (name,field) = case (name, field) of
   ("Test Result"           , F19 val )  -> yttpiTestResult        .~ val
   ("Target OS"             , F20 val )  -> yttpiTargetOS          .~ val
   ("Testing Type"          , F21 val )  -> yttpiTestingType       .~ val
-  ("Browser and Version"   , F22 val )  -> ytttpBrowserVersion    .~ val
+  ("Browser and Version"   , F22 val )  -> yttpBrowserVersion     .~ val
+  ("links"                 , F23 val )  -> yttpLinks              .~ val
   _                                     -> id
 
 dummyYttpIssue :: YttpIssue
@@ -447,6 +472,7 @@ dummyYttpIssue = MkYttpIssue
   []
   []
   Nothing
+  []
   []
   []
   []

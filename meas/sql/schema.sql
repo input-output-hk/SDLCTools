@@ -606,8 +606,6 @@ CREATE TABLE yttpIssueDetails (
   yttpiInSmokeTest       Bool    NOT NULL,
   yttpiExecutiontime     Integer,
   yttpiTestResult        text,
---  yttpiTargetOS          text,
---  yttpiTestingType       text,
 
   CONSTRAINT PKC_yttpIssueDetails PRIMARY KEY (yttpiIssueId),
   FOREIGN KEY (yttpiType) REFERENCES yttpTypeDomain (yttpTypeVal)
@@ -622,10 +620,6 @@ CREATE TABLE yttpIssueDetails (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttpiTestResult) REFERENCES yttpTestResultDomain (yttpTestResultVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
---  FOREIGN KEY (yttpiTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
---  ON DELETE RESTRICT ON UPDATE CASCADE,
---  FOREIGN KEY (yttpiTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
---  ON DELETE RESTRICT ON UPDATE CASCADE
 
 );
 
@@ -715,7 +709,9 @@ CREATE TABLE yttpBrowserAndVersions (
 
 CREATE TABLE yttpLinks (
   yttpiIssueId  text NOT NULL,
-  yttpLinkedTicketId text NOT NULL,
+  yttpLinkedTicketId   text NOT NULL,
+  yttpLinkedObjectType text NOT NULL,
+  yttpLinkRole         text NOT NULL,
 
   CONSTRAINT PKC_yttpLinks PRIMARY KEY (yttpiIssueId, yttpLinkedTicketId),
   FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)

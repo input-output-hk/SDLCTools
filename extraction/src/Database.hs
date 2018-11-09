@@ -69,7 +69,8 @@ instance ToField BrowserVersion where
   toField Opera55         = toField ("Opera 55"::String)
   toField GoogleChrome69  = toField ("Google Chrome 69"::String)
 
-
+instance ToRow Link where
+  toRow (MkLink lv lt lr) = toRow (toField $ show lv, toField $ show lt , toField $ show lr)
 
 -- REM : strange these instances should be imported from Database.PostgreSQL.Simple.ToRow ... But does not work
 
@@ -111,13 +112,14 @@ saveTestProjectIssue conn issue@MkYttpIssue{..} = do
         )
   execute conn stmt q
 
-  saveTargetOs conn issue
-  saveTestingType conn issue
-  savePassedInVersions conn issue
-  saveFailedInVersions conn issue
+  saveTargetOs          conn issue
+  saveTestingType       conn issue
+  savePassedInVersions  conn issue
+  saveFailedInVersions  conn issue
   saveBlockedInVersions conn issue
   saveCoveredComponents conn issue
-  saveBrowserVersion conn issue
+  saveBrowserVersion    conn issue
+  saveLinks             conn issue
 
   return ()
 
@@ -192,10 +194,18 @@ saveCoveredComponents conn MkYttpIssue{..} = do
 
 saveBrowserVersion :: Connection -> YttpIssue -> IO ()
 saveBrowserVersion conn MkYttpIssue{..} = do
-  mapM_ saveOne _ytttpBrowserVersion
+  mapM_ saveOne _yttpBrowserVersion
   where
   saveOne version = do
     let q = ( _yttpiIssueId, version)
     execute conn stmt q
   stmt = "insert into yttpBrowserAndVersions (yttpiIssueId, yttpBrowserVersionVal) values (?, ?)"
 
+saveLinks :: Connection -> YttpIssue -> IO ()
+saveLinks conn MkYttpIssue{..} = do
+  mapM_ saveOne _yttpLinks
+  where
+  saveOne MkLink{..} = do
+    let q = ( _yttpiIssueId, lValue, lType, lRole)
+    execute conn stmt q
+  stmt = "insert into yttpLinks (yttpiIssueId, yttpLinkedTicketId, yttpLinkedObjectType, yttpLinkRole) values (?, ?, ?, ?)"
