@@ -45,7 +45,7 @@ dayToStdDateText d = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat N
 
 
 data Options = MkOptions {
-  optAuth :: String
+  optConfigFile :: String
   }
   deriving (Show)
 
@@ -53,9 +53,10 @@ optionParser :: Parser Options
 optionParser =
   MkOptions
         <$> strOption (
-              long "authorization"
-              <> short 'a'
-              <> (help "YouTrack authorization"))
+              long "config"
+              <> value "config.yml"
+              <> short 'c'
+              <> (help "Config file name"))
 
 -- | Parse command line options
 parseCliArgs :: IO Options

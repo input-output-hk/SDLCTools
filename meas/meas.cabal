@@ -47,9 +47,11 @@ library
     , time
     , vector
     , xml-to-json-fast
+    , yaml
   exposed-modules:
       Meas
       Meas.Breakdown
+      Meas.Extract.Config
       Meas.Extract.Database
       Meas.Extract.Efficiency
       Meas.Extract.Iohks.Extractor

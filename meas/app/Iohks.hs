@@ -18,13 +18,16 @@ import            Data.Time.Clock
 
 import Meas.Extract.Iohks.Extractor
 import Meas.Extract.Iohks.Report
+import Meas.Extract.Config
 import Meas.Extract.Misc
+
 
 
 main :: IO ()
 main = do
-  MkOptions {..} <- parseCliArgs
-  run optAuth
+  (MkOptions {..}) <- parseCliArgs
+  (cfg::Config) <- readConfig optConfigFile
+  run (cfg_yt_key cfg)
 
 
 run :: String -> IO ()

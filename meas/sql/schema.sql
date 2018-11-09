@@ -20,17 +20,6 @@ insert into priorityDomain values
   , ('Normal')
   , ('Minor');
 
-CREATE TABLE iohksStateDomain (
-  iohksStateVal text,
-
-  CONSTRAINT PKC_iohksStateDomain PRIMARY KEY (iohksStateVal)
-);
-
-insert into iohksStateDomain values
-    ('IohksSubmitted')
-  , ('IohksReadyToSolve')
-  , ('IohksFixed')
-  , ('IohksDone');
 
 CREATE TABLE stateDomain (
   stateVal text,
@@ -144,79 +133,9 @@ CREATE TABLE developers (
   CONSTRAINT PKC_developers PRIMARY KEY (developerName)
 );
 
-/*
-squadId: we use text to identify squads
-dk : fixed ^^
-squadSize : duplicate information: we can get it from squadDetails
-dk : fixed ^^
-
-What to do in case of a 1 person squad:
-squadLead should be there and then we have to decide whether or not adding him as a squad member.
-It a subjective choice.
-But if we do, then we have to ensure, via a constraint, that the squad lead is a squad member as well.
-
-dk : yes, indeed we have to check this constraint but for now I'm leaving it considering this can be tested
-     with a ON INSERT trigger or sth else later.
-*/
-
-CREATE TABLE squads (
-  squadId   text NOT NULL,
-  squadLead text NOT NULL,
-
-  CONSTRAINT PKC_squads PRIMARY KEY (squadId),
-  FOREIGN KEY (squadLead) REFERENCES developers (developerName)
-  ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-CREATE TABLE squadDetails (
-  squadId     text NOT NULL,
-  squadMember text NOT NULL,
-
-  CONSTRAINT PKC_squadDetails PRIMARY KEY (squadId,squadMember),
-  FOREIGN KEY (squadId) REFERENCES squads (squadId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (squadMember) REFERENCES developers (developerName)
-  ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-/*
-There is a alternative model here, which is more RM in my opinion.
-dk : fixed ^^
- */
 
 
-/*
-The associate predicate is then (see the book: Database in Depth)
 
-The developer {developerName} is/was assigned to task identified by {yttTaskId}
-dk : didn't get it (btw I haven't bought the book yet) ^^ .
-
-Generic type is a temprorary data structure used in the code, not sure it should be in the DB.
-dk : yes its not necessary, I created this table with the view that this can be used to have a
-     collective store for all valid YT tickets. well removed for now.
-
-target versions is a multi-valued field in YT.
-This is non-sense and should be modified in YT.
-But you could not really know
-So, for the sake of simplicity, we can make it a single-valued field.
-dk : seems okay for now.
-*/
-
-/*
-CREATE TABLE targetVersionDomain (
-  targetVersion text NOT NULL,
-
-  CONSTRAINT PKC_targetVersionDomain PRIMARY KEY (targetVersion)
-);
-*/
-
-/*
-CREATE TABLE aux_targetVersionGroups (
-  targetVersionGroupId Integer NOT NULL,
-
-  CONSTRAINT PKC_targetVersionGroups PRIMARY KEY (targetVersionGroupId)
-);
-*/
 
 CREATE TABLE tickets (
   ticketId   text NOT NULL,
@@ -243,31 +162,6 @@ CREATE TABLE links (
 );
 
 
-/*
-1) Here also : more idiomatic solution which does not use a 'group'. Groups are ok if they  have a) an independent
-existence or b) we need to express FKs between table and views (sth SQL does not accept).
-dk : fixed ^^
-
-2) the Changes tables mixes 2 concepts: changes of State and change of Wait. The general rule is that
-a table only captures 1 and only 1 concept and a concept is captured by just 1 and only 1 table.
-dk : fixed ^^
-
-A more idiomatic solution could be :
-
-table IssueStateChange
-(
-  issueId   -- FK to issue table
-  updateTime
-  updater       -- FK to dev
-  oldStateVal text,  -- FK to stateDomain table etc
-  newStateVal text
-)
-
-The predicate is:
-
-At time {updateTime}, the value of the state field of the issue {issueId} has transitioned from
-{oldStateVal} to {newStateVal} and the change was done by {updater}
-*/
 
 CREATE TABLE issueStateChanges (
   issueId     text    NOT NULL,
@@ -318,26 +212,6 @@ insert into stateTransitionDomain values
   , ('Done')
   , ('IllegalStateTransitions');
 
-/*
-
-data StateTransitions =
-    STBacklog Int
-  | STSelected Int Int
-  | STInProgress Int Int Int
-  | STInReview Int Int Int Int
-  | STDone Int Int Int Int Int
-  | STIllegalStateTransitions
-
-  This data type is hard to model in RM.
-
-  I think you have found the right way to do it.
-
-But we have to clear about the predicate as the meaning of the ***Time attributes depends
-on the value of stateTransition
-
-BTW: in this case, it makes sense to have a reference from  issue/task to stateTransitions
-Thus ok for the surrogate key stateTransitionId
-*/
 
 CREATE TABLE stateTransitions (
   stateTransitionId    text    NOT NULL,
@@ -352,22 +226,6 @@ CREATE TABLE stateTransitions (
   FOREIGN KEY (stateTransitionVal) REFERENCES stateTransitionDomain (stateTransitionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
-
-/*
-Not sure we have to report errors in the DB.
-If there are errors, the importer (code) can report them on the screen.
-No need to complexify the DB here
-Or just use a simple text field to store the error.
-
-dk : ok fine, removed errors.
-
-And another question : if an error occurs for an issue, then we simply do not have any info about it.
-So if we have to store errors, it should be at the level of the super entiry (Ticket, see above).
-dk : no errors no problems.
-
-Optional: We might want to drop priority fields: no one uses them.
-dk : ok fixed
-*/
 
 
 
@@ -402,8 +260,6 @@ CREATE TABLE ytIssueDetails (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (ytiResolution) REFERENCES resolutionDomain (resolutionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
---  FOREIGN KEY (ytiSquadId) REFERENCES squads (squadId)
---  ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (ytiIssueId) REFERENCES stateTransitions (stateTransitionId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -415,8 +271,6 @@ CREATE TABLE targetVersion (
   CONSTRAINT PKC_targetVersion PRIMARY KEY (ytiIssueId, targetVersion),
   FOREIGN KEY (ytiIssueId) REFERENCES ytIssueDetails (ytiIssueId)
   ON DELETE RESTRICT ON UPDATE CASCADE
---  FOREIGN KEY (targetVersion) REFERENCES targetVersionDomain (targetVersion)
---  ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 
@@ -454,8 +308,6 @@ CREATE TABLE TaskAssignee (
   CONSTRAINT PKC_TaskAssignee PRIMARY KEY (yttTaskId, developerName),
   FOREIGN KEY (yttTaskId) REFERENCES ytTaskDetails (yttTaskId)
   ON DELETE RESTRICT ON UPDATE CASCADE
---  FOREIGN KEY (developerName) REFERENCES developers (developerName)
---  ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tables specific for Testing Projects :-
@@ -613,8 +465,6 @@ CREATE TABLE yttpIssueDetails (
   yttpiInSmokeTest       Bool    NOT NULL,
   yttpiExecutiontime     Integer,
   yttpiTestResult        text,
---  yttpiTargetOS          text,
---  yttpiTestingType       text,
 
   CONSTRAINT PKC_yttpIssueDetails PRIMARY KEY (yttpiIssueId),
   FOREIGN KEY (yttpiType) REFERENCES yttpTypeDomain (yttpTypeVal)
@@ -629,10 +479,6 @@ CREATE TABLE yttpIssueDetails (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttpiTestResult) REFERENCES yttpTestResultDomain (yttpTestResultVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
---  FOREIGN KEY (yttpiTargetOS) REFERENCES yttpTargetOSDomain (yttpTargetOSVal)
---  ON DELETE RESTRICT ON UPDATE CASCADE,
---  FOREIGN KEY (yttpiTestingType) REFERENCES yttpTestingTypeDomain (yttpTestingTypeVal)
---  ON DELETE RESTRICT ON UPDATE CASCADE
 
 );
 
@@ -722,7 +568,9 @@ CREATE TABLE yttpBrowserAndVersions (
 
 CREATE TABLE yttpLinks (
   yttpiIssueId  text NOT NULL,
-  yttpLinkedTicketId text NOT NULL,
+  yttpLinkedTicketId   text NOT NULL,
+  yttpLinkedObjectType text NOT NULL,
+  yttpLinkRole         text NOT NULL,
 
   CONSTRAINT PKC_yttpLinks PRIMARY KEY (yttpiIssueId, yttpLinkedTicketId),
   FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)

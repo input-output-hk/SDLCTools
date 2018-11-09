@@ -12,12 +12,13 @@
 --import Debug.Trace(trace)
 
 import qualified  Data.ByteString.Lazy as LBS
+import qualified  Data.ByteString as BS
 import qualified  Data.Csv as CSV
 import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
 import            Data.Time.Calendar
 import            Data.Time.Clock
-
+import            Data.String
 import            Database.PostgreSQL.Simple
 
 import Meas.Breakdown
@@ -26,18 +27,21 @@ import Meas.Extractor
 import Meas.Extract.Database
 import Meas.Extract.Misc
 import Meas.Extract.Report
+import Meas.Extract.Config
 
 
 main :: IO ()
 main = do
   (MkOptions {..}) <- parseCliArgs
-  run optAuth
+  cfg <- readConfig optConfigFile
+  print cfg
+  run cfg
 
 
-run :: String -> IO ()
-run authorization = do
-  res <- getAll authorization
-          [
+run :: Config -> IO ()
+run cfg@MkConfig{..} = do
+  res <- getAll cfg_yt_key cfgDevPrj
+--          [
           --  ("CBR", "Type:Task sort by: {issue id} asc")
           --  ("CBR", "Type:{User Story} #Bug #Task sort by: {issue id} asc")
 --    ("CE", "Type:Task #{User Story} sort by: {issue id} asc")
@@ -47,7 +51,7 @@ run authorization = do
            -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
 
       --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
-         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+    --     ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 --         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           --   ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           -- ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} desc")
@@ -66,7 +70,7 @@ run authorization = do
 --          , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 --          , ("QA", "Type:Task sort by: {issue id} asc")
 
-          ]
+--          ]
 
   let allTasks = do
         (_, tasks, _) <- res
@@ -120,14 +124,13 @@ run authorization = do
   LBS.appendFile  "breakdown-by-tasks.csv" bdsLBS
 
   -- Save in database
-  conn <- connectPostgreSQL "host=localhost port=5432 dbname=sdlc_db user=postgres"
+  conn <- connectPostgreSQL (connectionString cfg) --"host=localhost port=5432 dbname=sdlc_db user=postgres"
 
   -- save issues
   mapM_ (saveIssue conn) goodIssues
 
   -- save tasks
   mapM_ (saveTask conn) goodTasks
-
 
   return ()
 
@@ -136,9 +139,10 @@ run authorization = do
 
 --fromGregorian :: Integer -> Int -> Int -> Day
 
-
-
-
+connectionString :: Config -> BS.ByteString
+connectionString MkConfig{..} =
+  fromString ("host=" ++ cfg_db_host ++ "port=" ++ show cfg_db_port ++ "dbname="
+  ++ cfg_db_name ++ "user=" ++ cfg_db_user ++ "password=" ++ cfg_db_pwd)
 
 
 
