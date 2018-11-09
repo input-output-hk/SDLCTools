@@ -18,10 +18,12 @@ import qualified  Data.Map.Strict as M
 import            Data.Time.Calendar
 import            Data.Time.Clock
 
+import            Database.PostgreSQL.Simple
 
 import Meas.Breakdown
 import Meas.Extract.Types
 import Meas.Extractor
+import Meas.Extract.Database
 import Meas.Extract.Misc
 import Meas.Extract.Report
 
@@ -36,20 +38,22 @@ run :: String -> IO ()
 run authorization = do
   res <- getAll authorization
           [
+          --  ("CBR", "Type:Task sort by: {issue id} asc")
+          --  ("CBR", "Type:{User Story} #Bug #Task sort by: {issue id} asc")
 --    ("CE", "Type:Task #{User Story} sort by: {issue id} asc")
-      ("GMC", "Type: {User Story} #Bug #Task sort by: {issue id} asc")
+--      ("GMC", "Type: {User Story} #Bug #Task sort by: {issue id} asc")
 
-            --("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          --  ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
            -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
 
       --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
---         ("DDW", "issue id: DDW-10")
+         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 --         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           --   ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
           -- ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} desc")
          --            ("CO", "issue id: CO-14")
 
-       --    ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--            ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 
 --          ("CSM", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
 --          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
@@ -114,6 +118,16 @@ run authorization = do
   let bdsLBS = CSV.encodeByName defaultBreakdownHeader bds
   LBS.writeFile   "breakdown-by-tasks.csv" LBS.empty
   LBS.appendFile  "breakdown-by-tasks.csv" bdsLBS
+
+  -- Save in database
+  conn <- connectPostgreSQL "host=localhost port=5432 dbname=sdlc_db user=postgres"
+
+  -- save issues
+  mapM_ (saveIssue conn) goodIssues
+
+  -- save tasks
+  mapM_ (saveTask conn) goodTasks
+
 
   return ()
 

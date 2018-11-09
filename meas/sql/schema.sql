@@ -44,7 +44,8 @@ insert into stateDomain values
   , ('Selected')
   , ('InProgress')
   , ('Review')
-  , ('Done');
+  , ('Done')
+  , ('Neutral');
 
 CREATE TABLE waitDomain (
   waitVal text,
@@ -63,10 +64,11 @@ CREATE TABLE typeDomain (
 );
 
 insert into typeDomain values
-    ('TaskType')
-  , ('IssueType')
+    ('Task')
+  , ('User Story')
+  , ('Bug')
   , ('TestCase')
-  , ('OtherType');
+  , ('Other');
 
 CREATE TABLE threeDDomain (
   threeDVal text,
@@ -119,7 +121,9 @@ insert into linkTypeDomain values
   , ('Duplicates')
   , ('RelatesTo')
   , ('IsDuplicatedBy')
-  , ('IsRequiredFor');
+  , ('IsRequiredFor')
+  , ('TestedBy');
+
 
 CREATE TABLE valueChangeTypeDomain (
   valueChangeType text,
@@ -198,34 +202,28 @@ So, for the sake of simplicity, we can make it a single-valued field.
 dk : seems okay for now.
 */
 
+/*
 CREATE TABLE targetVersionDomain (
   targetVersion text NOT NULL,
 
   CONSTRAINT PKC_targetVersionDomain PRIMARY KEY (targetVersion)
 );
+*/
 
+/*
 CREATE TABLE aux_targetVersionGroups (
   targetVersionGroupId Integer NOT NULL,
 
   CONSTRAINT PKC_targetVersionGroups PRIMARY KEY (targetVersionGroupId)
 );
-
-CREATE TABLE targetVersionGroupDetails (
-  targetVersionGroupId Integer NOT NULL,
-  targetVersion        text    NOT NULL,
-
-  CONSTRAINT PKC_targetVersionGroupDetails PRIMARY KEY (targetVersionGroupId, targetVersion),
-  FOREIGN KEY (targetVersionGroupId) REFERENCES aux_targetVersionGroups (targetVersionGroupId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (targetVersion) REFERENCES targetVersionDomain (targetVersion)
-  ON DELETE RESTRICT ON UPDATE CASCADE
-);
+*/
 
 CREATE TABLE tickets (
   ticketId   text NOT NULL,
   ticketType text NOT NULL,
 
   CONSTRAINT PKC_ticketId PRIMARY KEY (ticketId),
+  UNIQUE (ticketId, ticketType),
   FOREIGN KEY (ticketType) REFERENCES typeDomain (typeVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -313,12 +311,12 @@ CREATE TABLE stateTransitionDomain (
 );
 
 insert into stateTransitionDomain values
-    ('STBacklog')
-  , ('STSelected')
-  , ('STInProgress')
-  , ('STInReview')
-  , ('STDone')
-  , ('STIllegalStateTransitions');
+    ('Backlog')
+  , ('Selected')
+  , ('InProgress')
+  , ('InReview')
+  , ('Done')
+  , ('IllegalStateTransitions');
 
 /*
 
@@ -342,18 +340,15 @@ Thus ok for the surrogate key stateTransitionId
 */
 
 CREATE TABLE stateTransitions (
-  stateTransitionId    Integer NOT NULL,
-  ticketId             text    NOT NULL,
-  stateTransitionVal text    NOT NULL,
-  backlogTime          Integer,
-  selectedTime         Integer,
-  progressStartTime    Integer,
-  reviewStartTime      Integer,
-  doneTime             Integer,
+  stateTransitionId    text    NOT NULL,
+  stateTransitionVal   text    NOT NULL,
+  backlogTime          timestamp,
+  selectedTime         timestamp,
+  progressStartTime    timestamp,
+  reviewStartTime      timestamp,
+  doneTime             timestamp,
 
   CONSTRAINT PKC_stateTransitions PRIMARY KEY (stateTransitionId),
-  FOREIGN KEY (ticketId) REFERENCES tickets (ticketId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (stateTransitionVal) REFERENCES stateTransitionDomain (stateTransitionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -381,23 +376,21 @@ CREATE TABLE ytIssueDetails (
   ytiType                 text    NOT NULL,
   ytiSummary              text    NOT NULL,
   ytiDescription          text    NOT NULL,
-  ytiCreated              Integer NOT NULL,
-  ytiUpdatedAt            Integer,
+  ytiCreated              timestamp NOT NULL,
+  ytiUpdatedAt            timestamp,
   ytiProject              text    NOT NULL,
   ytiNumber               Integer NOT NULL,
   ytiState                text    NOT NULL,
   ytiWait                 text    NOT NULL,
-  ytiDueDate              Integer NOT NULL,
+  ytiDueDate              timestamp NOT NULL,
   ytiROMManDay            text,
-  ytiSquadId              text,
-  ytiTargetVersionGroupId Integer,
+  ytiSquad                text,
   ytiOwner                text,
   ytiResolution           text    NOT NULL,
-  ytiStateTransitionId    Integer NOT NULL,
   ytiBlockedDays          Integer NOT NULL,
 
   CONSTRAINT PKC_YtIssueDetails PRIMARY KEY (ytiIssueId),
-  FOREIGN KEY (ytiIssueId) REFERENCES tickets (ticketId)
+  FOREIGN KEY (ytiIssueId, ytiType) REFERENCES tickets (ticketId, ticketType)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (ytiType) REFERENCES typeDomain (typeVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -409,37 +402,48 @@ CREATE TABLE ytIssueDetails (
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (ytiResolution) REFERENCES resolutionDomain (resolutionVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiSquadId) REFERENCES squads (squadId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiTargetVersionGroupId) REFERENCES aux_targetVersionGroups (targetVersionGroupId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (ytiStateTransitionId) REFERENCES stateTransitions (stateTransitionId)
+--  FOREIGN KEY (ytiSquadId) REFERENCES squads (squadId)
+--  ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ytiIssueId) REFERENCES stateTransitions (stateTransitionId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+CREATE TABLE targetVersion (
+  ytiIssueId       text NOT NULL,
+  targetVersion    text    NOT NULL,
+
+  CONSTRAINT PKC_targetVersion PRIMARY KEY (ytiIssueId, targetVersion),
+  FOREIGN KEY (ytiIssueId) REFERENCES ytIssueDetails (ytiIssueId)
+  ON DELETE RESTRICT ON UPDATE CASCADE
+--  FOREIGN KEY (targetVersion) REFERENCES targetVersionDomain (targetVersion)
+--  ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
 CREATE TABLE ytTaskDetails (
   yttTaskId            text    NOT NULL,
+  yttTaskType          text    default 'Task',
   yttSummary           text    NOT NULL,
   yttDescription       text    NOT NULL,
-  yttCreated           Integer NOT NULL,
-  yttUpdatedAt         Integer,
+  yttCreated           timestamp NOT NULL,
+  yttUpdatedAt         timestamp,
   yttProject           text    NOT NULL,
   yttNumber            Integer NOT NULL,
   yttState             text    NOT NULL,
   yttWait              text    NOT NULL,
-  yttThreeDVal       text    NOT NULL,
-  yttStateTransitionId Integer NOT NULL,
+  yttThreeDVal         text    NOT NULL,
   yttBlockedDays       Integer NOT NULL,
   yttParent            text    NOT NULL,
 
   CONSTRAINT PKC_ytTaskDetails PRIMARY KEY (yttTaskId),
+  FOREIGN KEY (yttTaskId, yttTaskType) REFERENCES tickets (ticketId, ticketType),
   FOREIGN KEY (yttTaskId) REFERENCES tickets (ticketId)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttState) REFERENCES stateDomain (stateVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY (yttWait) REFERENCES waitDomain (waitVal)
   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (yttStateTransitionId) REFERENCES stateTransitions (stateTransitionId)
+  FOREIGN KEY (yttTaskId) REFERENCES stateTransitions (stateTransitionId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -449,9 +453,9 @@ CREATE TABLE TaskAssignee (
 
   CONSTRAINT PKC_TaskAssignee PRIMARY KEY (yttTaskId, developerName),
   FOREIGN KEY (yttTaskId) REFERENCES ytTaskDetails (yttTaskId)
-  ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (developerName) REFERENCES developers (developerName)
   ON DELETE RESTRICT ON UPDATE CASCADE
+--  FOREIGN KEY (developerName) REFERENCES developers (developerName)
+--  ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tables specific for Testing Projects :-
@@ -562,7 +566,7 @@ insert into yttpTestingTypeDomain values
   , ('API Test')
   , ('Component Test')
   , ('UX Test')
-  , ('NFT');
+  , ('NFT')
   , ('Unit Test');
 
 

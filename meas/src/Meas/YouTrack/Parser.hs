@@ -12,7 +12,7 @@
 module Meas.YouTrack.Parser
 where
 
---import Debug.Trace (trace)
+import Debug.Trace (trace)
 
 import            Control.DeepSeq
 
@@ -265,8 +265,8 @@ parseUpdateTime = do
   where
   p = withText "update time" $ \s ->
         case readMaybe (T.unpack s) of
-          Just n -> return n
-          Nothing -> fail "not a number"
+              Just n -> return n
+              Nothing -> fail "not a number"
 
 parseFieldChange :: (T.Text -> T.Text -> ValueChange) -> Value -> Parser ValueChange
 parseFieldChange ctor value = do

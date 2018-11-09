@@ -227,6 +227,7 @@ instance FromText StateValue where
   fromText "Blocked"                            = Neutral
   fromText "Merged"                             = Done
   fromText "Cancel"                             = Done
+  fromText "Close"                              = Done
 
   fromText s                                    = error $ ("Unknow State: "++T.unpack s)
 

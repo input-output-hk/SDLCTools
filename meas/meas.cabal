@@ -50,6 +50,7 @@ library
   exposed-modules:
       Meas
       Meas.Breakdown
+      Meas.Extract.Database
       Meas.Extract.Efficiency
       Meas.Extract.Iohks.Extractor
       Meas.Extract.Iohks.Issue
@@ -79,6 +80,7 @@ executable meas
     , bytestring
     , cassava
     , containers
+    , postgresql-simple
     , time
 
   other-modules:

@@ -35,7 +35,7 @@ getSingleIssue authorization issueId = do
       let (tasks, issues) = extractAllIssues [gissues]
       return (tasks, issues)
     Left err -> do
-      putStrLn ("Errorcannot parse: "++ issueId )
+      putStrLn ("Error cannot parse: "++ issueId )
       return ([], [])
 
 getAllNoHistory :: String -> [(String, String)] -> IO [(String, [YtTask], [YtIssue])]

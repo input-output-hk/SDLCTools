@@ -120,44 +120,22 @@ enterWip tBacklog tSelected trs@((tEnterWip, firstWipState):_) =
   else
     case (rest1, timeInProgress, timeInReview, firstWipState) of
     -- Not Done state found
-    ([], 0, 0, InProgress) -> STInProgress tBacklog tSelected tEnterWip
-    ([], 0, 0, Review)     -> STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, 0, InProgress)    -> STInProgress tBacklog tSelected tEnterWip
+    ([], 0, 0, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], 0, _, InProgress) -> STIllegalStateTransitions -- should never happen by construction
-    ([], 0, _, Review)     -> STInReview tBacklog tSelected tEnterWip tEnterWip
+    ([], 0, _, InProgress)    -> STIllegalStateTransitions -- should never happen by construction
+    ([], 0, _, Review)        -> STInReview tBacklog tSelected tEnterWip tEnterWip
 
-    ([], tip, 0, _)        -> STInReview tBacklog tSelected tEnterWip (addUTCTime tip tEnterWip)
+    ([], tip, 0, _)           -> STInReview tBacklog tSelected tEnterWip (addUTCTime tip tEnterWip)
 
    -- ([], _, _, Neutral)       -> STInProgress tBacklog tSelected tEnterWip
 
     ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
+
     -- At least one Done state found
-    ((_, Done):_, 0, 0, _)  -> STIllegalStateTransitions
+    ((_, Done):_, 0, 0, _)    -> STIllegalStateTransitions
     ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (addUTCTime tip tEnterWip) td
     _                         -> STIllegalStateTransitions
-
---    -- At least one Done state found
---    ((_, Done):_, tip, tir, _) | tip == defUTCTime && tir == defUTCTime  -> STIllegalStateTransitions
---    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
---    _                         -> STIllegalStateTransitions
---
---    ([], tip, tir, InProgress) | tip == defUTCTime && tir == defUTCTime -> STInProgress tBacklog tSelected tEnterWip
---    ([], tip, tir , Review)    | tip == defUTCTime && tir == defUTCTime -> STInReview tBacklog tSelected tEnterWip tEnterWip
---
---    ([], tip, _, InProgress) | tip == defUTCTime -> STIllegalStateTransitions -- should never happen by construction
---    ([], tip, _, Review)     | tip == defUTCTime -> STInReview tBacklog tSelected tEnterWip tEnterWip
---
---    ([], tip, tir, _) | tir == defUTCTime        -> STInReview tBacklog tSelected tEnterWip (tEnterWip + tip)
---
---   -- ([], _, _, Neutral)       -> STInProgress tBacklog tSelected tEnterWip
---
---    ([], _, _, _)             -> STIllegalStateTransitions  -- should never happen by construction
---
---    -- At least one Done state found
---    ((_, Done):_, tip, tir, _) | tip == defUTCTime && tir == defUTCTime  -> STIllegalStateTransitions
---    ((td, Done):_, tip, _, _) -> STDone tBacklog tSelected tEnterWip (tEnterWip + tip) td
---    _                         -> STIllegalStateTransitions
-
 
   where
   -- keep all transitions until we find a Done transition

@@ -19,8 +19,6 @@ import qualified  Data.Set as S
 
 import            Data.Time.Calendar
 import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
-import            Data.Time.Format
 
 import Meas.Extract.Misc
 import Meas.Extract.Types

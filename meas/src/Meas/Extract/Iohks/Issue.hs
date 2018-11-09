@@ -21,6 +21,7 @@ import qualified  Data.Text as T
 import qualified  Data.Text.Conversions as T
 
 import            Meas.Extract.Issue
+import            Meas.Extract.Misc
 import            Meas.Extract.Types
 import            Meas.Extract.Iohks.Types
 import            Meas.YouTrack.Parser
@@ -43,7 +44,7 @@ extractIohksIssue genericIssue =
   where
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIohksIssue {_ytIohksIssueId = issueId genericIssue}
-  updater (GCreatedField s)           = set ytIohksCreated (read $ T.unpack s)
+  updater (GCreatedField s)           = set ytIohksCreated (toUTCTime $ read $ T.unpack s)
   updater (GSummaryField s)           = set ytIohksSummary s
   updater (GDescriptionField s)       = set ytIohksDescription s
   updater (GProjectField s)           = set ytIohksProject s

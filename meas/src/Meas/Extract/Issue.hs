@@ -21,6 +21,7 @@ import            Data.Maybe (mapMaybe)
 import qualified  Data.Text as T
 import qualified  Data.Text.Conversions as T
 
+import            Meas.Extract.Misc
 import            Meas.Extract.Types
 import            Meas.YouTrack.Parser
 
@@ -46,8 +47,8 @@ extractTask parent genericIssue =
   where
   task1 = foldr updater task0 (issueFields genericIssue)
   task0 = defaultTask {_yttTaskId = issueId genericIssue, _yttParent = parent}
-  updater (GCreatedField s)     = set yttCreated (read $ T.unpack s)
-  updater (GUpdatedField s)     = set yttUpdated (Just $ read $ T.unpack s)
+  updater (GCreatedField s)     = set yttCreated (toUTCTime $ read $ T.unpack s)
+  updater (GUpdatedField s)     = set yttUpdated (Just $ toUTCTime $ read $ T.unpack s)
 --  updater (GSummaryField s)     = set yttSummary s
 --  updater (GDescriptionField s) = set yttDescription s
   updater (GProjectField s)     = set yttProject s
@@ -69,11 +70,11 @@ extractIssue genericIssue =
   issue1 = foldr updater issue0 (issueFields genericIssue)
   issue0 = defaultIssue {_ytiIssueId = issueId genericIssue}
   updater (GTypeField s)        = set ytiType s
-  updater (GCreatedField s)     = set ytiCreated (read $ T.unpack s)
-  updater (GUpdatedField s)     = set ytiUpdated (Just $ read $ T.unpack s)
+  updater (GCreatedField s)     = set ytiCreated (toUTCTime $ read $ T.unpack s)
+  updater (GUpdatedField s)     = set ytiUpdated (Just $ toUTCTime $ read $ T.unpack s)
 --  updater (GSummaryField s)     = set ytiSummary s
 --  updater (GDescriptionField s) = set ytiDescription s
-  updater (GDueDateField s)     = set ytiDueDate (read $ T.unpack s)
+  updater (GDueDateField s)     = set ytiDueDate (toUTCTime $ read $ T.unpack s)
   updater (GProjectField s)     = set ytiProject s
   updater (GNumberField s)      = set ytiNumber (read $ T.unpack s)
   updater (GStateField s)       = set ytiState (T.fromText s)
