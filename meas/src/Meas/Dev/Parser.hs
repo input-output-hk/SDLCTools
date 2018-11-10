@@ -5,16 +5,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-
-
 {-# LANGUAGE TemplateHaskell #-}
 
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
+
 module Meas.Dev.Parser
+()
 where
 
-import Debug.Trace (trace)
-
-import            Control.DeepSeq
+-- import Debug.Trace (trace)
 
 import            Data.Aeson
 import            Data.Aeson.Types (Parser)
@@ -22,17 +22,15 @@ import            Data.Either
 import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
 import qualified  Data.Text as T
-import qualified  Data.Text.Conversions as T
+import            Data.Text.Conversions
 import qualified  Data.Vector as V
-
-import            GHC.Generics (Generic)
 
 import            Text.Read (readMaybe)
 
 
 import            Meas.Dev.Types
 
-
+head' :: [Char] -> [p] -> p
 head' msg [] = error $ "head2 : empty list + -> "++msg
 head' _ l = head l
 
@@ -57,14 +55,6 @@ genericIssuesParser =
     issueListVal <- o .: "items"
     issues <- withArray "Issue List" (mapM genericIssueParser . V.toList) issueListVal
     return $ GenericIssues issues
---  where
---  p = withObject "Issue" $ \o -> do
---        attrs <- o .: "attrs"
---        issueId <- attrs .: "id"
---        fieldsVal <- o .: "items"
---        fields <- issueFieldsParser fieldsVal
---        let !evFields = force fields
---        return $ MkGenericIssue issueId evFields
 
 genericIssueParser :: Value -> Parser GenericIssue
 genericIssueParser =
@@ -73,8 +63,7 @@ genericIssueParser =
     issueId <- attrs .: "id"
     fieldsVal <- o .: "items"
     fields <- issueFieldsParser fieldsVal
-    let !evFields = force fields
-    return $ MkGenericIssue issueId evFields
+    return $ MkGenericIssue issueId fields
 
 issueFieldsParser :: Value -> Parser [GenericIssueField]
 issueFieldsParser value = do
@@ -84,7 +73,7 @@ issueFieldsParser value = do
 issueLinkParser :: Object -> Parser (Maybe GenericIssueField)
 issueLinkParser o = do
   itemsVal <- o .: "items"
-  withArray "link elements" (mapM p . V.toList) itemsVal >>= (return . Just . GLinkField . L.map (\(l, t) -> (T.fromText l, t)))
+  withArray "link elements" (mapM p . V.toList) itemsVal >>= (return . Just . GLinkField . L.map (\(l, t) -> (fromText l, t)))
   where
   p = withObject "link" $ \o' -> do
         attrs <- o' .: "attrs"
@@ -192,7 +181,8 @@ parseSingletonArrayWithDefault def p value =
   withArray "Singleton Array" (\a -> do
     case V.toList a of
       [] -> return def
-      [s] -> p s) value
+      [s] -> p s
+      _ -> error "Cannot parse: array contains more than 1 element") value
 
 
 parseNamedSingletonArray :: (Value -> Parser (Maybe a)) -> Value -> Parser a
@@ -250,14 +240,12 @@ parseChangeGroup value = do
           case T.unpack name' of
             "updaterName" -> parseSingletonArray parseUpdaterName itemsVal >>= (return . Just)
             "updated" -> parseSingletonArray parseUpdateTime itemsVal >>= (return . Just)
-            "State" -> (parseFieldChange (\o' n -> StateChange (T.fromText o') (T.fromText n)) itemsVal) >>= (return . Just)
-            "Wait" -> (parseFieldChange (\o' n -> WaitChange (T.fromText o') (T.fromText n)) itemsVal) >>= (return . Just)
+            "State" -> (parseFieldChange (\o' n -> StateChange (fromText o') (fromText n)) itemsVal) >>= (return . Just)
+            "Wait" -> (parseFieldChange (\o' n -> WaitChange (fromText o') (fromText n)) itemsVal) >>= (return . Just)
             _ -> return Nothing
         _ -> return Nothing
 
 
-topItemsParser :: Value -> Parser [Either [ValueChange] Issue]
-topItemsParser = withArray "items" (mapM topItemParser . V.toList)
 
 parseIssue :: Object -> Parser Issue
 parseIssue o = do
@@ -278,4 +266,138 @@ topItemParser =
         itemsVal <- o .: "items"
         parseChangeGroup itemsVal >>= (return . Left)
       _ -> fail "topItemParser"
+
+
+
+instance FromText StateValue where
+  fromText "Backlog"                            = Backlog
+  fromText "Planning"                           = Planning
+  fromText "Selected"                           = Selected
+  fromText "In Progress"                        = InProgress
+  fromText "Review"                             = Review
+  fromText "Done"                               = Done
+  fromText "Backlog (pool of Ideas)"            = Backlog
+  fromText "To Verify"                          = Backlog
+
+-- old stuff in YouTrack ...
+  fromText "Closed"                             = Done
+  fromText "No State"                           = Backlog
+  fromText "No state"                           = Backlog
+  fromText "Open"                               = Backlog
+  fromText "Assigned"                           = Selected
+  fromText "No value"                           = Backlog
+  fromText "Waiting for review"                 = Review
+  fromText "DONT-USE-1"                         = Backlog
+  fromText "DONT-USE-3"                         = Backlog
+  fromText "DONT-USE-5"                         = Backlog
+  fromText "Aborted"                            = Done
+  fromText "To be discussed"                    = Backlog
+  fromText "Waiting for build"                  = Backlog
+  fromText "79-532-1524688761506.Done"          = Done
+  fromText "79-532-1524688761506.Backlog"       = Backlog
+  fromText "79-532-1524688761506.In Progress"   = InProgress
+  fromText "Duplicate"                          = Done
+  fromText "Verified"                           = Done
+  fromText "Pool of Ideas"                      = Backlog
+  fromText "Obsolete"                           = Done
+  fromText "Submitted"                          = Backlog
+  fromText "Can't Reproduce"                    = Done
+  fromText "Blocking"                           = Done
+  fromText "Postponed"                          = Backlog
+  fromText "Waiting for test"                   = InProgress
+  fromText "Waiting to be merged into `master`" = InProgress
+  fromText "To be deployed to staging"          = InProgress
+  fromText "To be deployed to production"       = InProgress
+  fromText "Ready to Solve"                     = Selected
+  fromText "Ready"                              = Selected
+  fromText "Blocked"                            = Neutral
+  fromText "Merged"                             = Done
+  fromText "Cancel"                             = Done
+  fromText "Close"                              = Done
+
+  fromText s                                    = error $ ("Unknow State: "++T.unpack s)
+
+
+
+instance FromText ROMMandaysValue where
+  fromText "Day"      = Days
+  fromText "Week"     = Weeks
+  fromText "Month"    = Months
+  fromText "Quarter"  = Quarters
+  fromText s          = error ("Unknown ROMMandays: " ++ T.unpack s)
+
+
+
+instance FromText WaitValue where
+  fromText "Running"        = Running
+  fromText "Waiting"        = Waiting
+  fromText "No wait"        = Running
+  fromText "<lost change>"  = Running
+  fromText s                = error $ ("Unknow Wait: "++ T.unpack s)
+
+
+
+instance FromText TypeValue where
+  fromText "User Story" = IssueType
+  fromText "Bug"        = IssueType
+  fromText "Task"       = TaskType
+  fromText "Issue"      = IssueType
+  fromText _            = OtherType
+
+
+
+instance FromText ThreeDValue where
+  fromText "Design"         = Design
+  fromText "Development"    = Development
+  fromText "Documentation"  = Documentation
+  fromText "Test"           = Test
+  fromText s                = error ("Unknown 3D: " ++ T.unpack s)
+
+
+
+instance FromText LinkType where
+  fromText "parent for"             = ParentFor
+  fromText "subtask of"             = SubTaskOf
+  fromText "must start after"       = MustStartAfter
+  fromText "is a prerequisite for"  = IsPreRequisiteFor
+  fromText "depends on"             = DependsOn
+  fromText "duplicates"             = Duplicates
+  fromText "relates to"             = RelatesTo
+  fromText "is duplicated by"       = IsDuplicatedBy
+  fromText "is required for"        = IsRequiredFor
+  fromText "tested by"              = TestedBy
+  fromText "test of"                = TestOf
+  fromText s                        = error ("unknow link role: "++T.unpack s)
+
+
+instance FromText PriorityValue where
+  fromText "Show-stopper" = ShowStopper
+  fromText "Critical"     = Critical
+  fromText "Major"        = Major
+  fromText "Normal"       = Normal
+  fromText "Minor"        = Minor
+  fromText s              = error ("unknow Priority :"++T.unpack s)
+
+-- instance FromText IohksStateValue where
+--   fromText "Submitted"      = IohksSubmitted
+--   fromText "Ready to Solve" = IohksReadyToSolve
+--   fromText "Fixed"          = IohksFixed
+--   fromText "Done"           = IohksDone
+--   fromText s                = error ("unknow Iohks State: "++T.unpack s)
+
+
+instance FromText ResolutionValue where
+  fromText "Successful" = Successful
+  fromText "Aborted"    = Aborted
+  fromText "Duplicate"  = Duplicate
+  fromText "Obsolete"   = Obsolete
+  fromText s            = error ("unknow Resolution: "++T.unpack s)
+
+-- instance Show IohksStateValue where
+--   show IohksSubmitted     = "Submitted"
+--   show IohksReadyToSolve  = "Ready to Solve"
+--   show IohksFixed         = "Fixed"
+--   show IohksDone          = "Done"
+
+
 

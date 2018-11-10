@@ -15,19 +15,16 @@ where
 -- import Debug.Trace (trace)
 
 
-import            Data.Aeson
 import qualified  Data.ByteString as BS
 import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
 import qualified  Data.Text as T
-import            Data.Time.Clock
 
 import            Network.HTTP.Simple as HTTP
 
 import            Text.XML.JSON.StreamingXmlToJson
 
-import            Meas.Misc
 --import            Meas.Extract.Types
 --import            Meas.YouTrack.Parser
 

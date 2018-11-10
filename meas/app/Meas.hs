@@ -12,25 +12,23 @@
 --import Debug.Trace(trace)
 
 import            Control.Monad
-import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.ByteString as BS
-import qualified  Data.Csv as CSV
-import qualified  Data.List as L
-import qualified  Data.Map.Strict as M
-import            Data.Time.Calendar
 import            Data.Time.Clock
 import            Data.String
 import            Database.PostgreSQL.Simple
 
-import Meas.Dev.Types
-import Meas.Dev.Extractor
-import Meas.Dev.Database
-import Meas.Misc
-import Meas.Dev.Report.Report
-import Meas.Config
+--import            Meas.Imports
 
-import Meas.Test.Types
-import Meas.Test.Database
+import            Meas.Dev.Types
+import            Meas.Dev.Extractor
+import            Meas.Dev.Database
+import            Meas.Misc
+import            Meas.Dev.Report.Analytics
+import            Meas.Dev.Report.Report
+import            Meas.Config
+
+import            Meas.Test.Extractor
+import            Meas.Test.Database
 
 main :: IO ()
 main = do
@@ -54,10 +52,7 @@ run cfg@MkConfig{..} = do
 
  -- mapM print goodTasks
 
-  let csvTasksLBS = CSV.encodeByName defaultTaskHeader goodTasks
-  LBS.writeFile "cfd-tasks.csv" LBS.empty
-  LBS.appendFile "cfd-tasks.csv" csvTasksLBS
-
+  generateAnalyticsForTasks "cfd-tasks.csv" goodTasks
 
   -- saving issues
   let allIssues = do
@@ -67,22 +62,15 @@ run cfg@MkConfig{..} = do
   -- only keep task without transition errors and without errors
   let goodIssues = filter (\t -> null (_ytiErrors t) && (_ytiStateTransitions t) /= STIllegalStateTransitions) allIssues
 
- -- mapM print goodTasks
+  generateAnalyticsForIssues "cfd-issues.csv" goodIssues
 
-  let csvIssuesLBS = CSV.encodeByName defaultIssueHeader goodIssues
-  LBS.writeFile "cfd-issues.csv" LBS.empty
-  LBS.appendFile "cfd-issues.csv" csvIssuesLBS
 
   -- create reports
   currentDay <- getCurrentTime >>= (return . utctDay)
 
-  let csvTaskReportLBS = CSV.encodeByName defaultTaskReportHeader $ map (TaskReport currentDay) allTasks
-  LBS.writeFile   "task-report.csv" LBS.empty
-  LBS.appendFile  "task-report.csv" csvTaskReportLBS
+  generateReportForTasks "task-report.csv" currentDay allTasks
+  generateReportForIssues "issue-report.csv" currentDay allIssues
 
-  let csvIssueReportLBS = CSV.encodeByName defaultIssueReportHeader $ map (IssueReport currentDay) allIssues
-  LBS.writeFile   "issue-report.csv" LBS.empty
-  LBS.appendFile  "issue-report.csv" csvIssueReportLBS
 
   -- Save in database
   conn <- connectPostgreSQL (connectionString cfg) --"host=localhost port=5432 dbname=sdlc_db user=postgres"

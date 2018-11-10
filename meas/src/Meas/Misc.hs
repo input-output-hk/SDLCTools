@@ -10,6 +10,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Misc
+(
+  defUTCTime
+  , intToDateText
+  , previousSecond
+  , toUTCTime
+  , utcTimeToStdDateText
+
+  , parseCliArgs
+
+  , Options (..)
+)
 where
 
 -- import Debug.Trace (trace)
@@ -40,8 +51,6 @@ intToDateText t = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" t
 utcTimeToStdDateText :: UTCTime -> T.Text
 utcTimeToStdDateText t = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) t
 
-dayToStdDateText :: Day -> T.Text
-dayToStdDateText d = T.pack $ formatTime defaultTimeLocale  (iso8601DateFormat Nothing) d
 
 
 data Options = MkOptions {

@@ -10,11 +10,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.Report.Report
+(
+  generateReportForIssues
+  , generateReportForTasks
+  ,
+)
 where
 
 -- import            Debug.Trace (trace)
 
-import            Data.Csv
+import qualified  Data.ByteString.Lazy as LBS
+import            Data.Csv as CSV
 import qualified  Data.List as L
 import qualified  Data.Text as T
 import            Data.Time.Calendar
@@ -24,6 +30,20 @@ import            Meas.Dev.State
 import            Meas.Dev.Types
 
 data TaskReport = TaskReport Day YtTask
+
+generateReportForIssues :: String -> Day -> [YtIssue] -> IO()
+generateReportForIssues filename currentDay issues = do
+  let csvIssueReportLBS = CSV.encodeByName defaultIssueReportHeader $ map (IssueReport currentDay) issues
+  LBS.writeFile  filename LBS.empty
+  LBS.appendFile filename csvIssueReportLBS
+
+generateReportForTasks :: String -> Day -> [YtTask] -> IO()
+generateReportForTasks filename currentDay tasks = do
+  let csvTaskReportLBS = CSV.encodeByName defaultTaskReportHeader $ map (TaskReport currentDay) tasks
+  LBS.writeFile  filename LBS.empty
+  LBS.appendFile filename csvTaskReportLBS
+
+
 
 defaultTaskReportHeader :: Header
 defaultTaskReportHeader = header
@@ -38,6 +58,7 @@ defaultTaskReportHeader = header
   , "Assignee-1", "Assignee-2", "Assignee-3"
   , "Parent"
   ]
+
 
 instance ToNamedRecord TaskReport where
     toNamedRecord (TaskReport currentDay MkYtTask{..}) = namedRecord
@@ -60,7 +81,7 @@ instance ToNamedRecord TaskReport where
 
 
 
-instance DefaultOrdered TaskReport where
+instance CSV.DefaultOrdered TaskReport where
     headerOrder _ = defaultTaskReportHeader
 
 
@@ -107,7 +128,7 @@ instance ToNamedRecord IssueReport where
         (tv:_) = _ytiTargetVersions ++ L.repeat ""
 
 
-instance DefaultOrdered IssueReport where
+instance CSV.DefaultOrdered IssueReport where
     headerOrder _ = defaultIssueReportHeader
 
 

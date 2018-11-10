@@ -10,6 +10,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.Issue
+(
+  extractAllIssues
+)
 where
 
 --import Debug.Trace (trace)
@@ -21,9 +24,10 @@ import            Data.Maybe (mapMaybe)
 import qualified  Data.Text as T
 import qualified  Data.Text.Conversions as T
 
-import            Meas.Misc
+import            Meas.Dev.Lens
+import            Meas.Dev.Parser ()
 import            Meas.Dev.Types
-import            Meas.Dev.Parser
+import            Meas.Misc
 
 
 
@@ -49,8 +53,6 @@ extractTask parent genericIssue =
   task0 = defaultTask {_yttTaskId = issueId genericIssue, _yttParent = parent}
   updater (GCreatedField s)     = set yttCreated (toUTCTime $ read $ T.unpack s)
   updater (GUpdatedField s)     = set yttUpdated (Just $ toUTCTime $ read $ T.unpack s)
---  updater (GSummaryField s)     = set yttSummary s
---  updater (GDescriptionField s) = set yttDescription s
   updater (GProjectField s)     = set yttProject s
   updater (GNumberField s)      = set yttNumber (read $ T.unpack s)
   updater (GStateField s)       = set yttState (T.fromText s)
@@ -72,8 +74,6 @@ extractIssue genericIssue =
   updater (GTypeField s)        = set ytiType s
   updater (GCreatedField s)     = set ytiCreated (toUTCTime $ read $ T.unpack s)
   updater (GUpdatedField s)     = set ytiUpdated (Just $ toUTCTime $ read $ T.unpack s)
---  updater (GSummaryField s)     = set ytiSummary s
---  updater (GDescriptionField s) = set ytiDescription s
   updater (GDueDateField s)     = set ytiDueDate (toUTCTime $ read $ T.unpack s)
   updater (GProjectField s)     = set ytiProject s
   updater (GNumberField s)      = set ytiNumber (read $ T.unpack s)
@@ -143,14 +143,13 @@ findLinkedIssues linkType links =
 
 
 
--- GLinkField [(T.Text, T.Text)]
 
 checkTask :: [String] -> GenericIssueField -> [String]
 checkTask acc (GThreeDField s) =
   if s == "No value" then ("No value for 3D":acc) else acc
 checkTask acc _ = acc
 
---  NOTE: check (GPPotentialSquadField T.Text
+--  NOTE: check (GPPotentialSquadField T.Text)
 checkIssue :: a -> b -> a
 checkIssue acc _ = acc
 

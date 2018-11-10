@@ -10,29 +10,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.Queries
+(
+  allChangesForIssue
+  , allIssues
+  , singleIssue
+)
 where
 
 -- import Debug.Trace (trace)
 
-
 import            Data.Aeson
-import qualified  Data.ByteString as BS
-import qualified  Data.ByteString.Char8 as BS8
-import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
 import qualified  Data.Text as T
 import            Data.Time.Clock
 
-import            Network.HTTP.Simple as HTTP
-
-import            Text.XML.JSON.StreamingXmlToJson
-
 import            Meas.Misc
 import            Meas.Dev.Types
-import            Meas.Dev.Parser  -- TODO should we need it?
+import            Meas.Dev.Parser ()
 import            Meas.YouTrack.Queries
-
-
 
 
 singleIssue :: String -> String -> IO (Either String GenericIssue)

@@ -10,6 +10,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.State
+(
+  ageInCurrentState
+  , cycleTime
+  , getStateTransitions
+)
 where
 
 --import Debug.Trace (trace)
@@ -23,8 +28,6 @@ import            Data.Time.Clock
 
 import Meas.Misc
 import Meas.Dev.Types
-
-
 
 
 getStateTransitions :: UTCTime -> [(UTCTime, [ValueChange])] -> StateTransitions
@@ -186,9 +189,6 @@ Sum the period of times when `state'` is active.
 timeInState :: Eq s => s -> [(NominalDiffTime, s)] -> NominalDiffTime
 timeInState state trPeriods = L.sum $ L.map fst $ L.filter (\(_, s) -> s == state) trPeriods
 
---lastUpdatedTime :: [(Int, a)] -> Maybe Int
---lastUpdatedTime [] = Nothing
---lastUpdatedTime changes = Just $ L.maximum $ L.map fst changes
 
 -- compute the age of the issue in its current state
 timeOfCurrentState :: UTCTime ->  [(UTCTime, [ValueChange])] -> UTCTime

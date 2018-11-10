@@ -10,6 +10,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.Efficiency
+(
+  getBlockedDays
+)
 where
 
 -- import Debug.Trace (trace)
@@ -53,21 +56,7 @@ getWipPeriod _          (STDone _ _ tip _ td)     = (utctDay tip, utctDay td)
 getWipPeriod _          STIllegalStateTransitions = (utctDay defUTCTime, utctDay defUTCTime)
 
 
-{-
-Given a period of time, compute the set of touched days while the issue is in WIP.
--}
 
-touchedDaysInPeriod :: Day -> Integer -> (Day, Day) -> StateTransitions -> [(UTCTime, [ValueChange])] -> S.Set Day
-touchedDaysInPeriod currentDay nDays (startPeriod, endPeriod) stateTransitions changes =
-  touchedDays
-  where
-  (tipDay, tdDay) = getWipPeriod currentDay stateTransitions
-  (tipDay', tdDay') = (max tipDay startPeriod, min tdDay endPeriod)
-  updateDays = L.map (utctDay . fst) changes
-  wipUpdateDays = L.filter (\t -> tipDay' <= t && t <= tdDay') updateDays
-  touchedDays = S.fromList $ do
-    day <- wipUpdateDays
-    [addDays (-i) day | i <- [0 .. nDays]]
 
 
 

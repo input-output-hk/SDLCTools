@@ -1,16 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 
 module Meas.Test.Database
+(
+  saveTestProjectIssue
+  , deleteTestProjectData
+)
 where
 
-import qualified  Data.Text as T
 import            Database.PostgreSQL.Simple
 import            Database.PostgreSQL.Simple.ToField
 import            Database.PostgreSQL.Simple.ToRow
 
-import Meas.Test.Types
+import            Meas.Test.Types
 
 
 instance ToField TypeVal where
@@ -110,7 +114,7 @@ saveTestProjectIssue conn issue@MkYttpIssue{..} = do
         , _yttpiExecutionTime
         , _yttpiTestResult
         )
-  execute conn stmt q
+  _ <- execute conn stmt q
 
   saveTargetOs          conn issue
   saveTestingType       conn issue
@@ -214,7 +218,7 @@ saveLinks conn MkYttpIssue{..} = do
 
 deleteTestProjectData :: Connection -> IO ()
 deleteTestProjectData conn =
-  mapM_ (\stmt -> execute conn stmt ()) stmts
+  mapM_ (\stmt -> execute_ conn stmt)  stmts
   where
   stmts =
     [ "delete from yttplinks"

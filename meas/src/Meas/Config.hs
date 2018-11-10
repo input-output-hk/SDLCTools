@@ -4,14 +4,18 @@
 
 
 module Meas.Config
+(
+  Config (..)
+
+  , readConfig
+
+)
 where
 
 -- import Debug.Trace (trace)
 
-import            Control.Applicative
 import            Control.Monad
 import qualified  Data.ByteString.Char8 as BS
-import            Data.Maybe (fromJust)
 import            Data.Yaml
 
 

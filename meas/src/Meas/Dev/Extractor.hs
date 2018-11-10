@@ -10,7 +10,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Meas.Dev.Extractor
+(
+  getAll
 
+  , getSingleIssue
+  , getAllNoHistory
+)
 where
 
 -- import Debug.Trace (trace)
@@ -35,7 +40,7 @@ getSingleIssue authorization issueId = do
       let (tasks, issues) = extractAllIssues [gissues]
       return (tasks, issues)
     Left err -> do
-      putStrLn ("Error cannot parse: "++ issueId )
+      putStrLn ("Error cannot parse: "++ issueId ++ " err = " ++ err)
       return ([], [])
 
 getAllNoHistory :: String -> [(String, String)] -> IO [(String, [YtTask], [YtIssue])]

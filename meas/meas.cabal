@@ -49,14 +49,15 @@ library
     , xml-to-json-fast
     , yaml
   exposed-modules:
-      Meas
       Meas.Config
 
       Meas.Dev.Database
       Meas.Dev.Efficiency
       Meas.Dev.Extractor
       Meas.Dev.Issue
+      Meas.Dev.Lens
       Meas.Dev.Parser
+      Meas.Dev.Report.Analytics
       Meas.Dev.Report.Report
       Meas.Dev.State
       Meas.Dev.Types
@@ -70,6 +71,9 @@ library
       Meas.Misc
 
       Meas.Test.Database
+      Meas.Test.Extractor
+      Meas.Test.Lens
+      Meas.Test.Parser
       Meas.Test.Types
 
       Meas.YouTrack.Queries

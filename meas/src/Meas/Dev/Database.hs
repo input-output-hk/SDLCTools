@@ -1,18 +1,22 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Meas.Dev.Database
+(
+  saveIssue
+  , saveTask
+  , deleteDevProjectData
+)
 where
 
 
 import qualified  Data.Text as T
 import            Database.PostgreSQL.Simple
 import            Database.PostgreSQL.Simple.ToField
-import            Database.PostgreSQL.Simple.ToRow
 
 import Meas.Misc
-import Meas.Dev.State
 import Meas.Dev.Types
 
 instance ToField PriorityValue where
@@ -67,7 +71,7 @@ instance ToField LinkType where
 saveTicket :: Connection -> T.Text -> T.Text -> IO ()
 saveTicket conn ticketId ticketType = do
   let q = (ticketId, ticketType)
-  execute conn stmt q
+  _ <- execute conn stmt q
   return ()
   where
   stmt = "insert into tickets (ticketId, ticketType) values (?, ?)"
@@ -96,7 +100,7 @@ saveIssue conn issue@(MkYtIssue{..}) = do
         , toField _ytiResolution
         , toField _ytiBlockedDays
         ]
-  execute conn stmt q
+  _ <- execute conn stmt q
 
   saveTargetVersions conn issue
   saveLinkedTickets conn _ytiIssueId _ytiLinks
@@ -120,7 +124,7 @@ saveStateTransitions conn ticketId trans = do
             STDone tb ts tp tr td     -> (ticketId, "Done"::String, tb, ts, tp, tr, td)
             STIllegalStateTransitions -> (ticketId, "IllegalStateTransitions"::String, defUTCTime, defUTCTime, defUTCTime, defUTCTime, defUTCTime)
 
-  execute conn stmt q
+  _ <- execute conn stmt q
   return ()
   where
   stmt = "insert into stateTransitions (\
@@ -130,12 +134,12 @@ saveStateTransitions conn ticketId trans = do
 
 
 saveTargetVersions :: Connection -> YtIssue -> IO ()
-saveTargetVersions conn issue@(MkYtIssue{..}) = do
+saveTargetVersions conn (MkYtIssue{..}) = do
   mapM_ saveOne _ytiTargetVersions
   where
   saveOne version = do
     let q = (_ytiIssueId, version)
-    execute conn stmt q
+    _ <- execute conn stmt q
     return ()
 
   stmt = "insert into targetVersion (ytiIssueId, targetVersion) values (?, ?)"
@@ -147,7 +151,7 @@ saveLinkedTickets conn ticketId links = do
   where
   saveOne (linkType, linkedTicketId) = do
     let q = (ticketId, linkType, linkedTicketId)
-    execute conn stmt q
+    _ <- execute conn stmt q
     return ()
 
   stmt = "insert into links (ticketId, linkType, linkedTicketId) values (?, ?, ?)"
@@ -173,7 +177,7 @@ saveTask conn task@(MkYtTask{..}) = do
         , toField _yttBlockedDays
         , toField _yttParent
         ]
-  execute conn stmt q
+  _ <- execute conn stmt q
   saveLinkedTickets conn _yttTaskId _yttLinks
   saveTaskAssignees conn task
   return ()
@@ -185,12 +189,12 @@ saveTask conn task@(MkYtTask{..}) = do
 
 
 saveTaskAssignees :: Connection -> YtTask -> IO ()
-saveTaskAssignees conn task@(MkYtTask{..}) = do
+saveTaskAssignees conn (MkYtTask{..}) = do
   mapM_ saveOne _yttAssignees
   where
   saveOne assignee = do
     let q = (_yttTaskId, assignee)
-    execute conn stmt q
+    _ <- execute conn stmt q
     return ()
 
   stmt = "insert into TaskAssignee (yttTaskId, developerName) values (?, ?)"
@@ -198,7 +202,7 @@ saveTaskAssignees conn task@(MkYtTask{..}) = do
 
 deleteDevProjectData :: Connection -> IO ()
 deleteDevProjectData conn =
-  mapM_ (\stmt -> execute conn stmt ()) stmts
+  mapM_ (\stmt -> execute_ conn stmt ) stmts
   where
   stmts =
     [ "delete from links"

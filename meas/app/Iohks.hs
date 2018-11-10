@@ -11,12 +11,14 @@
 
 --import Debug.Trace(trace)
 
-import qualified  Data.ByteString.Lazy as LBS
-import qualified  Data.Csv as CSV
-import            Data.Time.Clock
+-- import qualified  Data.ByteString.Lazy as LBS
+-- import qualified  Data.Csv as CSV
+-- import            Data.Time.Clock
 
 
+main :: IO ()
 main = return ()
+
 {-}
 import Meas.Iohks.Extractor
 import Meas.Iohks.Report
