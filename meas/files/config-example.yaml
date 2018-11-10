@@ -1,0 +1,16 @@
+dev:
+  cleanup_db: true
+  queries:
+    - ["PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc"]
+    - ["TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc"]
+test:
+  cleanup_db: true
+  queries:
+    - ["CST", "sort by: {issue id}"]
+    - ["DT", "sort by: {issue id}"]
+db_host: localhost
+db_port: 5432
+db_name: sdlc_db
+db_user: postgres
+db_pwd:  "your-password"
+yt_key:  "Bearer perm:your-yt-key"

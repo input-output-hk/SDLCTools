@@ -64,6 +64,8 @@ library
       Meas.Extract.State
       Meas.Extract.Types
       Meas.Extractor
+      Meas.Test.Database
+      Meas.Test.Types
       Meas.YouTrack.Parser
       Meas.YouTrack.Queries
   other-modules:

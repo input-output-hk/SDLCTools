@@ -11,6 +11,7 @@
 
 --import Debug.Trace(trace)
 
+import            Control.Monad
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.ByteString as BS
 import qualified  Data.Csv as CSV
@@ -29,6 +30,8 @@ import Meas.Extract.Misc
 import Meas.Extract.Report
 import Meas.Extract.Config
 
+import Meas.Test.Types
+import Meas.Test.Database
 
 main :: IO ()
 main = do
@@ -40,37 +43,8 @@ main = do
 
 run :: Config -> IO ()
 run cfg@MkConfig{..} = do
-  res <- getAll cfg_yt_key cfgDevPrj
---          [
-          --  ("CBR", "Type:Task sort by: {issue id} asc")
-          --  ("CBR", "Type:{User Story} #Bug #Task sort by: {issue id} asc")
---    ("CE", "Type:Task #{User Story} sort by: {issue id} asc")
---      ("GMC", "Type: {User Story} #Bug #Task sort by: {issue id} asc")
+  res <- getAll cfg_yt_key cfgDevQueries
 
-          --  ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-           -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
-
-      --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
-    --     ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          --   ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-          -- ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} desc")
-         --            ("CO", "issue id: CO-14")
-
---            ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
-
---          ("CSM", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
---          , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
---          , ("QA", "Type:Task sort by: {issue id} asc")
-
---          ]
 
   let allTasks = do
         (_, tasks, _) <- res
@@ -126,25 +100,59 @@ run cfg@MkConfig{..} = do
   -- Save in database
   conn <- connectPostgreSQL (connectionString cfg) --"host=localhost port=5432 dbname=sdlc_db user=postgres"
 
+  when cfgDevCleanupDB (deleteDevProjectData conn)
+
   -- save issues
   mapM_ (saveIssue conn) goodIssues
 
   -- save tasks
   mapM_ (saveTask conn) goodTasks
 
-  return ()
+  -- get data from test projects
 
---projectBreakDown :: [YtTask] -> Day -> (Day, Day) -> M.Map T.Text Float
+  testIssues <- getAllTestIssues cfg_yt_key cfgTestQueries
 
+  -- save in database
+  when cfgTestCleanupDB (deleteTestProjectData conn)
 
---fromGregorian :: Integer -> Int -> Int -> Day
+  mapM_ (\(_, issues) -> mapM_ (saveTestProjectIssue conn) issues) testIssues
+
 
 connectionString :: Config -> BS.ByteString
 connectionString MkConfig{..} =
-  fromString ("host=" ++ cfg_db_host ++ "port=" ++ show cfg_db_port ++ "dbname="
-  ++ cfg_db_name ++ "user=" ++ cfg_db_user ++ "password=" ++ cfg_db_pwd)
+  fromString ("host=" ++ cfg_db_host ++ " port=" ++ show cfg_db_port ++ " dbname="
+  ++ cfg_db_name ++ " user=" ++ cfg_db_user ++ " password=" ++ cfg_db_pwd)
 
 
 
 
+--          [
+          --  ("CBR", "Type:Task sort by: {issue id} asc")
+          --  ("CBR", "Type:{User Story} #Bug #Task sort by: {issue id} asc")
+--    ("CE", "Type:Task #{User Story} sort by: {issue id} asc")
+--      ("GMC", "Type: {User Story} #Bug #Task sort by: {issue id} asc")
 
+          --  ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+           -- ("EC", "Type:Task  #Bug sort by: {issue id} asc")
+
+      --    ("CSL", "Type:Task #Bug sort by: {issue id} desc")
+    --     ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--         ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          --   ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+          -- ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} desc")
+         --            ("CO", "issue id: CO-14")
+
+--            ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+
+--          ("CSM", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          ("TSD", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("PB", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("DEVOPS", "Type:Task  #Bug sort by: {issue id} asc")
+--          , ("DDW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CDEC", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CBR", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CHW", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("CO", "Type:Task #{User Story} #Bug sort by: {issue id} asc")
+--          , ("QA", "Type:Task sort by: {issue id} asc")
+
+--          ]

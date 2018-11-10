@@ -2,7 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 
-module Database
+module Meas.Test.Database
 where
 
 import qualified  Data.Text as T
@@ -10,7 +10,7 @@ import            Database.PostgreSQL.Simple
 import            Database.PostgreSQL.Simple.ToField
 import            Database.PostgreSQL.Simple.ToRow
 
-import Types
+import Meas.Test.Types
 
 
 instance ToField TypeVal where
@@ -209,3 +209,23 @@ saveLinks conn MkYttpIssue{..} = do
     let q = ( _yttpiIssueId, lValue, lType, lRole)
     execute conn stmt q
   stmt = "insert into yttpLinks (yttpiIssueId, yttpLinkedTicketId, yttpLinkedObjectType, yttpLinkRole) values (?, ?, ?, ?)"
+
+
+
+deleteTestProjectData :: Connection -> IO ()
+deleteTestProjectData conn =
+  mapM_ (\stmt -> execute conn stmt ()) stmts
+  where
+  stmts =
+    [ "delete from yttplinks"
+    , "delete from yttpTargetOS"
+    , "delete from yttpTestingType"
+    , "delete from yttpPassedVersions"
+    , "delete from yttpFailedVersions"
+    , "delete from yttpBlockedVersions"
+    , "delete from yttpCoveredComponents"
+    , "delete from yttpBrowserAndVersions"
+    , "delete from yttpissuedetails"
+    ]
+
+

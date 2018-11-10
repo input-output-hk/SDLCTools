@@ -1,4 +1,5 @@
 ﻿
+delete from yttplinks;
 delete from yttpTargetOS;
 delete from yttpTestingType;
 
