@@ -22,7 +22,6 @@ import            Data.Time.Clock
 import            Data.String
 import            Database.PostgreSQL.Simple
 
-import Meas.Dev.Report.Breakdown
 import Meas.Dev.Types
 import Meas.Dev.Extractor
 import Meas.Dev.Database
@@ -84,18 +83,6 @@ run cfg@MkConfig{..} = do
   let csvIssueReportLBS = CSV.encodeByName defaultIssueReportHeader $ map (IssueReport currentDay) allIssues
   LBS.writeFile   "issue-report.csv" LBS.empty
   LBS.appendFile  "issue-report.csv" csvIssueReportLBS
-
-  -- compute project breakdown
-
-  let periods = let
-        days = L.map (\(y, m) -> fromGregorian (fromIntegral y) m 1) [(y, m) | y <- [2018], m <- [1 .. 12]]
-        in L.zip days (L.tail days)
-  currentDay <- getCurrentTime >>= (return . utctDay)
-
-  let (bds :: [Breakdown]) = L.concatMap (\p@(s, e) -> L.map (\(prj, r) -> MkBreakdown s e prj r) $ M.toList $ projectBreakDown goodTasks currentDay p) periods
-  let bdsLBS = CSV.encodeByName defaultBreakdownHeader bds
-  LBS.writeFile   "breakdown-by-tasks.csv" LBS.empty
-  LBS.appendFile  "breakdown-by-tasks.csv" bdsLBS
 
   -- Save in database
   conn <- connectPostgreSQL (connectionString cfg) --"host=localhost port=5432 dbname=sdlc_db user=postgres"
