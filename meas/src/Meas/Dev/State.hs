@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.State
+module Meas.Dev.State
 where
 
 --import Debug.Trace (trace)
@@ -21,8 +21,8 @@ import            Data.Time.Calendar
 import            Data.Time.Clock
 
 
-import Meas.Extract.Misc
-import Meas.Extract.Types
+import Meas.Misc
+import Meas.Dev.Types
 
 
 

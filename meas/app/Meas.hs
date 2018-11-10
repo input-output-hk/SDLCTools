@@ -22,13 +22,13 @@ import            Data.Time.Clock
 import            Data.String
 import            Database.PostgreSQL.Simple
 
-import Meas.Breakdown
-import Meas.Extract.Types
-import Meas.Extractor
-import Meas.Extract.Database
-import Meas.Extract.Misc
-import Meas.Extract.Report
-import Meas.Extract.Config
+import Meas.Dev.Report.Breakdown
+import Meas.Dev.Types
+import Meas.Dev.Extractor
+import Meas.Dev.Database
+import Meas.Misc
+import Meas.Dev.Report.Report
+import Meas.Config
 
 import Meas.Test.Types
 import Meas.Test.Database

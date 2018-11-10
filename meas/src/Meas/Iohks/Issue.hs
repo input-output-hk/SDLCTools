@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Iohks.Issue
+module Meas.Iohks.Issue
 where
 
 -- import Debug.Trace (trace)
@@ -20,11 +20,11 @@ import qualified  Data.List as L
 import qualified  Data.Text as T
 import qualified  Data.Text.Conversions as T
 
-import            Meas.Extract.Issue
-import            Meas.Extract.Misc
-import            Meas.Extract.Types
-import            Meas.Extract.Iohks.Types
-import            Meas.YouTrack.Parser
+import            Meas.Dev.Issue
+import            Meas.Dev.Types
+import            Meas.Iohks.Types
+import            Meas.Dev.Parser
+import            Meas.Misc
 
 
 

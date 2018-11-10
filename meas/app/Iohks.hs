@@ -16,10 +16,12 @@ import qualified  Data.Csv as CSV
 import            Data.Time.Clock
 
 
-import Meas.Extract.Iohks.Extractor
-import Meas.Extract.Iohks.Report
-import Meas.Extract.Config
-import Meas.Extract.Misc
+main = return ()
+{-}
+import Meas.Iohks.Extractor
+import Meas.Iohks.Report
+import Meas.Config
+import Meas.Misc
 
 
 
@@ -42,5 +44,5 @@ run authorization = do
   LBS.appendFile  "iohks-report.csv" csvIohksReportLBS
 
 
-
+-}
 

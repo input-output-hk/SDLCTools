@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Report
+module Meas.Dev.Report.Report
 where
 
 -- import            Debug.Trace (trace)
@@ -19,9 +19,9 @@ import qualified  Data.List as L
 import qualified  Data.Text as T
 import            Data.Time.Calendar
 
-import            Meas.Extract.Misc
-import            Meas.Extract.State
-import            Meas.Extract.Types
+import            Meas.Misc
+import            Meas.Dev.State
+import            Meas.Dev.Types
 
 data TaskReport = TaskReport Day YtTask
 

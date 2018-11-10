@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Iohks.Extractor
+module Meas.Iohks.Extractor
 
 where
 
@@ -18,11 +18,11 @@ where
 import            Data.Aeson
 import qualified  Data.Text as T
 
-import            Meas.Extract.Issue
-import            Meas.Extract.Iohks.Types
-import            Meas.Extract.Iohks.Issue
+import            Meas.Issue
+import            Meas.Iohks.Types
+import            Meas.Iohks.Issue
 import            Meas.YouTrack.Queries
-import            Meas.YouTrack.Parser
+import            Meas.Dev.Parser
 
 nbTouchedDays :: Integer
 nbTouchedDays = 0

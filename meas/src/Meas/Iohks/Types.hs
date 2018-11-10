@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Iohks.Types
+module Meas.Iohks.Types
 where
 
 -- import            Debug.Trace (trace)
@@ -23,8 +23,8 @@ import            Data.Time.Clock
 
 import            GHC.Generics (Generic)
 
-import Meas.Extract.Types
-import Meas.Extract.Misc
+import Meas.Dev.Types
+import Meas.Misc
 
 
 

@@ -50,23 +50,29 @@ library
     , yaml
   exposed-modules:
       Meas
-      Meas.Breakdown
-      Meas.Extract.Config
-      Meas.Extract.Database
-      Meas.Extract.Efficiency
-      Meas.Extract.Iohks.Extractor
-      Meas.Extract.Iohks.Issue
-      Meas.Extract.Iohks.Report
-      Meas.Extract.Iohks.Types
-      Meas.Extract.Issue
-      Meas.Extract.Misc
-      Meas.Extract.Report
-      Meas.Extract.State
-      Meas.Extract.Types
-      Meas.Extractor
+      Meas.Config
+
+      Meas.Dev.Database
+      Meas.Dev.Efficiency
+      Meas.Dev.Extractor
+      Meas.Dev.Issue
+      Meas.Dev.Parser
+      Meas.Dev.Report.Report
+      Meas.Dev.Report.Breakdown
+      Meas.Dev.State
+      Meas.Dev.Types
+      Meas.Dev.Queries
+
+--      Meas.Iohks.Extractor
+--      Meas.Iohks.Issue
+--      Meas.Iohks.Report
+--      Meas.Iohks.Types
+
+      Meas.Misc
+
       Meas.Test.Database
       Meas.Test.Types
-      Meas.YouTrack.Parser
+
       Meas.YouTrack.Queries
   other-modules:
   default-language: Haskell2010

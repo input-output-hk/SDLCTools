@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.YouTrack.Parser
+module Meas.Dev.Parser
 where
 
 import Debug.Trace (trace)
@@ -30,67 +30,11 @@ import            GHC.Generics (Generic)
 import            Text.Read (readMaybe)
 
 
-import            Meas.Extract.Types
+import            Meas.Dev.Types
 
 
 head' msg [] = error $ "head2 : empty list + -> "++msg
 head' _ l = head l
-
-data GenericIssues = GenericIssues [GenericIssue]
-  deriving (Show, Generic, NFData)
-
-
-data GenericIssue = MkGenericIssue
-  { issueId :: T.Text
-  , issueFields :: [GenericIssueField]
-  }
-  deriving (Show, Generic, NFData)
-
-
-
-
-data GenericIssueField =
-  GProjectField T.Text
-  |GTypeField T.Text
-  |GCreatedField T.Text
-  |GUpdatedField T.Text
-  |GNumberField T.Text
-  |GSummaryField T.Text
-  |GDescriptionField T.Text
-  |GStateField T.Text
-  |GWaitField T.Text
-  |GThreeDField T.Text
-  |GDueDateField T.Text
-  |GRomManDaysField T.Text
-  |GSquadField T.Text
-  |GOwnerField T.Text
-  |GPEasyField T.Text
-  |GPBenefitsField T.Text
-  |GPUrgencyField T.Text
-  |GLinkField [(LinkType, T.Text)]
-  |GAssigneeField T.Text
-  |GPotentialSquadField T.Text
-  |GPriorityField T.Text
-  |GSubSystemField T.Text
-  |GFixVersionsField T.Text
-  |GAffectedVersionsField T.Text
-  |GExchangeField T.Text
-  |GResolutionField T.Text
-  |GPlatformField T.Text
-  |GTargetVersionsField T.Text
-
-  deriving (Show, Generic, NFData)
-
-
-data Hist =  Hist
-  { issue :: Issue
-  , changes :: [[ValueChange]]
-  }
-  deriving (Show, Generic, NFData)
-
-data Issue = Issue T.Text
-  deriving (Show, Generic, NFData)
-
 
 
 instance FromJSON Hist where

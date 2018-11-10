@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Efficiency
+module Meas.Dev.Efficiency
 where
 
 -- import Debug.Trace (trace)
@@ -20,8 +20,8 @@ import qualified  Data.Set as S
 import            Data.Time.Calendar
 import            Data.Time.Clock
 
-import Meas.Extract.Misc
-import Meas.Extract.Types
+import Meas.Misc
+import Meas.Dev.Types
 
 {- Compute the number of days an issue is not worked on.
 The issue is represented by its state transitions and by all its historical changes.

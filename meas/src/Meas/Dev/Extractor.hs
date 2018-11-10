@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extractor
+module Meas.Dev.Extractor
 
 where
 
@@ -18,11 +18,11 @@ where
 import qualified  Data.Text as T
 import            Data.Time.Clock
 
-import            Meas.Extract.Efficiency
-import            Meas.Extract.Issue
-import            Meas.Extract.State
-import            Meas.Extract.Types
-import            Meas.YouTrack.Queries
+import            Meas.Dev.Efficiency
+import            Meas.Dev.Issue
+import            Meas.Dev.State
+import            Meas.Dev.Types
+import            Meas.Dev.Queries
 
 nbTouchedDays :: Integer
 nbTouchedDays = 0

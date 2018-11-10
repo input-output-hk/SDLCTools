@@ -30,7 +30,7 @@ import            Data.Time.Format
 import qualified  Data.ByteString.Char8 as BS8
 import            Network.HTTP.Simple as HTTP
 
-import           Meas.Extract.Misc
+import            Meas.Misc
 
 
 -- TODO : move them in a misc module or wait until everything is moved in the "meas" package

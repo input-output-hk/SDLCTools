@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Issue
+module Meas.Dev.Issue
 where
 
 --import Debug.Trace (trace)
@@ -21,9 +21,9 @@ import            Data.Maybe (mapMaybe)
 import qualified  Data.Text as T
 import qualified  Data.Text.Conversions as T
 
-import            Meas.Extract.Misc
-import            Meas.Extract.Types
-import            Meas.YouTrack.Parser
+import            Meas.Misc
+import            Meas.Dev.Types
+import            Meas.Dev.Parser
 
 
 

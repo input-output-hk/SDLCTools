@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Iohks.Report
+module Meas.Iohks.Report
 where
 
 -- import            Debug.Trace (trace)
@@ -20,9 +20,9 @@ import            Data.Monoid ((<>))
 import qualified  Data.Text as T
 import            Data.Time.Calendar
 
-import            Meas.Extract.Misc
-import            Meas.Extract.Report
-import            Meas.Extract.Iohks.Types
+import            Meas.Misc
+import            Meas.Dev.Report.Report
+import            Meas.Iohks.Types
 
 data IohksReport = IohksReport Day YtIohksIssue
 

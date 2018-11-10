@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Breakdown
+module Meas.Dev.Report.Breakdown
 
 where
 
@@ -22,9 +22,9 @@ import qualified  Data.Set as S
 import qualified  Data.Text as T
 import            Data.Time.Calendar
 
-import            Meas.Extract.Efficiency
-import            Meas.Extract.Misc
-import            Meas.Extract.Types
+import            Meas.Dev.Efficiency
+import            Meas.Misc
+import            Meas.Dev.Types
 
 
 

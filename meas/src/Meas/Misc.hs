@@ -9,7 +9,7 @@
 
 {-# LANGUAGE TemplateHaskell #-}
 
-module Meas.Extract.Misc
+module Meas.Misc
 where
 
 -- import Debug.Trace (trace)
