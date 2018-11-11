@@ -110,15 +110,7 @@ issueFieldParser =
           "p_urgency"         -> issueEnumFieldParser GPUrgencyField o
           "Target versions"   -> issueSimpleFieldParser GTargetVersionsField o
           "Potential Squads"  -> issueSimpleFieldParser GPotentialSquadField o
-
-
-          --IOHKS
-          "Subsystem"         -> issueSimpleFieldParser GSubSystemField o
-          "Fix versions"      -> issueSimpleFieldParser GFixVersionsField o
-          "Affected versions" -> issueSimpleFieldParser GAffectedVersionsField o
-          "Exchange"          -> issueSimpleFieldParser GExchangeField o
           "Resolution"        -> issueSimpleFieldParser GResolutionField o
-          "Platform"          -> issueSimpleFieldParser GPlatformField o
 
           "links"             -> issueLinkParser o
           _                   -> return Nothing
@@ -378,12 +370,6 @@ instance FromText PriorityValue where
   fromText "Minor"        = Minor
   fromText s              = error ("unknow Priority :"++T.unpack s)
 
--- instance FromText IohksStateValue where
---   fromText "Submitted"      = IohksSubmitted
---   fromText "Ready to Solve" = IohksReadyToSolve
---   fromText "Fixed"          = IohksFixed
---   fromText "Done"           = IohksDone
---   fromText s                = error ("unknow Iohks State: "++T.unpack s)
 
 
 instance FromText ResolutionValue where
@@ -392,12 +378,6 @@ instance FromText ResolutionValue where
   fromText "Duplicate"  = Duplicate
   fromText "Obsolete"   = Obsolete
   fromText s            = error ("unknow Resolution: "++T.unpack s)
-
--- instance Show IohksStateValue where
---   show IohksSubmitted     = "Submitted"
---   show IohksReadyToSolve  = "Ready to Solve"
---   show IohksFixed         = "Fixed"
---   show IohksDone          = "Done"
 
 
 

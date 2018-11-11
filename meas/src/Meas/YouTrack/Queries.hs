@@ -25,9 +25,6 @@ import            Network.HTTP.Simple as HTTP
 
 import            Text.XML.JSON.StreamingXmlToJson
 
---import            Meas.Extract.Types
---import            Meas.YouTrack.Parser
-
 
 
 allIssuesForProjectJson :: String -> String -> String -> IO LBS.ByteString

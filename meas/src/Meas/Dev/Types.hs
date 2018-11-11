@@ -57,13 +57,6 @@ data PriorityValue =
   |Minor
   deriving (Eq, Show)
 
---data IohksStateValue =
---  IohksSubmitted
---  |IohksReadyToSolve
---  |IohksFixed
---  |IohksDone
---  deriving (Eq, Generic, NFData)
-
 
 data StateValue =
   Backlog
@@ -282,15 +275,11 @@ data GenericIssueField =
   |GAssigneeField T.Text
   |GPotentialSquadField T.Text
   |GPriorityField T.Text
-  |GSubSystemField T.Text
-  |GFixVersionsField T.Text
-  |GAffectedVersionsField T.Text
-  |GExchangeField T.Text
-  |GResolutionField T.Text
-  |GPlatformField T.Text
   |GTargetVersionsField T.Text
+  |GResolutionField T.Text
 
   deriving (Show)
+
 
 
 data Hist =  Hist
