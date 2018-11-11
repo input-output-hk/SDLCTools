@@ -75,7 +75,7 @@ run cfg@MkConfig{..} = do
   -- Save in database
   conn <- connectPostgreSQL (connectionString cfg) --"host=localhost port=5432 dbname=sdlc_db user=postgres"
 
-  when cfgDevCleanupDB (deleteDevProjectData conn)
+  when (cfgDevCleanupDB && not (null goodIssues)) (deleteDevProjectData conn)
 
   -- save issues
   mapM_ (saveIssue conn) goodIssues
@@ -88,7 +88,7 @@ run cfg@MkConfig{..} = do
   testIssues <- getAllTestIssues cfg_yt_key cfgTestQueries
 
   -- save in database
-  when cfgTestCleanupDB (deleteTestProjectData conn)
+  when (cfgTestCleanupDB && not (null testIssues)) (deleteTestProjectData conn)
 
   mapM_ (\(_, issues) -> mapM_ (saveTestProjectIssue conn) issues) testIssues
 
