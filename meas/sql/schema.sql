@@ -572,7 +572,7 @@ CREATE TABLE yttpLinks (
   yttpLinkedObjectType text NOT NULL,
   yttpLinkRole         text NOT NULL,
 
-  CONSTRAINT PKC_yttpLinks PRIMARY KEY (yttpiIssueId, yttpLinkedTicketId),
+  CONSTRAINT PKC_yttpLinks PRIMARY KEY (yttpiIssueId, yttpLinkedTicketId, yttpLinkRole),
   FOREIGN KEY (yttpiIssueId) REFERENCES yttpIssueDetails (yttpiIssueId)
   ON DELETE RESTRICT ON UPDATE CASCADE
 );
