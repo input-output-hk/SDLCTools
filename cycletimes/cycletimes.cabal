@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 556233b76f23c8fdb462a1c22e3b21fddcc00af7305443bd35cf0b8fd85b3e38
+-- hash: d1ddeae8fed4047a36527a98e089d4474f375223296a6779bd98a3ec1129871c
 
 name:           cycletimes
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
     , optparse-applicative
     , text
     , time
+    , vector
   default-language: Haskell2010
 
 executable cycletimes-exe
@@ -60,6 +61,7 @@ executable cycletimes-exe
     , optparse-applicative
     , text
     , time
+    , vector
   default-language: Haskell2010
 
 test-suite cycletimes-test
@@ -80,4 +82,5 @@ test-suite cycletimes-test
     , optparse-applicative
     , text
     , time
+    , vector
   default-language: Haskell2010
