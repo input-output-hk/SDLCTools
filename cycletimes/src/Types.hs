@@ -70,3 +70,29 @@ nameToState "New Issues"  = Backlog
 nameToState "In Progress" = InProgress
 nameToState "Review/QA"   = InReview
 nameToState "Closed"      = Done
+
+
+
+-- J-C view on events
+
+data Events =
+  Created TimeStamp    -- ^ time the issue is created, time associated with Backlog state, from GH
+  |Transition State State TimeStamp  -- ^ state transition, from ZenHub
+  |Closed TimeStamp  -- ^ time when the issue is closed, from GH
+  |ReOpen TimeStamp  -- ^ time when the issue is re-opened, from GH
+
+{-
+Given a list of such event, the goal is to find a algo that will produce a set S of
+forward-only state transactions: Backlog -> InProgress -> InReview -> Done.
+with some conditions:
+
+Backlog time always = creation time
+
+If a Done state is in the set S, it has the highest time .
+Beware of backwards transitions from Done to InProgress, Review.
+Transition from Done to Backlog are problematic,
+
+-}
+
+
+
