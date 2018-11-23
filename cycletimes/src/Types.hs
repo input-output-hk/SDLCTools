@@ -81,6 +81,21 @@ data Events =
   |Closed TimeStamp  -- ^ time when the issue is closed, from GH
   |ReOpen TimeStamp  -- ^ time when the issue is re-opened, from GH
 
+
+
+data Events =
+  Transition State State TimeStamp  -- ^ state transition, from ZenHub
+
+
+
+data StateTransitions =
+  STBacklog UTCTime
+  |STInProgress UTCTime UTCTime UTCTime
+  |STInReview UTCTime UTCTime UTCTime UTCTime
+  |STDone UTCTime UTCTime UTCTime UTCTime UTCTime
+  |STIllegalStateTransitions
+  deriving (Eq, Show)
+
 {-
 Given a list of such event, the goal is to find a algo that will produce a set S of
 forward-only state transactions: Backlog -> InProgress -> InReview -> Done.
