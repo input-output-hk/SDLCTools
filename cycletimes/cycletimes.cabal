@@ -27,6 +27,8 @@ source-repository head
 library
   exposed-modules:
       Misc
+      Parser
+      Queries
       Types
   other-modules:
       Paths_cycletimes

@@ -9,7 +9,7 @@ import           Control.Applicative
 import           GHC.Generics
 import           Data.Aeson
 import           Data.Aeson.Types
-import           Data.Text
+import qualified Data.Text as T
 import           Data.Vector      (toList)
 
 import            Data.Time.Calendar
@@ -22,6 +22,29 @@ toUTCTime :: Int -> UTCTime
 toUTCTime n = posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
 
 
+
+
+data GHUser = MkGHUser
+  { ghuUser     :: T.Text
+  , ghuUserId   :: Int
+  }
+  deriving Show
+
+
+data GHIssue = MkGHIssue
+  { ghiId               :: Int
+  , ghiNumber           :: Int
+  , ghiTitle            :: T.Text
+  , ghiUser             :: GHUser
+  , ghiCreationTime     :: UTCTime
+  , ghiMainAssignee     :: GHUser
+  , ghiAssignees        :: [GHUser]
+  }
+  deriving Show
+
+
+
+
 data Event =
   TransferState State State TimeStamp UserId
   | SetState State TimeStamp UserId
@@ -30,21 +53,21 @@ data Event =
 
 instance FromJSON Event where
   parseJSON = withObject "Event" $ \o -> do
-    eventType <- o .: "type" :: Parser Text
+    eventType <- o .: "type" :: Parser T.Text
     case eventType of
       "transferIssue" -> do
         timeStamp <- toUTCTime <$> (o .: "created_at" :: Parser Int)
 
         let transferState  = do
               fromPipeLine <-  o .: "from_pipeline"
-              fromState <- nameToState <$> (fromPipeLine .: "name" :: Parser Text)
+              fromState <- nameToState <$> (fromPipeLine .: "name" :: Parser T.Text)
               toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser Text)
+              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
               pure $ TransferState fromState toState (toUTCTime 1) 1
 
         let setState  = do
               toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser Text)
+              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
               pure $ SetState toState (toUTCTime 1) 1
 
         transferState <|> setState
@@ -65,7 +88,7 @@ parseEvents :: Value -> Parser [Event]
 parseEvents (Array arr) = do
   forM (toList arr) parseJSON :: Parser [Event]
 
-nameToState :: Text -> State
+nameToState :: T.Text -> State
 nameToState "New Issues"  = Backlog
 nameToState "In Progress" = InProgress
 nameToState "Review/QA"   = InReview
@@ -74,7 +97,7 @@ nameToState "Closed"      = Done
 
 
 -- J-C view on events
-
+{-
 data Events =
   Created TimeStamp    -- ^ time the issue is created, time associated with Backlog state, from GH
   |Transition State State TimeStamp  -- ^ state transition, from ZenHub
@@ -95,7 +118,7 @@ data StateTransitions =
   |STDone UTCTime UTCTime UTCTime UTCTime UTCTime
   |STIllegalStateTransitions
   deriving (Eq, Show)
-
+-}
 {-
 Given a list of such event, the goal is to find a algo that will produce a set S of
 forward-only state transactions: Backlog -> InProgress -> InReview -> Done.
