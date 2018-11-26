@@ -14,6 +14,7 @@ import qualified  Data.ByteString.Char8 as B8
 import qualified  Data.ByteString.Lazy.Char8 as BL8
 import qualified  Data.ByteString.Lazy as LBS
 
+import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
@@ -24,33 +25,54 @@ import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
-
+import            Assignee
+import            Config
+import            Issue
 import            Misc
 import            Parser
 import            Queries
+import            Report.Assignees
 import            Types
 
 main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
   resp <- runQuery zhToken repoId issueNum
-  print resp
+--  print resp
+  return ()
 
--- curl -H 'X-Authentication-Token: 99e0c835ae8b1f111226d1f88dc130608bf36891'
--- https://api.github.com/repos/jcmincke/zenhub-prj/issues/6 > gh-one-issue-jc.json
 
--- main2
-d::UTCTime
-d = parseTimeOrError  True defaultTimeLocale  "%Y-%m-%dT%TZ" "2018-11-22T22:34:14Z"
+main3 :: IO ()
+main3 = do
+  issues <- getIssues config
+--  print config
+--  print issues
+  --generateAssigneeIssueReport "files/assignees.csv" $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
+  return ()
+  where
+  onlyInProgressIssues issues = L.filter (\i -> let s = zhiState $ iZHIssue $ i in s == InProgress || s == InReview) issues
+  config = MkConfig [--("input-output-hk", "cardano-chain", 149791280)
+                     ("input-output-hk", "cardano-wallet", 154148239)
+--                    ("jcmincke", "zenhub-prj", 152765249)
+                    ]
+                    "gh-key"
+                    "zh-key"
 
--- "2018-11-22T10:32:29Z"
+
+
+
 
 main2 :: IO ()
 main2 = do
-  json <- getSingleIssueFromGH "99e0c835ae8b1f111226d1f88dc130608bf36891" "jcmincke" "zenhub-prj" 6
-  LBS.writeFile "resp.json" json
-  let (issue :: Either String GHIssue) = eitherDecode json
+  json <- getAllIssuesFromGHRepo "GH-key" "jcmincke" "zenhub-prj"
+  LBS.writeFile "resp1.json" json
+  let (issue :: Either String [GHIssue]) = eitherDecode json
   print issue
+  json <- getIssueEventsFromGHRepo "GH-key" "jcmincke" "zenhub-prj" 6
+  LBS.writeFile "resp2.json" json
+  let (evts :: Either String [Maybe GHIssueEvent]) = eitherDecode json
+  print evts
+
 
 runQuery :: String -> String -> Int -> IO (BL8.ByteString)
 runQuery token repo_id issue_number = do
@@ -65,8 +87,5 @@ runQuery token repo_id issue_number = do
   return responseBody
 
 
-key =" 0224a838e6110e6971df72feb78200ab68b1924406ec70b1b14159c86de186fc95b3961f155fa506"
-
-repo = "149791280"
 
 

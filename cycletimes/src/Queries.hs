@@ -30,8 +30,8 @@ https://api.github.com/repos/jcmincke/zenhub-prj/issues/6 > gh-one-issue-jc.json
 -}
 
 
-getSingleIssueFromGH :: String -> String -> String -> Int -> IO LBS.ByteString
-getSingleIssueFromGH token user repo issue_number = do
+getSingleIssueFromGHRepo :: String -> String -> String -> Int -> IO LBS.ByteString
+getSingleIssueFromGHRepo token user repo issue_number = do
   req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues/"
                          <> show issue_number
   let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
@@ -42,7 +42,54 @@ getSingleIssueFromGH token user repo issue_number = do
   let responseBody = getResponseBody response
   return responseBody
 
+getAllIssuesFromGHRepo :: String -> String -> String -> IO LBS.ByteString
+getAllIssuesFromGHRepo token user repo = do
+  req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              , ("User-Agent", BS8.pack user)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  return responseBody
 
+
+
+getIssueEventsFromGHRepo :: String -> String -> String -> Int -> IO LBS.ByteString
+getIssueEventsFromGHRepo token user repo issue_number = do
+  req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues/"
+                         <> show issue_number <> "/events"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              , ("User-Agent", BS8.pack user)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  return responseBody
+
+
+getSingleIssueFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString
+getSingleIssueFromZHRepo token repoId issueNumber = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/issues/"  <> show issueNumber
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  print (repoId, issueNumber, responseBody)
+  return responseBody
+
+getSingleIssueEventsFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString
+getSingleIssueEventsFromZHRepo token repoId issueNumber = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/issues/"  <> show issueNumber <> "/events/"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  return responseBody
+
+--https://api.github.com/repos/jcmincke/zenhub-prj/issues/6/events > gh-events-jc.json
 
 {-
 allIssuesForProjectJson :: String -> String -> String -> IO LBS.ByteString

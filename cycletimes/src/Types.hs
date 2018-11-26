@@ -22,14 +22,25 @@ toUTCTime :: Int -> UTCTime
 toUTCTime n = posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
 
 
+data Issue = MkIssue
+  { iGHIssue  :: GHIssue
+  , iZHIssue  :: ZHIssue
+  , iGHIssueEvents :: [GHIssueEvent]
+  , iZHIssueEvents :: [ZHIssueEvent]
+  , iRepoName :: T.Text
+  }
+  deriving (Show, Eq, Ord)
+
 
 
 data GHUser = MkGHUser
   { ghuUser     :: T.Text
   , ghuUserId   :: Int
   }
-  deriving Show
+  deriving (Show, Eq, Ord)
 
+defGHUser :: GHUser
+defGHUser = MkGHUser "" 0
 
 data GHIssue = MkGHIssue
   { ghiId               :: Int
@@ -37,62 +48,61 @@ data GHIssue = MkGHIssue
   , ghiTitle            :: T.Text
   , ghiUser             :: GHUser
   , ghiCreationTime     :: UTCTime
-  , ghiMainAssignee     :: GHUser
+  , ghiMainAssignee     :: Maybe GHUser
   , ghiAssignees        :: [GHUser]
+  , ghiUrl              :: T.Text
   }
-  deriving Show
+  deriving (Show, Eq, Ord)
+
+data ZHIssue = MkZHIssue
+  { zhiState            :: State
+  , zhiIsEpic           :: Bool
+  }
+  deriving (Show, Eq, Ord)
 
 
 
+data GHIssueEvent =
+  GHEvtCloseEvent TimeStamp
+  |GHEvtReOpenEvent TimeStamp
+--  |GHEvtOther
+  deriving (Show, Eq, Ord)
 
-data Event =
-  TransferState State State TimeStamp UserId
-  | SetState State TimeStamp UserId
-  | NotImportant
+
+
+data ZHIssueEvent =
+  ZHEvtTransferState State State TimeStamp
+--  | ZHEvtSetState State TimeStamp
+--  | ZHNoEvent
+  deriving (Show, Eq, Ord)
+
+data StateEvent = StateEvent State State TimeStamp
   deriving (Eq, Show, Generic)
 
-instance FromJSON Event where
-  parseJSON = withObject "Event" $ \o -> do
-    eventType <- o .: "type" :: Parser T.Text
-    case eventType of
-      "transferIssue" -> do
-        timeStamp <- toUTCTime <$> (o .: "created_at" :: Parser Int)
-
-        let transferState  = do
-              fromPipeLine <-  o .: "from_pipeline"
-              fromState <- nameToState <$> (fromPipeLine .: "name" :: Parser T.Text)
-              toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
-              pure $ TransferState fromState toState (toUTCTime 1) 1
-
-        let setState  = do
-              toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
-              pure $ SetState toState (toUTCTime 1) 1
-
-        transferState <|> setState
-
-      _ -> pure NotImportant
 
 data State =
   Backlog
   |InProgress
   |InReview
   |Done
-  deriving (Eq, Show, Generic)
+  deriving (Eq, Show, Generic, Ord)
 
 type UserId = Int
 type TimeStamp = UTCTime
 
-parseEvents :: Value -> Parser [Event]
-parseEvents (Array arr) = do
-  forM (toList arr) parseJSON :: Parser [Event]
+--parseEvents :: Value -> Parser [Event]
+--parseEvents (Array arr) = do
+--  forM (toList arr) parseJSON :: Parser [Event]
 
 nameToState :: T.Text -> State
-nameToState "New Issues"  = Backlog
-nameToState "In Progress" = InProgress
-nameToState "Review/QA"   = InReview
-nameToState "Closed"      = Done
+nameToState "New Issues"     = Backlog
+nameToState "In Progress"    = InProgress
+nameToState "Review/QA"      = InReview
+nameToState "Closed"         = Done
+nameToState "Epics"          = Backlog
+nameToState "Proposed"       = Backlog
+nameToState "Accepted"       = Backlog
+nameToState e = error (T.unpack e)
 
 
 

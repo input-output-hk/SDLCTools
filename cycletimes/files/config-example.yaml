@@ -1,0 +1,8 @@
+
+repos:
+    - ["input-output-hk", "cardano-chain", 149791280]
+repos-bck:
+    - ["jcmincke", "zenhub-prj", 152765249]
+gh_key:  "your-gh-key"
+zh_key:  "your-zh-key"
+
