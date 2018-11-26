@@ -34,7 +34,8 @@ getSingleIssueFromGHRepo :: String -> String -> String -> Int -> IO LBS.ByteStri
 getSingleIssueFromGHRepo token user repo issue_number = do
   req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues/"
                          <> show issue_number
-  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+  let authorization = "token " ++ token
+  let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
                               , ("User-Agent", BS8.pack user)
                               ]
           $ req'
@@ -45,7 +46,8 @@ getSingleIssueFromGHRepo token user repo issue_number = do
 getAllIssuesFromGHRepo :: String -> String -> String -> IO LBS.ByteString
 getAllIssuesFromGHRepo token user repo = do
   req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues"
-  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+  let authorization = "token " ++ token
+  let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
                               , ("User-Agent", BS8.pack user)
                               ]
           $ req'
@@ -59,7 +61,8 @@ getIssueEventsFromGHRepo :: String -> String -> String -> Int -> IO LBS.ByteStri
 getIssueEventsFromGHRepo token user repo issue_number = do
   req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues/"
                          <> show issue_number <> "/events"
-  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+  let authorization = "token " ++ token
+  let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
                               , ("User-Agent", BS8.pack user)
                               ]
           $ req'
