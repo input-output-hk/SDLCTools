@@ -16,7 +16,7 @@ import           Data.Time.Clock
 import           Data.Time.Format
 import           GHC.Exts (sortWith)
 
-import qualified Meas as M
+import qualified Meas.Dev.Types as M
 
 newtype GHResponse = GHResponse ( PageInfo , [PullRequest] )
   deriving ( Show )

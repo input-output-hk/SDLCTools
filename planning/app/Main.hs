@@ -29,10 +29,10 @@ import qualified  Data.List as L
 
 import            Gtsim.Simulator
 
-import            Meas.Extract.Types
-import            Meas.Extractor
-import            Meas.Extract.Misc
-import            Meas.Extract.Report
+import            Meas.Dev.Types
+import            Meas.Dev.Extractor
+import            Meas.Misc
+import            Meas.Dev.Report.Report
 
 import            Gtsim.Types
 import qualified  Gtsim.Invariants as I

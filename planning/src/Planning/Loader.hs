@@ -31,7 +31,7 @@ import Data.Word
 
 import            Gtsim.Types
 import            Gtsim.Simulator as S
-import            Meas.Extract.Types
+import            Meas.Dev.Types
 
 import System.IO.Unsafe (unsafePerformIO)
 
