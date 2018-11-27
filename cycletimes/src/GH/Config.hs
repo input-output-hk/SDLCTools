@@ -3,7 +3,7 @@
 
 
 
-module Config
+module GH.Config
 (
   Config (..)
 

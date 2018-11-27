@@ -25,53 +25,75 @@ import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
-import            Assignee
-import            Config
-import            Issue
-import            Misc
-import            Parser
-import            Queries
-import            Report.Assignees
-import            Types
+import            Network.HTTP.Link.Parser as P
 
-main :: IO ()
-main = do
+import            GH.Assignee
+import            GH.Config
+import            GH.Issue
+import            GH.Misc
+import            GH.Parser
+import            GH.Queries
+import            GH.Report.Assignees
+import            GH.Types
+
+-- parseLinkHeader' :: Text -> Either String [Link]
+l = parseLinkHeader' "<https://api.github.com/repositories/154148239/issues?state=all&page=4>; rel=\"prev\", <https://api.github.com/repositories/154148239/issues?state=all&page=4>; rel=\"last\", <https://api.github.com/repositories/154148239/issues?state=all&page=1>; rel=\"first\""
+
+
+main1 :: IO ()
+main1 = do
   (MkCliOptions {..}) <- parseCliArgs
   resp <- runQuery zhToken repoId issueNum
 --  print resp
   return ()
 
 
-main3 :: IO ()
-main3 = do
+main :: IO ()
+main = do
   issues <- getIssues config
 --  print config
---  print issues
-  --generateAssigneeIssueReport "files/assignees.csv" $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
+  print issues
+  generateAssigneeIssueReport "files/assignements.csv" $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
+  generateIssueAssigneeReport "files/assignees.csv" $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
   return ()
   where
-  onlyInProgressIssues issues = L.filter (\i -> let s = zhiState $ iZHIssue $ i in s == InProgress || s == InReview) issues
-  config = MkConfig [--("input-output-hk", "cardano-chain", 149791280)
-                     ("input-output-hk", "cardano-wallet", 154148239)
+  onlyInProgressIssues issues = L.filter (\i -> let
+                  s = (zhiState $ iZHIssue i)
+                  isPR = ghiIsPR $ iGHIssue i
+                  in (s == InProgress || s == InReview) && not isPR) issues
+  config = MkConfig [ -- ("input-output-hk", "cardano-wallet", 154148239)
+  --                   ("input-output-hk", "ouroboros-network", 149481615)
+                     ("input-output-hk", "cardano-chain", 149791280)
+   --                  ("input-output-hk", "fm-ledger-rules", 150113380)
+  --                   ("input-output-hk", "cardano-shell", 154114906)
+
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
                     "gh-key"
                     "zh-key"
 
 
+main4 :: IO ()
+main4 = do
+  mapM_ (\i -> do
+            json <- getSingleIssueFromGHRepo "acef7726f02469d6793791458e4ceab094410436" "input-output-hk"  "cardano-wallet" 24
+            print "========="
+            print i
+            print "--------"
+            print json
+            ) [1..62]
 
 
-
-main2 :: IO ()
-main2 = do
-  json <- getAllIssuesFromGHRepo "GH-key" "jcmincke" "zenhub-prj"
-  LBS.writeFile "resp1.json" json
-  let (issue :: Either String [GHIssue]) = eitherDecode json
-  print issue
-  json <- getIssueEventsFromGHRepo "GH-key" "jcmincke" "zenhub-prj" 6
-  LBS.writeFile "resp2.json" json
-  let (evts :: Either String [Maybe GHIssueEvent]) = eitherDecode json
-  print evts
+--main2 :: IO ()
+--main2 = do
+--  json <- getAllIssuesFromGHRepo "GH-key" "jcmincke" "zenhub-prj"
+--  LBS.writeFile "resp1.json" json
+--  let (issue :: Either String [GHIssue]) = eitherDecode json
+--  print issue
+--  json <- getIssueEventsFromGHRepo "GH-key" "jcmincke" "zenhub-prj" 6
+--  LBS.writeFile "resp2.json" json
+--  let (evts :: Either String [Maybe GHIssueEvent]) = eitherDecode json
+--  print evts
 
 
 runQuery :: String -> String -> Int -> IO (BL8.ByteString)

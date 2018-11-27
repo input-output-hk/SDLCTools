@@ -8,7 +8,7 @@
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Parser
+module GH.Parser
 where
 
 import Debug.Trace (trace)
@@ -16,6 +16,7 @@ import            Control.Applicative
 import            Data.Aeson
 import            Data.Aeson.Types (Parser)
 import qualified  Data.Text as T
+import qualified  Data.HashMap.Strict as M
 
 import            Data.Time.Calendar
 import            Data.Time.Clock
@@ -23,7 +24,7 @@ import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
 
-import            Types
+import            GH.Types
 
 
 {-
@@ -56,7 +57,7 @@ data ZHIssue = MkZHIssue
 
 -}
 
-parseUTCTime t = parseTimeOrError  True defaultTimeLocale  "%Y-%m-%dT%H:%M%S%QZ" t
+parseUTCTime t = parseTimeOrError  True defaultTimeLocale  "%Y-%m-%dT%H:%M:%S%QZ" t
 
 
 instance {-# OVERLAPS #-} FromJSON (Maybe ZHIssueEvent) where
@@ -119,6 +120,8 @@ instance FromJSON GHIssue where
     ghiMainAssignee <- o .: "assignee" :: Parser (Maybe GHUser)
     ghiAssignees    <- o .: "assignees" :: Parser [GHUser]
     ghiUrl          <- o .: "html_url" :: Parser T.Text
+    let ghiIsPR = M.member "pull_request" o
+    --let ghiIsPR = maybe False (const True) prM
     let ghiRepoName = T.empty
     let ghiCreationTime = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack creationTime)
     return $ MkGHIssue {..}

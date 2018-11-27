@@ -1,4 +1,4 @@
-module Misc where
+module GH.Misc where
 
 import           Options.Applicative
 import           Data.Monoid ((<>))

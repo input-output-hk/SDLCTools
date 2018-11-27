@@ -26,14 +26,14 @@ source-repository head
 
 library
   exposed-modules:
-      Assignee
-      Config
-      Issue
-      Misc
-      Parser
-      Queries
-      Report.Assignees
-      Types
+      GH.Assignee
+      GH.Config
+      GH.Issue
+      GH.Misc
+      GH.Parser
+      GH.Queries
+      GH.Report.Assignees
+      GH.Types
   other-modules:
       Paths_cycletimes
   hs-source-dirs:
@@ -45,7 +45,11 @@ library
     , cassava
     , containers
     , http-conduit
+    , http-link-header
+    , http-types
+    , network-uri
     , optparse-applicative
+    , unordered-containers
     , text
     , time
     , vector
@@ -66,6 +70,7 @@ executable cycletimes-exe
     , cassava
     , cycletimes
     , http-conduit
+    , http-link-header
     , optparse-applicative
     , text
     , time

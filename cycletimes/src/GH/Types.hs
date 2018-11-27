@@ -2,15 +2,16 @@
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE RecordWildCards   #-}
-module Types where
 
-import           Control.Monad
-import           Control.Applicative
-import           GHC.Generics
-import           Data.Aeson
-import           Data.Aeson.Types
-import qualified Data.Text as T
-import           Data.Vector      (toList)
+module GH.Types where
+
+import            Control.Monad
+import            Control.Applicative
+import            GHC.Generics
+import            Data.Aeson
+import            Data.Aeson.Types
+import qualified  Data.Text as T
+import            Data.Vector      (toList)
 
 import            Data.Time.Calendar
 import            Data.Time.Clock
@@ -51,6 +52,7 @@ data GHIssue = MkGHIssue
   , ghiMainAssignee     :: Maybe GHUser
   , ghiAssignees        :: [GHUser]
   , ghiUrl              :: T.Text
+  , ghiIsPR             :: Bool
   }
   deriving (Show, Eq, Ord)
 
@@ -95,13 +97,17 @@ type TimeStamp = UTCTime
 --  forM (toList arr) parseJSON :: Parser [Event]
 
 nameToState :: T.Text -> State
-nameToState "New Issues"     = Backlog
-nameToState "In Progress"    = InProgress
-nameToState "Review/QA"      = InReview
-nameToState "Closed"         = Done
-nameToState "Epics"          = Backlog
-nameToState "Proposed"       = Backlog
-nameToState "Accepted"       = Backlog
+nameToState "New Issues"      = Backlog
+nameToState "Backlog"         = Backlog
+nameToState "In Progress"     = InProgress
+nameToState "Review/QA"       = InReview
+nameToState "Review"          = InReview
+nameToState "Done"            = Done
+nameToState "Closed"          = Done
+nameToState "Retrospective"   = Done
+nameToState "Epics"           = Backlog
+nameToState "Proposed"        = Backlog
+nameToState "Accepted"        = Backlog
 nameToState e = error (T.unpack e)
 
 

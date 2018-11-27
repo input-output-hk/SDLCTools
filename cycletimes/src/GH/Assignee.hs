@@ -3,7 +3,7 @@
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE RecordWildCards   #-}
 
-module Assignee where
+module GH.Assignee where
 
 import           Control.Monad
 import           Control.Applicative
@@ -21,7 +21,7 @@ import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
-import            Types
+import            GH.Types
 
 assigneeMap :: [GHIssue] -> M.Map GHUser (S.Set GHIssue)
 assigneeMap issues =
@@ -42,7 +42,7 @@ issueMap issues =
   fproc acc issue@MkGHIssue{..} =
     let acc' =  case ghiMainAssignee of
                 Just user -> M.insertWith S.union issue (S.singleton user) acc
-                Nothing -> acc
+                Nothing -> M.insertWith S.union issue S.empty acc
     in L.foldl (fproc' issue) acc' ghiAssignees
   fproc' issue acc user = M.insertWith S.union issue (S.singleton user) acc
 

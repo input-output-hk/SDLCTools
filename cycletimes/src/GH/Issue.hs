@@ -5,7 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE BangPatterns         #-}
 
-module Issue where
+module GH.Issue where
 
 
 import Debug.Trace (trace)
@@ -25,10 +25,10 @@ import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
-import            Config
-import            Parser
-import            Queries
-import            Types
+import            GH.Config
+import            GH.Parser
+import            GH.Queries
+import            GH.Types
 
 
 getIssues :: Config -> IO [Issue]
@@ -38,14 +38,15 @@ getIssues MkConfig{..} = do
 
   where
   getGHIssuesForRepo user repo repoId = do
-    json <- getAllIssuesFromGHRepo cfg_gh_key user repo
-    let (ghIssueE :: Either String [GHIssue]) = eitherDecode json
-    case ghIssueE of
-      Right ghIssues -> do
-          mapM proc ghIssues
-      Left e -> fail e
+    jsons <- getAllIssuesFromGHRepo cfg_gh_key user repo
+    let ghIssues = L.concat $ L.map (\json ->
+                    case eitherDecode json of
+                      Right issues -> issues
+                      Left e -> error e) jsons
+    mapM proc ghIssues
     where
     proc ghIssue = do
+      print ("getting data for: ", ghiNumber ghIssue)
       zhIssue <- getZHIssueForRepo repo repoId ghIssue
       zhIssueEvents <- getZHIssueEventsForRepo repo repoId ghIssue
       ghIssueEvents <- getGHIssueEventsForRepo user repo ghIssue
@@ -61,8 +62,8 @@ getIssues MkConfig{..} = do
 
   getZHIssueForRepo repo repoId ghIssue@MkGHIssue{..} = do
     json <- getSingleIssueFromZHRepo cfg_zh_key repoId ghiNumber
-    print "====================="
-    print json
+--    print "====================="
+--    print json
 
     let (zhIssueE :: Either String ZHIssue) = eitherDecode json
     case zhIssueE of

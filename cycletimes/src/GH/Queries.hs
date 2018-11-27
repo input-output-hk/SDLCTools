@@ -5,10 +5,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 
 
-module Queries
+module GH.Queries
 where
 
 -- import Debug.Trace (trace)
@@ -18,17 +19,30 @@ import qualified  Data.ByteString as BS
 import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
+import qualified  Data.Map.Strict as M
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
 
 import            Network.HTTP.Simple as HTTP
+import            Network.HTTP.Link.Parser
+import            Network.HTTP.Link.Types
+import            Network.HTTP.Types.Header
+import            Network.URI
 
+deriving instance Ord LinkParam
 
-{-
-curl -H 'X-Authentication-Token: 99e0c835ae8b1f111226d1f88dc130608bf36891'
-https://api.github.com/repos/jcmincke/zenhub-prj/issues/6 > gh-one-issue-jc.json
--}
-
+getNextPage :: ResponseHeaders -> Maybe String
+getNextPage headers = do
+  header <- M.lookup hLink (M.fromList headers)
+  links <- parseLinkHeaderBS header
+  let map = M.fromList $ do
+                Link uri params <- links
+                param <- params
+                return (param, uri)
+  uri <- M.lookup (Rel, "next") map
+  return $ show uri
+  where
+  hLink = "Link"
 
 getSingleIssueFromGHRepo :: String -> String -> String -> Int -> IO LBS.ByteString
 getSingleIssueFromGHRepo token user repo issue_number = do
@@ -40,20 +54,30 @@ getSingleIssueFromGHRepo token user repo issue_number = do
                               ]
           $ req'
   response <- httpLBS req
+  let headers = getResponseHeaders response
   let responseBody = getResponseBody response
   return responseBody
 
-getAllIssuesFromGHRepo :: String -> String -> String -> IO LBS.ByteString
+
+getAllIssuesFromGHRepo :: String -> String -> String -> IO [LBS.ByteString]
 getAllIssuesFromGHRepo token user repo = do
-  req' <- parseRequest $ "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues"
-  let authorization = "token " ++ token
-  let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
-                              , ("User-Agent", BS8.pack user)
-                              ]
-          $ req'
-  response <- httpLBS req
-  let responseBody = getResponseBody response
-  return responseBody
+  go [] initialRequest
+  where
+  go jsons url = do
+    print url
+    req' <- parseRequest url
+    let authorization = "token " ++ token
+    let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
+                                , ("User-Agent", BS8.pack user)
+                                ]
+              $ req'
+    response <- httpLBS req
+    let responseBody = getResponseBody response
+    case getNextPage $ getResponseHeaders response of
+      Just nextUrl -> go (responseBody:jsons) nextUrl
+      Nothing -> return (responseBody:jsons)
+
+  initialRequest = "GET https://api.github.com/repos/" <> user <> "/" <> repo <> "/issues?state=all"
 
 
 
@@ -79,7 +103,7 @@ getSingleIssueFromZHRepo token repoId issueNumber = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  print (repoId, issueNumber, responseBody)
+  -- print (repoId, issueNumber, responseBody)
   return responseBody
 
 getSingleIssueEventsFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString
