@@ -10,7 +10,8 @@ module GH.StateTransition
 )
 where
 
-import GH.Types
+import           GH.Types
+import qualified Data.List as L
 
 -- | Given the creation time and a list of StateChange Events returns the
 --   final StateTransition
@@ -43,7 +44,36 @@ transitionStep (STDone tb tp tr td)  (StateEvent Done Done _)             = STDo
 transitionStep _ _ = STIllegalStateTransitions
 
 
-
+-- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
 getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-getStateEvents [x] [c] = case (x,c) of
-  (GHEvtCloseEvent t1 , ZHEvtTransferState _ _ t2) | t1 > t2 -> []
+getStateEvents ghs zhs = L.sort . reverse $ _getStateEvents Nothing [] (L.sort ghs) (L.sort zhs)
+
+_getStateEvents :: Maybe State -> [StateEvent] -> [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+_getStateEvents oldState acc [] zhEvents = acc ++ (fromZHEvent <$> zhEvents)
+_getStateEvents oldState acc ghs@(ghe:restGhe) zhs@(zhe:restZhe) = case compareTime ghe zhe of
+  GT ->  _getStateEvents oldState (fromZHEvent zhe : acc) ghs restZhe
+  _  -> case ghe of
+    GHEvtCloseEvent ct -> let acc' = StateEvent (getLastState acc) Done ct : acc
+                          in _getStateEvents (Just $ getLastState acc) acc' restGhe zhs
+    GHEvtReOpenEvent ct -> let newState = case oldState of
+                                        Nothing -> StateEvent Backlog Backlog ct
+                                        Just st -> StateEvent Done st ct
+                           in _getStateEvents Nothing (newState : acc) restGhe zhs
+
+
+compareTime :: GHIssueEvent -> ZHIssueEvent -> Ordering
+compareTime (GHEvtCloseEvent gt)  (ZHEvtTransferState _ _ zt) = compare gt zt
+compareTime (GHEvtReOpenEvent gt) (ZHEvtTransferState _ _ zt) = compare gt zt
+
+
+-- | convert a ZHIssueEvent to StateEvent
+fromZHEvent :: ZHIssueEvent -> StateEvent
+fromZHEvent (ZHEvtTransferState s1 s2 t) = StateEvent s1 s2 t
+
+-- | from a list of StateEvent returns the most recent State
+getLastState :: [StateEvent] -> State
+getLastState ((StateEvent _ ls _) : _) = ls
+getLastState _ = error "No Previous State Found"
+
+
+
