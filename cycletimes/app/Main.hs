@@ -76,7 +76,7 @@ main = do
 main4 :: IO ()
 main4 = do
   mapM_ (\i -> do
-            json <- getSingleIssueFromGHRepo "acef7726f02469d6793791458e4ceab094410436" "input-output-hk"  "cardano-wallet" 24
+            json <- getSingleIssueFromGHRepo "gh-key" "input-output-hk"  "cardano-wallet" 24
             print "========="
             print i
             print "--------"
