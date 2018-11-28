@@ -32,6 +32,7 @@ library
       GH.Misc
       GH.Parser
       GH.Queries
+      GH.StateTransition
       GH.Report.Assignees
       GH.Types
   other-modules:

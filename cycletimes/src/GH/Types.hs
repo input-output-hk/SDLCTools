@@ -24,11 +24,12 @@ toUTCTime n = posixSecondsToUTCTime (fromIntegral $ n `div` 1000)
 
 
 data Issue = MkIssue
-  { iGHIssue  :: GHIssue
-  , iZHIssue  :: ZHIssue
-  , iGHIssueEvents :: [GHIssueEvent]
-  , iZHIssueEvents :: [ZHIssueEvent]
-  , iRepoName :: T.Text
+  { iGHIssue            :: GHIssue
+  , iZHIssue            :: ZHIssue
+  , iGHIssueEvents      :: [GHIssueEvent]
+  , iZHIssueEvents      :: [ZHIssueEvent]
+  , iRepoName           :: T.Text
+  , iStateTransitions   :: StateTransitions
   }
   deriving (Show, Eq, Ord)
 
@@ -118,7 +119,7 @@ data StateTransitions =
   |STInReview UTCTime UTCTime UTCTime
   |STDone UTCTime UTCTime UTCTime UTCTime
   |STIllegalStateTransitions
-  deriving (Eq, Show)
+  deriving (Eq, Show, Ord)
 
 -- J-C view on events
 {-
