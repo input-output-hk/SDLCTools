@@ -68,16 +68,32 @@ data ZHIssue = MkZHIssue
 data GHIssueEvent =
   GHEvtCloseEvent TimeStamp
   |GHEvtReOpenEvent TimeStamp
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq)
+
+instance Ord GHIssueEvent where
+  compare ge1 ge2 = compare (getTime ge1) (getTime ge2)
+    where
+      getTime (GHEvtCloseEvent t) = t
+      getTime (GHEvtReOpenEvent t) = t
 
 
 
 data ZHIssueEvent =
   ZHEvtTransferState State State TimeStamp
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq)
+
+instance Ord ZHIssueEvent where
+  compare ze1 ze2 = compare (getTime ze1) (getTime ze2)
+    where
+      getTime (ZHEvtTransferState _ _ t) = t
 
 data StateEvent = StateEvent State State TimeStamp
   deriving (Eq, Show, Generic)
+
+instance Ord StateEvent where
+  compare se1 se2 = compare (getTime se1) (getTime se2)
+    where
+      getTime (StateEvent _ _ t) = t
 
 
 data State =
