@@ -26,6 +26,7 @@ source-repository head
 
 library
   exposed-modules:
+      GH.Report.Actionable
       GH.Assignee
       GH.Config
       GH.Issue
@@ -35,7 +36,6 @@ library
       GH.StateTransition
       GH.Report.Assignees
       GH.Types
-      GH.StateTransition
   other-modules:
       Paths_cycletimes
   hs-source-dirs:

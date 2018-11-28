@@ -34,7 +34,7 @@ import            GH.Types
 getIssues :: Config -> IO [Issue]
 getIssues MkConfig{..} = do
   issues <- mapM (\(u, r, rid) -> getGHIssuesForRepo u r rid) cfgRepos >>= (return . L.concat)
-  return $ L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r)) issues
+  return $ L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
 
   where
   getGHIssuesForRepo user repo repoId = do

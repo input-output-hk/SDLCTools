@@ -6,7 +6,7 @@
 module GH.StateTransition
 (
   getStateTransitions
-, getStateEvents
+-- , getStateEvents
 )
 where
 
@@ -39,11 +39,11 @@ transitionStep (STInReview tb tp tr) (StateEvent InReview  InReview _)    = STIn
 transitionStep (STInReview tb tp tr) (StateEvent InReview  Done td)       = STDone tb tp tr td
 transitionStep (STDone tb tp tr td)  (StateEvent Done InProgress _)       = STInReview tb tp tr
 transitionStep (STDone tb tp tr td)  (StateEvent Done InReview _)         = STInReview tb tp tr
-transitionStep (STDone tb tp tr td)  (StateEvent Done Done _)             = STDone tb tp tr td
+transitionStep (STDone tb tp tr _)   (StateEvent Done Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
 
 
 
-getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-getStateEvents [x] [c] = case (x,c) of
-  (GHEvtCloseEvent t1 , ZHEvtTransferState _ _ t2) | t1 > t2 -> []
+-- getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+-- getStateEvents [x] [c] = case (x,c) of
+--   (GHEvtCloseEvent t1 , ZHEvtTransferState _ _ t2) | t1 > t2 -> []
