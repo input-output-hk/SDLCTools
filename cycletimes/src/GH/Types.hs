@@ -41,6 +41,13 @@ data GHUser = MkGHUser
   }
   deriving (Show, Eq, Ord)
 
+data GHMilestone = MkGHMilestone
+  {
+    ghmNumber   :: Int
+  , ghmDueDate  :: UTCTime
+  }
+  deriving (Show, Eq, Ord)
+
 defGHUser :: GHUser
 defGHUser = MkGHUser "" 0
 
@@ -54,6 +61,7 @@ data GHIssue = MkGHIssue
   , ghiAssignees        :: [GHUser]
   , ghiUrl              :: T.Text
   , ghiIsPR             :: Bool
+  , ghiMilestone        :: Maybe GHMilestone
   }
   deriving (Show, Eq, Ord)
 

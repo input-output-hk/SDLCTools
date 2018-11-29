@@ -58,9 +58,11 @@ defaultActionableIssueHeader = header
   , "Backlog", "InProgress", "Review", "Done"
   , "Repo"
   , "Is Epic"
+  , "Milestone"
   , "Assignee-1"
   , "Assignee-2"
   , "Assignee-3"
+
   ]
 
 data ActionableIssueReport = ActionableIssueReport Issue
@@ -87,12 +89,15 @@ instance ToNamedRecord ActionableIssueReport where
         , "Done"            .= maybe T.empty intToDateText (getDoneTime transitions)       -- ("20180816" :: String) --
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
+        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ ")") ghiMilestone
         , "Assignee-1"      .= a0
         , "Assignee-2"      .= a1
         , "Assignee-3"      .= a2
         ]
         where
         (a0:a1:a2:a3:a4:_) = (L.map ghuUser ghiAssignees ++ L.repeat "")
+        utcTimeToDateString t = formatTime defaultTimeLocale  "%d-%m-%Y" t
+
 
 
 instance CSV.DefaultOrdered ActionableIssueReport where

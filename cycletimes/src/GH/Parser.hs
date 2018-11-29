@@ -110,6 +110,14 @@ instance FromJSON GHUser where
     return $ MkGHUser {..}
 
 
+instance FromJSON GHMilestone where
+  parseJSON = withObject "User" $ \o -> do
+    ghmNumber  <- o .: "number" :: Parser Int
+    dueDate    <- o .: "due_on" :: Parser T.Text
+    let ghmDueDate = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack dueDate)
+    return $ MkGHMilestone {..}
+
+
 instance FromJSON GHIssue where
   parseJSON = withObject "Issue" $ \o -> do
     ghiId           <- o .: "id" :: Parser Int
@@ -120,10 +128,10 @@ instance FromJSON GHIssue where
     ghiMainAssignee <- o .: "assignee" :: Parser (Maybe GHUser)
     ghiAssignees    <- o .: "assignees" :: Parser [GHUser]
     ghiUrl          <- o .: "html_url" :: Parser T.Text
-    let ghiIsPR = M.member "pull_request" o
-    --let ghiIsPR = maybe False (const True) prM
-    let ghiRepoName = T.empty
     let ghiCreationTime = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack creationTime)
+    let ghiIsPR = M.member "pull_request" o
+    ghiMilestone    <- o .:? "milestone" :: Parser (Maybe GHMilestone)
+    let ghiRepoName = T.empty
     return $ MkGHIssue {..}
 
 

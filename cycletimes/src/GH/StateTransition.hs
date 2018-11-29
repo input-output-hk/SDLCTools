@@ -35,21 +35,24 @@ getStateTransitions t stateChanges = go (STBacklog t) stateChanges
 
 -- | The Core logic of StateTransition from one State to another
 transitionStep :: StateTransitions -> StateEvent -> StateTransitions
-transitionStep (STBacklog tb)        (StateEvent Backlog Backlog _)       = STBacklog tb
-transitionStep (STBacklog tb)        (StateEvent Backlog InProgress tp)   = STInProgress tb tp
-transitionStep (STBacklog tb)        (StateEvent Backlog InReview tr)     = STInReview tb tr tr
-transitionStep (STInProgress tb tp)  (StateEvent InProgress Backlog _)    = STInProgress tb tp
-transitionStep (STInProgress tb tp)  (StateEvent InProgress InProgress _) = STInProgress tb tp
-transitionStep (STInProgress tb tp)  (StateEvent InProgress InReview tr)  = STInReview tb tp tr
-transitionStep (STInProgress tb tp)  (StateEvent InProgress Done td)      = STDone tb tp td td
-transitionStep (STInReview tb tp tr) (StateEvent InReview  Backlog _)     = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent InReview  InProgress _)  = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent InReview  InReview _)    = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent InReview  Done td)       = STDone tb tp tr td
-transitionStep (STDone tb tp tr td)  (StateEvent Done InProgress _)       = STInReview tb tp tr
-transitionStep (STDone tb tp tr td)  (StateEvent Done InReview _)         = STInReview tb tp tr
-transitionStep (STDone tb tp tr _)   (StateEvent Done Done td)            = STDone tb tp tr td
+transitionStep (STBacklog tb)        (StateEvent _ Backlog _)       = STBacklog tb
+transitionStep (STBacklog tb)        (StateEvent _ InProgress tp)   = STInProgress tb tp
+transitionStep (STBacklog tb)        (StateEvent _ InReview tr)     = STInReview tb tr tr
+transitionStep (STInProgress tb tp)  (StateEvent _ Backlog _)    = STInProgress tb tp
+transitionStep (STInProgress tb tp)  (StateEvent _ InProgress _) = STInProgress tb tp
+transitionStep (STInProgress tb tp)  (StateEvent _ InReview tr)  = STInReview tb tp tr
+transitionStep (STInProgress tb tp)  (StateEvent _ Done td)      = STDone tb tp td td
+transitionStep (STInReview tb tp tr) (StateEvent _  Backlog _)     = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  InProgress _)  = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  InReview _)    = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  Done td)       = STDone tb tp tr td
+transitionStep (STDone tb tp tr td)  (StateEvent _ InProgress _)       = STInReview tb tp tr
+transitionStep (STDone tb tp tr td)  (StateEvent _ InReview _)         = STInReview tb tp tr
+transitionStep (STDone tb tp tr _)   (StateEvent _ Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
+
+
+
 
 
 data IssueEvent = GHE GHIssueEvent | ZHE ZHIssueEvent
@@ -62,21 +65,6 @@ instance Ord IssueEvent where
       getTime (GHE (GHEvtCloseEvent t))        = t
       getTime (GHE (GHEvtReOpenEvent t))       = t
 
-stateEventSummary :: Issue -> [String]
-stateEventSummary MkIssue{..} =
-  (T.unpack iRepoName ++ "-" ++ show ghiNumber):(L.reverse $ L.foldl' go [] evts)
-  where
-  MkGHIssue {..} = iGHIssue
-  evts = (L.sort $ (GHE <$> iGHIssueEvents) ++ (ZHE <$> iZHIssueEvents))
-  go acc (ZHE (ZHEvtTransferState si sf t)) =
-    (intToDateText t ++ "  ZH: " ++ show si ++ " => " ++ show sf):acc
-  go acc (GHE (GHEvtCloseEvent t)) =
-    (intToDateText t ++ "  Closed"):acc
-  go acc (GHE (GHEvtReOpenEvent t)) =
-    (intToDateText t ++ "  Re Opened"):acc
-
-  intToDateText :: UTCTime -> String
-  intToDateText t = formatTime defaultTimeLocale  "%d-%m-%Y" t
 
 -- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
 getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
@@ -101,6 +89,25 @@ getStateEvents ghs zhs =
   go _ currentState acc (GHE (GHEvtCloseEvent t):rest) =
     go currentState Done (StateEvent currentState Done t : acc) rest
 
+
+
+
+stateEventSummary :: Issue -> [String]
+stateEventSummary MkIssue{..} =
+  (T.unpack iRepoName ++ "-" ++ show ghiNumber):(utcTimeToDateString ghiCreationTime ++ "  Created") : (L.map go evts)
+          ++ ("": L.map go' stateChanges)
+  where
+  stateChanges = getStateEvents iGHIssueEvents iZHIssueEvents
+  MkGHIssue {..} = iGHIssue
+  evts = (L.sort $ (GHE <$> iGHIssueEvents) ++ (ZHE <$> iZHIssueEvents))
+  go (ZHE (ZHEvtTransferState si sf t)) = utcTimeToDateString t ++ "  ZH: " ++ show si ++ " => " ++ show sf
+  go (GHE (GHEvtCloseEvent t))          = utcTimeToDateString t ++ "  Closed"
+  go (GHE (GHEvtReOpenEvent t))         = utcTimeToDateString t ++ "  Re Opened"
+  go' (StateEvent si sf t)              = utcTimeToDateString t ++ "  TR: " ++ show si ++ " => " ++ show sf
+
+
+  utcTimeToDateString :: UTCTime -> String
+  utcTimeToDateString t = formatTime defaultTimeLocale  "%d-%m-%Y" t
 
 
 
