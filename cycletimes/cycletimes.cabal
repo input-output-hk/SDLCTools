@@ -35,7 +35,6 @@ library
       GH.StateTransition
       GH.Report.Assignees
       GH.Types
-      GH.StateTransition
   other-modules:
       Paths_cycletimes
   hs-source-dirs:

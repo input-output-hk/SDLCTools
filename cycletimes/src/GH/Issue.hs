@@ -28,14 +28,25 @@ import            Data.Time.Format
 import            GH.Config
 import            GH.Parser
 import            GH.Queries
+import            GH.StateTransition
 import            GH.Types
+
+
+
+computeTransitions :: Issue -> Issue
+computeTransitions issue@MkIssue{..} =
+  issue {iStateTransitions = st}
+  where
+  MkGHIssue {..} = iGHIssue
+  st = getStateTransitions ghiCreationTime $ getStateEvents iGHIssueEvents iZHIssueEvents
 
 
 getIssues :: Config -> IO [Issue]
 getIssues MkConfig{..} = do
   issues <- mapM (\(u, r, rid) -> getGHIssuesForRepo u r rid) cfgRepos >>= (return . L.concat)
-  return $ L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r)) issues
-
+  let issues1 = L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
+  let issues2 = L.map computeTransitions issues1
+  return issues2
   where
   getGHIssuesForRepo user repo repoId = do
     jsons <- getAllIssuesFromGHRepo cfg_gh_key user repo
@@ -77,87 +88,4 @@ getIssues MkConfig{..} = do
       Right zhEvts -> return $ catMaybes zhEvts
       Left e -> fail e
 
-{-}
-
-data GHUser = MkGHUser
-  { ghuUser     :: T.Text
-  , ghuUserId   :: Int
-  }
-  deriving (Show, Eq, Ord)
-
-defGHUser :: GHUser
-defGHUser = MkGHUser "" 0
-
-data GHIssue = MkGHIssue
-  { ghiId               :: Int
-  , ghiNumber           :: Int
-  , ghiTitle            :: T.Text
-  , ghiUser             :: GHUser
-  , ghiCreationTime     :: UTCTime
-  , ghiMainAssignee     :: Maybe GHUser
-  , ghiAssignees        :: [GHUser]
-  , ghiUrl              :: T.Text
-  , ghiRepoName         :: T.Text
-  }
-  deriving (Show, Eq, Ord)
-
-data GHIssueEvent =
-  GHEvtCloseEvent UTCTime
-  |GHEvtReOpenEvent UTCTime
-  |GHEvtOther
-  deriving Show
-
-
-
-data Event =
-  TransferState State State TimeStamp UserId
-  | SetState State TimeStamp UserId
-  | NotImportant
-  deriving (Eq, Show, Generic)
-
-instance FromJSON Event where
-  parseJSON = withObject "Event" $ \o -> do
-    eventType <- o .: "type" :: Parser T.Text
-    case eventType of
-      "transferIssue" -> do
-        timeStamp <- toUTCTime <$> (o .: "created_at" :: Parser Int)
-
-        let transferState  = do
-              fromPipeLine <-  o .: "from_pipeline"
-              fromState <- nameToState <$> (fromPipeLine .: "name" :: Parser T.Text)
-              toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
-              pure $ TransferState fromState toState (toUTCTime 1) 1
-
-        let setState  = do
-              toPipeLine <-  o .: "to_pipeline"
-              toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
-              pure $ SetState toState (toUTCTime 1) 1
-
-        transferState <|> setState
-
-      _ -> pure NotImportant
-
-data State =
-  Backlog
-  |InProgress
-  |InReview
-  |Done
-  deriving (Eq, Show, Generic)
-
-type UserId = Int
-type TimeStamp = UTCTime
-
-parseEvents :: Value -> Parser [Event]
-parseEvents (Array arr) = do
-  forM (toList arr) parseJSON :: Parser [Event]
-
-nameToState :: T.Text -> State
-nameToState "New Issues"  = Backlog
-nameToState "In Progress" = InProgress
-nameToState "Review/QA"   = InReview
-nameToState "Closed"      = Done
-
-
--}
 

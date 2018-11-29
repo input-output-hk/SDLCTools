@@ -44,9 +44,6 @@ transitionStep (STDone tb tp tr td)  (StateEvent Done Done _)             = STDo
 transitionStep _ _ = STIllegalStateTransitions
 
 
--- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
-getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-getStateEvents ghs zhs = reverse $ _getStateEvents Nothing [] (L.sort $ (GHE <$> ghs) ++ (ZHE <$> zhs))
 
 data IssueEvent = GHE GHIssueEvent | ZHE ZHIssueEvent
   deriving (Show, Eq)
@@ -58,27 +55,33 @@ instance Ord IssueEvent where
       getTime (GHE (GHEvtCloseEvent t))        = t
       getTime (GHE (GHEvtReOpenEvent t))       = t
 
-_getStateEvents :: Maybe State -> [StateEvent] -> [IssueEvent]-> [StateEvent]
-_getStateEvents oldState acc []  = acc
-_getStateEvents oldState acc (ie:rest) = case ie of
-  ZHE zhe ->  _getStateEvents oldState (fromZHEvent zhe : acc) rest
-  GHE ghe -> case ghe of
-    GHEvtCloseEvent ct -> let acc' = StateEvent (getLastState acc) Done ct : acc
-                          in _getStateEvents (Just $ getLastState acc) acc' rest
-    GHEvtReOpenEvent ct -> let newState = case oldState of
-                                        Nothing -> StateEvent Backlog Backlog ct
-                                        Just st -> StateEvent Done st ct
-                           in _getStateEvents Nothing (newState : acc) rest
+
+-- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
+getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+getStateEvents ghs zhs =
+  case evts of
+  [] -> []
+  ZHE (ZHEvtTransferState Backlog sf t):rest -> go Backlog sf [StateEvent Backlog sf t] rest
+  ZHE (ZHEvtTransferState _ _ _):_ -> error "Initial State is not Backlog on the 1st ZH transition"
+  GHE (GHEvtCloseEvent t):rest -> go Backlog Done [StateEvent Backlog Done t] rest
+  GHE (GHEvtReOpenEvent _):_ -> error "Reopening non closed issue"
+  where
+  evts = (L.sort $ (GHE <$> ghs) ++ (ZHE <$> zhs))
 
 
--- | convert a ZHIssueEvent to StateEvent
-fromZHEvent :: ZHIssueEvent -> StateEvent
-fromZHEvent (ZHEvtTransferState s1 s2 t) = StateEvent s1 s2 t
+go _ _ acc [] = reverse acc
+go _ currentState acc (ZHE (ZHEvtTransferState si sf t):rest) =
+  if currentState == si
+  then go si sf (StateEvent si sf t : acc) rest
+  else error $ "Bad current state (" ++ show currentState ++ ") in case of ZH event"
 
--- | from a list of StateEvent returns the most recent State
-getLastState :: [StateEvent] -> State
-getLastState ((StateEvent _ ls _) : _) = ls
-getLastState _ = error "No Previous State Found"
+go previousState currentState acc (GHE (GHEvtReOpenEvent t):rest) =
+  case currentState of
+    Done -> go currentState  previousState (StateEvent currentState previousState t : acc) rest
+    _    -> error $ "Bad current state (" ++ show currentState ++ ") in case of re-open event"
+
+go _ currentState acc (GHE (GHEvtCloseEvent t):rest) =
+  go currentState Done (StateEvent currentState Done t : acc) rest
 
 
 
