@@ -40,9 +40,10 @@ transitionStep (STInReview tb tp tr) (StateEvent InReview  InReview _)    = STIn
 transitionStep (STInReview tb tp tr) (StateEvent InReview  Done td)       = STDone tb tp tr td
 transitionStep (STDone tb tp tr td)  (StateEvent Done InProgress _)       = STInReview tb tp tr
 transitionStep (STDone tb tp tr td)  (StateEvent Done InReview _)         = STInReview tb tp tr
-transitionStep (STDone tb tp tr td)  (StateEvent Done Done _)             = STDone tb tp tr td
+transitionStep (STDone tb tp tr _)   (StateEvent Done Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
 
+{-}
 
 
 data IssueEvent = GHE GHIssueEvent | ZHE ZHIssueEvent
@@ -82,6 +83,59 @@ go previousState currentState acc (GHE (GHEvtReOpenEvent t):rest) =
 
 go _ currentState acc (GHE (GHEvtCloseEvent t):rest) =
   go currentState Done (StateEvent currentState Done t : acc) rest
+
+
+
+
+-- data GHIssueEvent =
+--   GHEvtCloseEvent TimeStamp
+--   |GHEvtReOpenEvent TimeStamp
+--   deriving (Show, Eq)
+
+packEvts :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+packEvts ghEvts zhEvts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
+-}
+
+
+
+-- future test code (2nd, independent, implementation)
+
+data CEvt =
+  CGHEvt GHIssueEvent
+  |CZHEvt ZHIssueEvent
+  deriving (Show, Eq)
+
+instance Ord CEvt where
+  compare ge1 ge2 =
+    compare (getTime ge1) (getTime ge2)
+    where
+    getTime (CGHEvt (GHEvtCloseEvent t)) = t
+    getTime (CGHEvt (GHEvtReOpenEvent t)) = t
+    getTime (CZHEvt (ZHEvtTransferState _ _ t)) = t
+
+
+getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+getStateEvents ghEvts zhEvts =
+  case cevts of
+  []                                        -> []
+  CZHEvt (ZHEvtTransferState si sf t):rest  -> go [StateEvent si sf t] si sf rest
+  CGHEvt (GHEvtCloseEvent t):rest           -> go [StateEvent Backlog Done t] Backlog Done rest
+  CGHEvt (GHEvtReOpenEvent t):rest          -> error "Cannot Reopen non closed issue"
+  where
+  cevts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
+
+  go acc _ _ [] = L.sort acc
+  go acc previousState currentState (CZHEvt (ZHEvtTransferState si sf t):rest) =
+    go (StateEvent si sf t : acc) currentState sf rest
+
+  go acc previousState currentState (CGHEvt (GHEvtCloseEvent t):rest) =
+    go (StateEvent currentState Done t : acc) currentState Done rest
+
+  go acc previousState currentState (CGHEvt (GHEvtReOpenEvent t):rest) =
+    go (StateEvent currentState previousState t : acc) currentState previousState rest
+
+
+
 
 
 

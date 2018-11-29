@@ -34,6 +34,7 @@ import            GH.Misc
 import            GH.Parser
 import            GH.Queries
 import            GH.Report.Assignees
+import            GH.Report.Actionable
 import            GH.Types
 
 -- parseLinkHeader' :: Text -> Either String [Link]
@@ -55,6 +56,7 @@ main = do
   print issues
   generateAssigneeIssueReport "files/assignements.csv" $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
   generateIssueAssigneeReport "files/assignees.csv" $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
+  generateActionableForIssues "files/actionable.csv" issues
   return ()
   where
   onlyInProgressIssues issues = L.filter (\i -> let
@@ -69,8 +71,8 @@ main = do
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
-                    "gh-key"
-                    "zh-key"
+--                    "key"
+--                    "key"
 
 
 main4 :: IO ()

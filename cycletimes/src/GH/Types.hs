@@ -72,7 +72,6 @@ if zhiIsEpic == False  (that means the issue is a task, whch should have a paren
 data GHIssueEvent =
   GHEvtCloseEvent TimeStamp
   |GHEvtReOpenEvent TimeStamp
---  |GHEvtOther
   deriving (Show, Eq)
 
 instance Ord GHIssueEvent where
@@ -136,32 +135,36 @@ data StateTransitions =
   |STIllegalStateTransitions
   deriving (Eq, Show, Ord)
 
--- J-C view on events
-{-
-data Events =
-  Created TimeStamp    -- ^ time the issue is created, time associated with Backlog state, from GH
-  |Transition State State TimeStamp  -- ^ state transition, from ZenHub
-  |Closed TimeStamp  -- ^ time when the issue is closed, from GH
-  |ReOpen TimeStamp  -- ^ time when the issue is re-opened, from GH
 
 
 
-data Events =
-  Transition State State TimeStamp  -- ^ state transition, from ZenHub
+getBacklogTime :: StateTransitions -> Maybe UTCTime
+getBacklogTime (STBacklog t)              = Just t
+getBacklogTime (STInProgress t _)         = Just t
+getBacklogTime (STInReview t _ _)         = Just t
+getBacklogTime (STDone t _ _ _)           = Just t
+getBacklogTime STIllegalStateTransitions  = Nothing
 
 
--}
+getInProgressTime :: StateTransitions -> Maybe UTCTime
+getInProgressTime (STBacklog _)             = Nothing
+getInProgressTime (STInProgress _ t)        = Just t
+getInProgressTime (STInReview _ t _)        = Just t
+getInProgressTime (STDone _ t _ _)          = Just t
+getInProgressTime STIllegalStateTransitions = Nothing
 
-{-
-Given a list of such event, the goal is to find a algo that will produce a set S of
-forward-only state transactions: Backlog -> InProgress -> InReview -> Done.
-with some conditions:
+getReviewTime :: StateTransitions -> Maybe UTCTime
+getReviewTime (STBacklog _)             = Nothing
+getReviewTime (STInProgress _ _)        = Nothing
+getReviewTime (STInReview _ _ t)        = Just t
+getReviewTime (STDone _ _ t _)          = Just t
+getReviewTime STIllegalStateTransitions = Nothing
 
-Backlog time always = creation time
+getDoneTime :: StateTransitions -> Maybe UTCTime
+getDoneTime (STBacklog _)             = Nothing
+getDoneTime (STInProgress _ _)        = Nothing
+getDoneTime (STInReview _ _ _)        = Nothing
+getDoneTime (STDone _ _ _ t)          = Just t
+getDoneTime STIllegalStateTransitions = Nothing
 
-If a Done state is in the set S, it has the highest time .
-Beware of backwards transitions from Done to InProgress, Review.
-Transition from Done to Backlog are problematic,
-
--}
 

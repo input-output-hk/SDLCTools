@@ -26,6 +26,7 @@ source-repository head
 
 library
   exposed-modules:
+      GH.Report.Actionable
       GH.Assignee
       GH.Config
       GH.Issue

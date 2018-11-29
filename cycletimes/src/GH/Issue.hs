@@ -33,19 +33,12 @@ import            GH.Types
 
 
 
-computeTransitions :: Issue -> Issue
-computeTransitions issue@MkIssue{..} =
-  issue {iStateTransitions = st}
-  where
-  MkGHIssue {..} = iGHIssue
-  st = getStateTransitions ghiCreationTime $ getStateEvents iGHIssueEvents iZHIssueEvents
-
 
 getIssues :: Config -> IO [Issue]
 getIssues MkConfig{..} = do
   issues <- mapM (\(u, r, rid) -> getGHIssuesForRepo u r rid) cfgRepos >>= (return . L.concat)
   let issues1 = L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
-  let issues2 = L.map computeTransitions issues1
+  let issues2 = L.map computeStateTransitions issues1
   return issues2
   where
   getGHIssuesForRepo user repo repoId = do
@@ -87,5 +80,14 @@ getIssues MkConfig{..} = do
     case zhEvtsE of
       Right zhEvts -> return $ catMaybes zhEvts
       Left e -> fail e
+
+
+
+computeStateTransitions :: Issue -> Issue
+computeStateTransitions issue@MkIssue{..} =
+  issue {iStateTransitions = st}
+  where
+  MkGHIssue {..} = iGHIssue
+  st = getStateTransitions ghiCreationTime $ getStateEvents iGHIssueEvents iZHIssueEvents
 
 
