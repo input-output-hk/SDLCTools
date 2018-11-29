@@ -107,9 +107,6 @@ data State =
 type UserId = Int
 type TimeStamp = UTCTime
 
---parseEvents :: Value -> Parser [Event]
---parseEvents (Array arr) = do
---  forM (toList arr) parseJSON :: Parser [Event]
 
 nameToState :: T.Text -> State
 nameToState "New Issues"      = Backlog
@@ -163,6 +160,4 @@ Beware of backwards transitions from Done to InProgress, Review.
 Transition from Done to Backlog are problematic,
 
 -}
-
-
 

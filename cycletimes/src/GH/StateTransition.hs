@@ -46,24 +46,29 @@ transitionStep _ _ = STIllegalStateTransitions
 
 -- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
 getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-getStateEvents ghs zhs = L.sort . reverse $ _getStateEvents Nothing [] (L.sort ghs) (L.sort zhs)
+getStateEvents ghs zhs = reverse $ _getStateEvents Nothing [] (L.sort $ (GHE <$> ghs) ++ (ZHE <$> zhs))
 
-_getStateEvents :: Maybe State -> [StateEvent] -> [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-_getStateEvents oldState acc [] zhEvents = acc ++ (fromZHEvent <$> zhEvents)
-_getStateEvents oldState acc ghs@(ghe:restGhe) zhs@(zhe:restZhe) = case compareTime ghe zhe of
-  GT ->  _getStateEvents oldState (fromZHEvent zhe : acc) ghs restZhe
-  _  -> case ghe of
+data IssueEvent = GHE GHIssueEvent | ZHE ZHIssueEvent
+  deriving (Show, Eq)
+
+instance Ord IssueEvent where
+  compare ie1 ie2 = compare (getTime ie1) (getTime ie2)
+    where
+      getTime (ZHE (ZHEvtTransferState _ _ t)) = t
+      getTime (GHE (GHEvtCloseEvent t))        = t
+      getTime (GHE (GHEvtReOpenEvent t))       = t
+
+_getStateEvents :: Maybe State -> [StateEvent] -> [IssueEvent]-> [StateEvent]
+_getStateEvents oldState acc []  = acc
+_getStateEvents oldState acc (ie:rest) = case ie of
+  ZHE zhe ->  _getStateEvents oldState (fromZHEvent zhe : acc) rest
+  GHE ghe -> case ghe of
     GHEvtCloseEvent ct -> let acc' = StateEvent (getLastState acc) Done ct : acc
-                          in _getStateEvents (Just $ getLastState acc) acc' restGhe zhs
+                          in _getStateEvents (Just $ getLastState acc) acc' rest
     GHEvtReOpenEvent ct -> let newState = case oldState of
                                         Nothing -> StateEvent Backlog Backlog ct
                                         Just st -> StateEvent Done st ct
-                           in _getStateEvents Nothing (newState : acc) restGhe zhs
-
-
-compareTime :: GHIssueEvent -> ZHIssueEvent -> Ordering
-compareTime (GHEvtCloseEvent gt)  (ZHEvtTransferState _ _ zt) = compare gt zt
-compareTime (GHEvtReOpenEvent gt) (ZHEvtTransferState _ _ zt) = compare gt zt
+                           in _getStateEvents Nothing (newState : acc) rest
 
 
 -- | convert a ZHIssueEvent to StateEvent
