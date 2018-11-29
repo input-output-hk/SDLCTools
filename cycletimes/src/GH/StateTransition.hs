@@ -7,11 +7,19 @@ module GH.StateTransition
 (
   getStateTransitions
 , getStateEvents
+, stateEventSummary
 )
 where
 
+import qualified  Data.List as L
+import qualified  Data.Text as T
+import            Data.Time.Calendar
+import            Data.Time.Clock
+import            Data.Time.Clock.POSIX
+import            Data.Time.Format
+
 import           GH.Types
-import qualified Data.List as L
+
 
 -- | Given the creation time and a list of StateChange Events returns the
 --   final StateTransition
@@ -43,8 +51,6 @@ transitionStep (STDone tb tp tr td)  (StateEvent Done InReview _)         = STIn
 transitionStep (STDone tb tp tr _)   (StateEvent Done Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
 
-{-}
-
 
 data IssueEvent = GHE GHIssueEvent | ZHE ZHIssueEvent
   deriving (Show, Eq)
@@ -56,6 +62,21 @@ instance Ord IssueEvent where
       getTime (GHE (GHEvtCloseEvent t))        = t
       getTime (GHE (GHEvtReOpenEvent t))       = t
 
+stateEventSummary :: Issue -> [String]
+stateEventSummary MkIssue{..} =
+  (T.unpack iRepoName ++ "-" ++ show ghiNumber):(L.reverse $ L.foldl' go [] evts)
+  where
+  MkGHIssue {..} = iGHIssue
+  evts = (L.sort $ (GHE <$> iGHIssueEvents) ++ (ZHE <$> iZHIssueEvents))
+  go acc (ZHE (ZHEvtTransferState si sf t)) =
+    (intToDateText t ++ "  ZH: " ++ show si ++ " => " ++ show sf):acc
+  go acc (GHE (GHEvtCloseEvent t)) =
+    (intToDateText t ++ "  Closed"):acc
+  go acc (GHE (GHEvtReOpenEvent t)) =
+    (intToDateText t ++ "  Re Opened"):acc
+
+  intToDateText :: UTCTime -> String
+  intToDateText t = formatTime defaultTimeLocale  "%d-%m-%Y" t
 
 -- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
 getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
@@ -68,73 +89,17 @@ getStateEvents ghs zhs =
   GHE (GHEvtReOpenEvent _):_ -> error "Reopening non closed issue"
   where
   evts = (L.sort $ (GHE <$> ghs) ++ (ZHE <$> zhs))
+  go _ _ acc [] = reverse acc
+  go _ currentState acc (ZHE (ZHEvtTransferState si sf t):rest) =
+    go currentState sf (StateEvent currentState sf t : acc) rest
 
+  go previousState currentState acc (GHE (GHEvtReOpenEvent t):rest) =
+    case currentState of
+      Done -> go currentState  previousState (StateEvent currentState previousState t : acc) rest
+      _    -> error $ "Bad current state (" ++ show currentState ++ ") in case of re-open event"
 
-go _ _ acc [] = reverse acc
-go _ currentState acc (ZHE (ZHEvtTransferState si sf t):rest) =
-  if currentState == si
-  then go si sf (StateEvent si sf t : acc) rest
-  else error $ "Bad current state (" ++ show currentState ++ ") in case of ZH event"
-
-go previousState currentState acc (GHE (GHEvtReOpenEvent t):rest) =
-  case currentState of
-    Done -> go currentState  previousState (StateEvent currentState previousState t : acc) rest
-    _    -> error $ "Bad current state (" ++ show currentState ++ ") in case of re-open event"
-
-go _ currentState acc (GHE (GHEvtCloseEvent t):rest) =
-  go currentState Done (StateEvent currentState Done t : acc) rest
-
-
-
-
--- data GHIssueEvent =
---   GHEvtCloseEvent TimeStamp
---   |GHEvtReOpenEvent TimeStamp
---   deriving (Show, Eq)
-
-packEvts :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-packEvts ghEvts zhEvts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
--}
-
-
-
--- future test code (2nd, independent, implementation)
-
-data CEvt =
-  CGHEvt GHIssueEvent
-  |CZHEvt ZHIssueEvent
-  deriving (Show, Eq)
-
-instance Ord CEvt where
-  compare ge1 ge2 =
-    compare (getTime ge1) (getTime ge2)
-    where
-    getTime (CGHEvt (GHEvtCloseEvent t)) = t
-    getTime (CGHEvt (GHEvtReOpenEvent t)) = t
-    getTime (CZHEvt (ZHEvtTransferState _ _ t)) = t
-
-
-getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
-getStateEvents ghEvts zhEvts =
-  case cevts of
-  []                                        -> []
-  CZHEvt (ZHEvtTransferState si sf t):rest  -> go [StateEvent si sf t] si sf rest
-  CGHEvt (GHEvtCloseEvent t):rest           -> go [StateEvent Backlog Done t] Backlog Done rest
-  CGHEvt (GHEvtReOpenEvent t):rest          -> error "Cannot Reopen non closed issue"
-  where
-  cevts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
-
-  go acc _ _ [] = L.sort acc
-  go acc previousState currentState (CZHEvt (ZHEvtTransferState si sf t):rest) =
-    go (StateEvent si sf t : acc) currentState sf rest
-
-  go acc previousState currentState (CGHEvt (GHEvtCloseEvent t):rest) =
-    go (StateEvent currentState Done t : acc) currentState Done rest
-
-  go acc previousState currentState (CGHEvt (GHEvtReOpenEvent t):rest) =
-    go (StateEvent currentState previousState t : acc) currentState previousState rest
-
-
+  go _ currentState acc (GHE (GHEvtCloseEvent t):rest) =
+    go currentState Done (StateEvent currentState Done t : acc) rest
 
 
 

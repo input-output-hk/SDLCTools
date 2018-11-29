@@ -15,6 +15,7 @@ where
 -- import Debug.Trace (trace)
 
 
+
 import qualified  Data.ByteString as BS
 import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
@@ -28,6 +29,8 @@ import            Network.HTTP.Link.Parser
 import            Network.HTTP.Link.Types
 import            Network.HTTP.Types.Header
 import            Network.URI
+
+
 
 deriving instance Ord LinkParam
 
@@ -110,6 +113,7 @@ getSingleIssueEventsFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString
 getSingleIssueEventsFromZHRepo token repoId issueNumber = do
   req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/issues/"  <> show issueNumber <> "/events/"
   let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              , ("User-Agent", BS8.pack "jcmincke")
                               ]
           $ req'
   response <- httpLBS req

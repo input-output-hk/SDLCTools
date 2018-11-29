@@ -35,6 +35,7 @@ import            GH.Parser
 import            GH.Queries
 import            GH.Report.Assignees
 import            GH.Report.Actionable
+import            GH.Report.StateTransition
 import            GH.Types
 
 -- parseLinkHeader' :: Text -> Either String [Link]
@@ -51,28 +52,42 @@ main1 = do
 
 main :: IO ()
 main = do
-  issues <- getIssues config
---  print config
-  print issues
-  generateAssigneeIssueReport "files/assignements.csv" $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
-  generateIssueAssigneeReport "files/assignees.csv" $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
-  generateActionableForIssues "files/actionable.csv" issues
-  return ()
+  issuesPerRepos <- getIssues config
+  mapM_ (\(repo, issues) -> goOneRepo repo issues) issuesPerRepos
+
+  -- consolidated view
+  let allIssues = do
+        (_, issues) <- issuesPerRepos
+        issue <- issues
+        return issue
+
+  goOneRepo "global" allIssues
   where
+
+  goOneRepo repo issues = do
+      generateAssigneeIssueReport ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
+      generateIssueAssigneeReport ("files/" ++ repo ++ "/assignees.csv") $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
+      generateActionableForIssues ("files/" ++ repo ++ "/actionable.csv") issues
+
+  -- generate invalid state transition report
+      generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") issues
+
+
   onlyInProgressIssues issues = L.filter (\i -> let
                   s = (zhiState $ iZHIssue i)
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
   config = MkConfig [ -- ("input-output-hk", "cardano-wallet", 154148239)
   --                   ("input-output-hk", "ouroboros-network", 149481615)
-                     ("input-output-hk", "cardano-chain", 149791280)
+   --                  ("input-output-hk", "cardano-chain", 149791280)
    --                  ("input-output-hk", "fm-ledger-rules", 150113380)
-  --                   ("input-output-hk", "cardano-shell", 154114906)
+                     ("input-output-hk", "cardano-shell", 154114906)
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
 --                    "key"
 --                    "key"
+
 
 
 main4 :: IO ()

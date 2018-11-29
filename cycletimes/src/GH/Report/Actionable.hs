@@ -45,10 +45,11 @@ intToDateText t = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" t
 
 generateActionableForIssues :: String -> [Issue] -> IO ()
 generateActionableForIssues filename issues = do
-  let csvIssuesLBS = CSV.encodeByName defaultActionableIssueHeader $ L.map ActionableIssueReport issues
+  let csvIssuesLBS = CSV.encodeByName defaultActionableIssueHeader $ L.map ActionableIssueReport $ L.filter hasValidStateTransitions issues
   LBS.writeFile filename LBS.empty
   LBS.appendFile filename csvIssuesLBS
-
+  where
+  hasValidStateTransitions MkIssue{..} = iStateTransitions /= STIllegalStateTransitions
 
 
 defaultActionableIssueHeader :: Header
