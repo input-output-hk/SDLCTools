@@ -6,7 +6,7 @@
 module GH.StateTransition
 (
   getStateTransitions
--- , getStateEvents
+, getStateEvents
 )
 where
 
@@ -43,7 +43,7 @@ transitionStep (STDone tb tp tr td)  (StateEvent Done InReview _)         = STIn
 transitionStep (STDone tb tp tr _)   (StateEvent Done Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
 
-
+{-}
 
 -- | Given a list of GHIssueEvent and ZHIssueEvent returns a list of StateEvent by merging both
 getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
@@ -75,4 +75,59 @@ fromZHEvent (ZHEvtTransferState s1 s2 t) = StateEvent s1 s2 t
 getLastState :: [StateEvent] -> State
 getLastState ((StateEvent _ ls _) : _) = ls
 getLastState _ = error "No Previous State Found"
+
+
+
+
+-- data GHIssueEvent =
+--   GHEvtCloseEvent TimeStamp
+--   |GHEvtReOpenEvent TimeStamp
+--   deriving (Show, Eq)
+
+packEvts :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+packEvts ghEvts zhEvts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
+-}
+
+
+
+-- future test code (2nd, independent, implementation)
+
+data CEvt =
+  CGHEvt GHIssueEvent
+  |CZHEvt ZHIssueEvent
+  deriving (Show, Eq)
+
+instance Ord CEvt where
+  compare ge1 ge2 =
+    compare (getTime ge1) (getTime ge2)
+    where
+    getTime (CGHEvt (GHEvtCloseEvent t)) = t
+    getTime (CGHEvt (GHEvtReOpenEvent t)) = t
+    getTime (CZHEvt (ZHEvtTransferState _ _ t)) = t
+
+
+getStateEvents :: [GHIssueEvent] -> [ZHIssueEvent] -> [StateEvent]
+getStateEvents ghEvts zhEvts =
+  case cevts of
+  []                                        -> []
+  CZHEvt (ZHEvtTransferState si sf t):rest  -> go [StateEvent si sf t] si sf rest
+  CGHEvt (GHEvtCloseEvent t):rest           -> go [StateEvent Backlog Done t] Backlog Done rest
+  CGHEvt (GHEvtReOpenEvent t):rest          -> error "Cannot Reopen non closed issue"
+  where
+  cevts = L.sort $ map CGHEvt ghEvts ++ map CZHEvt zhEvts
+
+  go acc _ _ [] = L.sort acc
+  go acc previousState currentState (CZHEvt (ZHEvtTransferState si sf t):rest) =
+    go (StateEvent si sf t : acc) currentState sf rest
+
+  go acc previousState currentState (CGHEvt (GHEvtCloseEvent t):rest) =
+    go (StateEvent currentState Done t : acc) currentState Done rest
+
+  go acc previousState currentState (CGHEvt (GHEvtReOpenEvent t):rest) =
+    go (StateEvent currentState previousState t : acc) currentState previousState rest
+
+
+
+
+
 

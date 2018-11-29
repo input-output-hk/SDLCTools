@@ -80,10 +80,10 @@ data Issue = MkIssue
 instance ToNamedRecord ActionableIssueReport where
     toNamedRecord (ActionableIssueReport (MkIssue MkGHIssue{..} MkZHIssue{..} _ _ repo transitions)) = namedRecord
         [ "IssueId"         .= (T.unpack repo ++ "-" ++ show ghiNumber)
-        , "Backlog"         .= ("20180813" :: String) -- maybe T.empty intToDateText (getBacklogTime transitions)
-        , "InProgress"      .= ("20180814" :: String) -- maybe T.empty intToDateText (getInProgressTime transitions)
-        , "Review"          .= ("20180815" :: String) -- maybe T.empty intToDateText (getReviewTime transitions)
-        , "Done"            .= ("20180816" :: String) -- maybe T.empty intToDateText (getDoneTime transitions)
+        , "Backlog"         .= maybe T.empty intToDateText (getBacklogTime transitions)    -- ("20180813" :: String) --
+        , "InProgress"      .= maybe T.empty intToDateText (getInProgressTime transitions) -- ("20180814" :: String) --
+        , "Review"          .= maybe T.empty intToDateText (getReviewTime transitions)     -- ("20180815" :: String) --
+        , "Done"            .= maybe T.empty intToDateText (getDoneTime transitions)       -- ("20180816" :: String) --
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
         , "Assignee-1"      .= a0

@@ -28,14 +28,17 @@ import            Data.Time.Format
 import            GH.Config
 import            GH.Parser
 import            GH.Queries
+import            GH.StateTransition
 import            GH.Types
 
 
 getIssues :: Config -> IO [Issue]
 getIssues MkConfig{..} = do
   issues <- mapM (\(u, r, rid) -> getGHIssuesForRepo u r rid) cfgRepos >>= (return . L.concat)
-  return $ L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
-
+  let issues1 = L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
+  -- enrich with state transitions
+  let issues2 = L.map computeStateTransitions issues1
+  return issues2
   where
   getGHIssuesForRepo user repo repoId = do
     jsons <- getAllIssuesFromGHRepo cfg_gh_key user repo
@@ -77,7 +80,24 @@ getIssues MkConfig{..} = do
       Right zhEvts -> return $ catMaybes zhEvts
       Left e -> fail e
 
+computeStateTransitions :: Issue -> Issue
+computeStateTransitions issue@MkIssue{..} =
+  issue {iStateTransitions = st}
+  where
+  MkGHIssue{..} = iGHIssue
+  st = getStateTransitions ghiCreationTime $ getStateEvents iGHIssueEvents iZHIssueEvents
+
 {-}
+
+
+
+data Issue = MkIssue
+  { iGHIssue            :: GHIssue
+  , iZHIssue            :: ZHIssue
+  , iGHIssueEvents      :: [GHIssueEvent]
+  , iZHIssueEvents      :: [ZHIssueEvent]
+  , iRepoName           :: T.Text
+  , iStateTransitions   :: StateTransitions
 
 data GHUser = MkGHUser
   { ghuUser     :: T.Text
