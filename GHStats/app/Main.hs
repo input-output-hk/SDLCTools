@@ -18,18 +18,20 @@ import           Network.HTTP.Simple
 import           System.FilePath.Posix
 import           Control.Monad
 
-
-import           Types
-import           Extract
-import           Report
-import           Misc
-import           YtIntegration
+import           Paths_GHStats
+import           PR.Types
+import           PR.Extract
+import           PR.Report
+import           PR.Misc
+import           PR.YtIntegration
 
 
 main :: IO ()
 main = do
   (MkCliOptions {..}) <- parseCliArgs
-  queryTemplate <- (replace "#repoName#" repoName . filter (\c -> c /= '\n')) <$> readFile (relPath </> "queryPullRequestAll")
+  queryFile <- getDataFileName "extraData/queryPullRequestAll"
+  print queryFile
+  queryTemplate <- (replace "#repoName#" repoName . filter (\c -> c /= '\n')) <$> readFile queryFile
   let loop :: Int -> T.Text -> [PullRequest] -> IO ()
       loop n cursor acc = do
         putStrLn ("n = " ++ show n)

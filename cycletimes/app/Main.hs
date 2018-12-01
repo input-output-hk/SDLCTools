@@ -9,23 +9,29 @@ module Main where
 
 
 
+import            Control.Monad
+
 import            Data.Aeson
 import qualified  Data.ByteString.Char8 as B8
 import qualified  Data.ByteString.Lazy.Char8 as BL8
 import qualified  Data.ByteString.Lazy as LBS
-
 import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
-import            Network.HTTP.Simple
-import            Control.Monad
 import            Data.Time.Calendar
 import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
+import            Network.HTTP.Simple
 import            Network.HTTP.Link.Parser as P
+
+import            System.FilePath.Posix
+
+import            PR.Extract
+import            PR.Pr
+import            PR.Report
 
 import            GH.Assignee
 import            GH.Config
@@ -38,22 +44,23 @@ import            GH.Report.Actionable
 import            GH.Report.StateTransition
 import            GH.Types
 
--- parseLinkHeader' :: Text -> Either String [Link]
-l = parseLinkHeader' "<https://api.github.com/repositories/154148239/issues?state=all&page=4>; rel=\"prev\", <https://api.github.com/repositories/154148239/issues?state=all&page=4>; rel=\"last\", <https://api.github.com/repositories/154148239/issues?state=all&page=1>; rel=\"first\""
 
 
-main1 :: IO ()
-main1 = do
-  (MkCliOptions {..}) <- parseCliArgs
-  resp <- runQuery zhToken repoId issueNum
---  print resp
-  return ()
+
+--main1 :: IO ()
+--main1 = do
+--  (MkCliOptions {..}) <- parseCliArgs
+--  resp <- runQuery zhToken repoId issueNum
+----  print resp
+--  return ()
 
 
 main :: IO ()
 main = do
   issuesPerRepos <- getIssues config
-  mapM_ (\(repo, issues) -> goOneRepo repo issues) issuesPerRepos
+  mapM_ (\(repo, issues) -> do
+    goIssuesOneRepo repo issues
+    ) issuesPerRepos
 
   -- consolidated view
   let allIssues = do
@@ -61,10 +68,30 @@ main = do
         issue <- issues
         return issue
 
-  goOneRepo "global" allIssues
+  goIssuesOneRepo "global" allIssues
+
+
+  -- Pull Request
+  let MkConfig{..} = config
+  when cfg_pr $ do
+    pullRequestsPerRepo <- getAllPRs cfg_gh_key 100 $ map (\(r, _, _) -> r) cfg_Repos
+    mapM_ (\(repo, pullRequests) -> do
+      goPrsOneRepo repo pullRequests
+      ) pullRequestsPerRepo
+
+    -- consolidated view
+
+    let allPullRequests = do
+          (_, pullRequests) <- pullRequestsPerRepo
+          pullRequest <- pullRequests
+          return pullRequest
+
+    goPrsOneRepo "global" allPullRequests
+
+
   where
 
-  goOneRepo repo issues = do
+  goIssuesOneRepo repo issues = do
       generateAssigneeIssueReport ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
       generateIssueAssigneeReport ("files/" ++ repo ++ "/assignees.csv") $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
       generateActionableForIssues ("files/" ++ repo ++ "/actionable.csv") issues
@@ -73,57 +100,27 @@ main = do
       generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") issues
 
 
+
   onlyInProgressIssues issues = L.filter (\i -> let
                   s = (zhiState $ iZHIssue i)
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
-  config = MkConfig [ -- ("input-output-hk", "cardano-wallet", 154148239)
-  --                   ("input-output-hk", "ouroboros-network", 149481615)
-   --                  ("input-output-hk", "cardano-chain", 149791280)
+
+  config = MkConfig [--("input-output-hk", "cardano-wallet", 154148239)
+--                     ("input-output-hk", "ouroboros-network", 149481615)
+                     ("input-output-hk", "cardano-chain", 149791280)
    --                  ("input-output-hk", "fm-ledger-rules", 150113380)
-                     ("input-output-hk", "cardano-shell", 154114906)
+--                     ("input-output-hk", "cardano-shell", 154114906)
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
 --                    "key"
 --                    "key"
+                    True
 
-
-
-main4 :: IO ()
-main4 = do
-  mapM_ (\i -> do
-            json <- getSingleIssueFromGHRepo "gh-key" "input-output-hk"  "cardano-wallet" 24
-            print "========="
-            print i
-            print "--------"
-            print json
-            ) [1..62]
-
-
---main2 :: IO ()
---main2 = do
---  json <- getAllIssuesFromGHRepo "GH-key" "jcmincke" "zenhub-prj"
---  LBS.writeFile "resp1.json" json
---  let (issue :: Either String [GHIssue]) = eitherDecode json
---  print issue
---  json <- getIssueEventsFromGHRepo "GH-key" "jcmincke" "zenhub-prj" 6
---  LBS.writeFile "resp2.json" json
---  let (evts :: Either String [Maybe GHIssueEvent]) = eitherDecode json
---  print evts
-
-
-runQuery :: String -> String -> Int -> IO (BL8.ByteString)
-runQuery token repo_id issue_number = do
-  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> repo_id <> "/issues/" <> show issue_number <> "/events"
-  let req = setRequestHeaders [ ("X-Authentication-Token", B8.pack token)
-                              ]
-          $ req'
-  response <- httpLBS req
-  putStrLn $ "The status code was: " ++
-              show (getResponseStatusCode response)
-  let responseBody = getResponseBody response
-  return responseBody
+goPrsOneRepo repo pullRequests = do
+  makeReport ("files" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
+  makeReport ("files" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
 
 
 

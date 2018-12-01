@@ -38,7 +38,7 @@ import            GH.Types
 
 getIssues :: Config -> IO [(String, [Issue])]
 getIssues MkConfig{..} = do
-  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo) cfgRepos
+  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo) cfg_Repos
   return issues
 
 

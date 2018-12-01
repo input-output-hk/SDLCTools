@@ -3,31 +3,21 @@ module GH.Misc where
 import           Options.Applicative
 import           Data.Monoid ((<>))
 
-data CliOptions = MkCliOptions {
-                  zhToken  :: String
-                , repoId   :: String
-                , issueNum :: Int
-                } deriving (Show)
 
-optionParser :: Parser CliOptions
+data Options = MkOptions {
+  optConfigFile :: String
+  }
+  deriving (Show)
+
+optionParser :: Parser Options
 optionParser =
-  MkCliOptions
+  MkOptions
         <$> strOption (
-              long "Api Token"
-              <> short 't'
-              <> (help "ZenHub APi Token"))
-        <*> strOption (
-              long "Repository Id"
-              <> short 'r'
-              <> (help "Id of Repository to query"))
-        <*> option auto (
-              long "Issue Number"
-              <> showDefault
-              <> short 'i'
-              <> (help "Issue Number of repo to query"))
-
+              long "config"
+              <> value "config.yml"
+              <> short 'c'
+              <> (help "Config file name"))
 
 -- | Parse command line options
-parseCliArgs :: IO CliOptions
+parseCliArgs :: IO Options
 parseCliArgs = customExecParser (prefs showHelpOnError) (info optionParser fullDesc)
-

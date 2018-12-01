@@ -57,6 +57,8 @@ library
     , time
     , vector
     , yaml
+
+    , GHStats
   default-language: Haskell2010
 
 executable cycletimes-exe
@@ -72,12 +74,15 @@ executable cycletimes-exe
     , bytestring
     , cassava
     , cycletimes
+    , filepath
     , http-conduit
     , http-link-header
     , optparse-applicative
     , text
     , time
     , vector
+
+    , GHStats
   default-language: Haskell2010
 
 test-suite cycletimes-test

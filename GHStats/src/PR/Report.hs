@@ -4,15 +4,15 @@
 {-# LANGUAGE RecordWildCards        #-}
 {-# LANGUAGE ScopedTypeVariables    #-}
 
-module Report where
+module PR.Report where
 
-import           Data.Char (toLower)
-import qualified Data.ByteString.Lazy as BS
-import           Data.Csv
-import qualified Data.Text as T
-import           Data.Time.Format
+import qualified  Data.ByteString.Lazy as BS
+import            Data.Char (toLower)
+import            Data.Csv
+import qualified  Data.Text as T
+import            Data.Time.Format
 
-import           Types
+import            PR.Types
 
 
 makeReport :: (ToNamedRecord a, DefaultOrdered a) => FilePath -> [a] -> IO ()

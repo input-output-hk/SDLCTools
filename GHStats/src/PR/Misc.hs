@@ -1,7 +1,7 @@
-module Misc where
+module PR.Misc where
 
-import           Options.Applicative
-import           Data.Monoid ((<>))
+import            Data.Monoid ((<>))
+import            Options.Applicative
 
 data CliOptions = MkCliOptions {
                   relPath         :: String

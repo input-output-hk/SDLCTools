@@ -5,16 +5,16 @@
 {-# LANGUAGE ScopedTypeVariables  #-}
 
 
-module Types where
+module PR.Types where
 
-import           Control.Monad
-import           GHC.Generics
-import           Data.Aeson
-import           Data.Aeson.Types
-import           Data.Text
-import           Data.Time.Clock
-import           Data.Time.Format
-import           GHC.Exts (sortWith)
+import            Control.Monad
+import            Data.Aeson
+import            Data.Aeson.Types
+import            Data.Text
+import            Data.Time.Clock
+import            Data.Time.Format
+import            GHC.Exts (sortWith)
+import            GHC.Generics
 
 import qualified Meas.Dev.Types as M
 

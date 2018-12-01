@@ -21,17 +21,19 @@ import            Data.Yaml
 
 
 data Config = MkConfig
-  { cfgRepos    :: [(String, String, Int)]
+  { cfg_Repos   :: [(String, String, Int)]
   , cfg_gh_key  :: String
   , cfg_zh_key  :: String
+  , cfg_pr      :: Bool     -- ^ Do Pull Request analysis
   }
   deriving Show
 
 instance FromJSON Config where
     parseJSON (Object o) = do
-        cfgRepos <- o .: "repos"
-        cfg_gh_key <- o .: "gh_key"
-        cfg_zh_key <- o .: "zh_key"
+        cfg_Repos   <- o .: "repos"
+        cfg_gh_key  <- o .: "gh_key"
+        cfg_zh_key  <- o .: "zh_key"
+        cfg_pr      <- o .: "pr"
 
         return MkConfig{..}
     parseJSON _ = mzero

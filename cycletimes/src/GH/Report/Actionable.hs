@@ -89,7 +89,7 @@ instance ToNamedRecord ActionableIssueReport where
         , "Done"            .= maybe T.empty intToDateText (getDoneTime transitions)       -- ("20180816" :: String) --
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
-        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ ")") ghiMilestone
+        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ ")") ghiMilestone
         , "Assignee-1"      .= a0
         , "Assignee-2"      .= a1
         , "Assignee-3"      .= a2

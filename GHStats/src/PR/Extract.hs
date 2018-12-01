@@ -3,16 +3,17 @@
 {-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 
-module Extract where
+module PR.Extract where
 
-import qualified Data.List as L
-import qualified Data.Text as T
-import qualified Data.ByteString.Lazy            as LBS
-import qualified Data.ByteString.Lazy.Char8      as LBSC
-import           Control.Monad
-import           Types
-import           Regex
-import           YtIntegration
+import            Control.Monad
+import qualified  Data.ByteString.Lazy            as LBS
+import qualified  Data.ByteString.Lazy.Char8      as LBSC
+import qualified  Data.List as L
+import qualified  Data.Text as T
+
+import            PR.Regex
+import            PR.Types
+import            PR.YtIntegration
 
 -- | given a PullRequest returns the authored date of the earliest commit.
 getFirstCommitTime :: PullRequest -> Maybe Date

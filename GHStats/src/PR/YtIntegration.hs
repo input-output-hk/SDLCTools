@@ -3,13 +3,15 @@
 {-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE ScopedTypeVariables  #-}
 
-module YtIntegration where
+module PR.YtIntegration where
 
-import qualified Data.Text as T
-import Types
+import qualified  Data.Text as T
 
-import           Meas.Dev.Types
-import           Meas.Dev.Extractor
+
+import            PR.Types
+
+import            Meas.Dev.Types
+import            Meas.Dev.Extractor
 
 getYtInfo :: YtAuthorization -> Maybe YtIssueId -> IO (Maybe YtInfo)
 getYtInfo _ Nothing = return Nothing
