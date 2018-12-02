@@ -119,7 +119,7 @@ main = do
                     True
 
 goPrsOneRepo repo pullRequests = do
-  makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis repo pr Nothing) pullRequests)
+  makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
   makeReport ("files/" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
 
 

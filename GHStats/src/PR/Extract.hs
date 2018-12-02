@@ -33,8 +33,8 @@ getLastCommitTime PullRequest{..} =
 splitCommits :: PullRequest -> ([Commit], [Commit])
 splitCommits PullRequest{..} = L.partition (\c -> cAuthoredDate c <= prCreatedAt) prCommits
 
-mkPRAnalysis :: String -> PullRequest -> Maybe YtInfo -> Maybe PRAnalysis
-mkPRAnalysis repo pr@PullRequest{..} yi = do
+mkPRAnalysis :: PullRequest -> Maybe YtInfo -> Maybe PRAnalysis
+mkPRAnalysis pr@PullRequest{..} yi = do
   firstCommitTime  <- getFirstCommitTime pr
   latestCommitTime <- getLastCommitTime pr
   let !prYTID      = either (const Nothing) Just $ extractIssueId prTitle
@@ -46,7 +46,7 @@ mkPRAnalysis repo pr@PullRequest{..} yi = do
       ytIssuseIdPresence = chkAllEithers $ extractIssueId <$> ( prTitle : (cMessage <$> prCommits))
       paytTypeVal        = maybe Nothing (Just . yiYtTypeVal) yi
       paytStateVal       = maybe Nothing (Just . yiYtStateStatus) yi
-  return $ PRAnalysis prNumber prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence paytTypeVal paytStateVal repo
+  return $ PRAnalysis prNumber prYTID firstCommitTime prCreatedAt latestCommitTime prClosingDate wasMerged (auName prAuthor) devReviewCommits prComments prSourceBranch prTargetBranch ytIssuseIdPresence paytTypeVal paytStateVal prRepo
 
 mkPRCDetails :: PullRequest -> Maybe [PRCDetails]
 mkPRCDetails PullRequest{..} = do

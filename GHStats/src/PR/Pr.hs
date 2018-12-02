@@ -44,7 +44,7 @@ getAllPRsForRepo ghKey maxRequestCount repoName = do
   queryFile <- getDataFileName "extraData/queryPullRequestAll"
   queryTemplate <- (replace "#repoName#" repoName . filter (\c -> c /= '\n')) <$> readFile queryFile
   pulRequests <- loop queryTemplate 0 "" []
-  return pulRequests
+  return $ map (\pr -> pr {prRepo = repoName}) pulRequests
 
   where
   loop :: String -> Int -> T.Text -> [PullRequest] -> IO [PullRequest]

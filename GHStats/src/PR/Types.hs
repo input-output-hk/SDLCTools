@@ -39,6 +39,7 @@ data PullRequest = PullRequest {
                  , prComments     :: [Comment]
                  , prSourceBranch :: BranchName
                  , prTargetBranch :: BranchName
+                 , prRepo         :: String
                  } deriving ( Show, Eq, Generic)
 
 instance FromJSON PullRequest where
@@ -175,6 +176,7 @@ parsePullRequest = withObject "PullRequest" $ \pullRequest -> do
   prComments        <- forM commentNodes parseComment
   prSourceBranch    <- pullRequest  .: "headRefName"
   prTargetBranch    <- pullRequest  .: "baseRefName"
+  let prRepo = ""
   return PullRequest{..}
 
 parseCommit :: Value -> Parser Commit
