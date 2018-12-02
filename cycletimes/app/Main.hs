@@ -62,11 +62,11 @@ main = do
     goIssuesOneRepo repo issues
     ) issuesPerRepos
 
-  -- consolidated view
+ -- consolidated view
   let allIssues = do
-        (_, issues) <- issuesPerRepos
-        issue <- issues
-        return issue
+       (_, issues) <- issuesPerRepos
+       issue <- issues
+       return issue
 
   goIssuesOneRepo "global" allIssues
 
@@ -74,7 +74,7 @@ main = do
   -- Pull Request
   let MkConfig{..} = config
   when cfg_pr $ do
-    pullRequestsPerRepo <- getAllPRs cfg_gh_key 100 $ map (\(r, _, _) -> r) cfg_Repos
+    pullRequestsPerRepo <- getAllPRs cfg_gh_key 100 $ map (\(_, r, _) -> r) cfg_Repos
     mapM_ (\(repo, pullRequests) -> do
       goPrsOneRepo repo pullRequests
       ) pullRequestsPerRepo
@@ -106,21 +106,21 @@ main = do
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
 
-  config = MkConfig [--("input-output-hk", "cardano-wallet", 154148239)
---                     ("input-output-hk", "ouroboros-network", 149481615)
-                     ("input-output-hk", "cardano-chain", 149791280)
-   --                  ("input-output-hk", "fm-ledger-rules", 150113380)
---                     ("input-output-hk", "cardano-shell", 154114906)
+  config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
+                    , ("input-output-hk", "ouroboros-network", 149481615)
+                    , ("input-output-hk", "cardano-chain", 149791280)
+                    , ("input-output-hk", "fm-ledger-rules", 150113380)
+                    , ("input-output-hk", "cardano-shell", 154114906)
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
---                    "key"
---                    "key"
+                    "key"
+                    "key"
                     True
 
 goPrsOneRepo repo pullRequests = do
-  makeReport ("files" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
-  makeReport ("files" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
+  makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis repo pr Nothing) pullRequests)
+  makeReport ("files/" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
 
 
 

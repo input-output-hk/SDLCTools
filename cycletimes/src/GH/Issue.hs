@@ -69,7 +69,7 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
     proc ghIssue = do
       print ("getting data for: ", ghiNumber ghIssue)
       -- poor man rate control
-      threadDelay 50000
+      threadDelay 150000
 
       zhIssue <- getZHIssueForRepo repo repoId ghIssue
       zhIssueEvents <- getZHIssueEventsForRepo repo repoId ghIssue

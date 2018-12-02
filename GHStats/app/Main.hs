@@ -49,12 +49,12 @@ main = do
                 do
                   let allprs = prs <> acc
                   maybeYtInfos <- forM allprs $ \ PullRequest{..} -> trace ("YT: "++ show (extractIssueId prTitle)) $ (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle))
-                  makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith mkPRAnalysis allprs maybeYtInfos)
+                  makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith (mkPRAnalysis repoName) allprs maybeYtInfos)
                   makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> allprs)
                   putStrLn $ "OK : made " <> show (n+1) <> " calls to Github"
           Left e  -> do
             maybeYtInfos <- forM acc $ \PullRequest{..} -> (getYtInfo ytAuthorization (either (const Nothing) Just $ extractIssueId prTitle) )
-            makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith mkPRAnalysis acc maybeYtInfos)
+            makeReport "PRAnalysis.csv" $ (catMaybes $ zipWith (mkPRAnalysis repoName) acc maybeYtInfos)
             makeReport "PRCDetails.csv" $ (concat . catMaybes $ mkPRCDetails <$> acc)
             putStrLn $ "oops error occured" <> e
 

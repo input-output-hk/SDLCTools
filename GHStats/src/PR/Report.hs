@@ -53,6 +53,7 @@ defaultPRACSVHeader = header
   , "First Commit Time"
   , "PullRequest Creation Time"
   , "Closing Time"
+  , "Repo"
   , "State"
   , "Was Merged"
   , "Author"
@@ -74,6 +75,7 @@ instance ToNamedRecord PRAnalysis where
                 , "First Commit Time"         .= formatDate paFirstCommitTime
                 , "PullRequest Creation Time" .= formatDate paPRCreationTime
                 , "Closing Time"              .= maybe "" formatDate paPRClosingTime
+                , "Repo"                      .= paRepo
                 , "State"                     .= maybe ("Review"::String) (const "Closed") paPRClosingTime
                 , "Was Merged"                .= wasMergedSt
                 , "Author"                    .= maybe T.empty id paPrAuthor

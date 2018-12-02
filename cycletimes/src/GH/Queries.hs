@@ -106,7 +106,7 @@ getSingleIssueFromZHRepo token repoId issueNumber = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  -- print (repoId, issueNumber, responseBody)
+  print (repoId, issueNumber, responseBody)
   return responseBody
 
 getSingleIssueEventsFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString

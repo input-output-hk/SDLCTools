@@ -72,7 +72,7 @@ data Author = Author {
 
 instance FromJSON Author where
   parseJSON = withObject "Author" $ \o -> do
-    auName <- o .: "name"
+    auName <- o .:? "name"
     return Author{..}
 
 data PRState = OPEN | CLOSED | MERGED
@@ -107,6 +107,7 @@ data PRAnalysis = PRAnalysis {
                 , paYtIssueIdPresence :: Bool
                 , paYtType            :: Maybe M.TypeValue
                 , paYtState           :: Maybe M.StateValue
+                , paRepo              :: String
                 } deriving ( Show, Eq, Generic)
 
 -- | Pull Request Commit Details
