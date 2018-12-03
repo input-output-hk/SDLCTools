@@ -121,29 +121,28 @@ getSingleIssueEventsFromZHRepo token repoId issueNumber = do
   print (issueNumber, responseBody)
   return responseBody
 
+
+getSingleEpicFromZHRepo :: String -> Int -> Int -> IO LBS.ByteString
+getSingleEpicFromZHRepo token repoId epicId = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/epics/"  <> show epicId
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  print (epicId, responseBody)
+  return responseBody
+
+getAllEpicsFromZHRepo :: String -> Int -> IO LBS.ByteString
+getAllEpicsFromZHRepo token repoId = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/epics"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  print (repoId, responseBody)
+  return responseBody
+
 --https://api.github.com/repos/jcmincke/zenhub-prj/issues/6/events > gh-events-jc.json
-
-{-
-allIssuesForProjectJson :: String -> String -> String -> IO LBS.ByteString
-allIssuesForProjectJson authorization projectName query = do
-  req <- HTTP.parseRequest ("https://iohk.myjetbrains.com/youtrack/rest/issue/byproject/" ++ projectName)
-  let req' =  ((HTTP.setRequestHeaders
-                [("Authorization", BS8.pack authorization)])
-              . (HTTP.setRequestQueryString
-                  [ ("max", Just "4000")
-                  , ("filter", Just $ BS8.pack query)
-                  ])
-              ) req
-  resp <- httpBS req'
-  let xmlBs = getResponseBody resp
-  let st = L.concat $ xmlStreamToJSON (BS8.unpack xmlBs)
-  let jsonBs = LBS.fromStrict $ BS8.pack $ st
-  return jsonBs
-
-
--}
-
-
-
-
 

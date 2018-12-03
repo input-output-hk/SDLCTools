@@ -13,6 +13,7 @@ where
 
 import Debug.Trace (trace)
 import            Control.Applicative
+import            Control.Monad (forM)
 import            Data.Aeson
 import            Data.Aeson.Types (Parser)
 import qualified  Data.Text as T
@@ -75,11 +76,6 @@ instance {-# OVERLAPS #-} FromJSON (Maybe ZHIssueEvent) where
               toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
               return $ Just $ ZHEvtTransferState fromState toState timeStamp
 
-    --    let setState  = do
-    --          toPipeLine <-  o .: "to_pipeline"
-    --          toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
-    --          return $ Just $ ZHEvtSetState toState timeStamp
-
         transferState  -- <|> setState
 
       _ -> return Nothing -- ZHNoEvent
@@ -87,7 +83,6 @@ instance {-# OVERLAPS #-} FromJSON (Maybe ZHIssueEvent) where
 instance FromJSON ZHIssue where
   parseJSON = withObject "ZH Issue" $ \o -> do
     zhiIsEpic       <- o .: "is_epic"
---    zhiIsEpic       <- fmap (maybe False id) (o .:? "is_epic")
     pipeline        <- o .: "pipeline"
     zhiState        <- fmap nameToState $ pipeline .: "name"
     return $ MkZHIssue {..}
@@ -136,11 +131,19 @@ instance FromJSON GHIssue where
 
 
 
+instance FromJSON EpicChildren where
+  parseJSON = withObject "EpicChildren" $ \o -> do
+    issues  <- o .: "issues" :: Parser [Object]
+    childIssues <- forM issues $ \i -> do  
+      issueNum <- i .: "issue_number" :: Parser Int
+      return issueNum
+    return $ EpicChildren childIssues
 
 
-
-
-
-
-
-
+instance FromJSON AllEpics where
+  parseJSON = withObject "Epics" $ \o -> do
+    issues  <- o .: "epic_issues" :: Parser [Object]
+    epicIssues <- forM issues $ \i -> do  
+      issueNum <- i .: "issue_number" :: Parser Int
+      return issueNum
+    return $ AllEpics epicIssues

@@ -37,6 +37,7 @@ library
       GH.Report.Assignees
       GH.Report.StateTransition
       GH.Types
+      GH.Epic
   other-modules:
       Paths_cycletimes
   hs-source-dirs:

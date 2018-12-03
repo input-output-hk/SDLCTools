@@ -72,10 +72,15 @@ data ZHIssue = MkZHIssue
   }
   deriving (Show, Eq, Ord)
 
-
 {-
 if zhiIsEpic == False  (that means the issue is a task, whch should have a parent) then find the parent epic zhiParentEpic
 -}
+
+newtype AllEpics = AllEpics { epics :: [Int] }
+  deriving (Show, Eq, Ord)
+
+newtype EpicChildren = EpicChildren { ecIssues :: [Int] }
+  deriving (Show, Eq, Ord)
 
 data GHIssueEvent =
   GHEvtCloseEvent TimeStamp
