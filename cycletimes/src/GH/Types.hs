@@ -68,13 +68,10 @@ data GHIssue = MkGHIssue
 data ZHIssue = MkZHIssue
   { zhiState            :: State
   , zhiIsEpic           :: Bool
---  , zhiParentEpic       :: T.Text
+  , zhiParentEpic       :: Maybe Int
   }
   deriving (Show, Eq, Ord)
 
-{-
-if zhiIsEpic == False  (that means the issue is a task, whch should have a parent) then find the parent epic zhiParentEpic
--}
 
 newtype AllEpics = AllEpics { epics :: [Int] }
   deriving (Show, Eq, Ord)

@@ -85,6 +85,7 @@ instance FromJSON ZHIssue where
     zhiIsEpic       <- o .: "is_epic"
     pipeline        <- o .: "pipeline"
     zhiState        <- fmap nameToState $ pipeline .: "name"
+    let zhiParentEpic = Nothing
     return $ MkZHIssue {..}
 
 instance {-# OVERLAPS #-} FromJSON (Maybe GHIssueEvent) where
@@ -134,7 +135,7 @@ instance FromJSON GHIssue where
 instance FromJSON EpicChildren where
   parseJSON = withObject "EpicChildren" $ \o -> do
     issues  <- o .: "issues" :: Parser [Object]
-    childIssues <- forM issues $ \i -> do  
+    childIssues <- forM issues $ \i -> do
       issueNum <- i .: "issue_number" :: Parser Int
       return issueNum
     return $ EpicChildren childIssues
@@ -143,7 +144,7 @@ instance FromJSON EpicChildren where
 instance FromJSON AllEpics where
   parseJSON = withObject "Epics" $ \o -> do
     issues  <- o .: "epic_issues" :: Parser [Object]
-    epicIssues <- forM issues $ \i -> do  
+    epicIssues <- forM issues $ \i -> do
       issueNum <- i .: "issue_number" :: Parser Int
       return issueNum
     return $ AllEpics epicIssues

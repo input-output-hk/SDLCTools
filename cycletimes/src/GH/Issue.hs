@@ -18,6 +18,7 @@ import            GHC.Generics
 import            Data.Aeson
 import            Data.Aeson.Types
 import qualified  Data.List as L
+import qualified  Data.Map.Strict as M
 import            Data.Maybe (catMaybes)
 import qualified  Data.Text as T
 import            Data.Vector      (toList)
@@ -28,6 +29,7 @@ import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
 import            GH.Config
+import            GH.Epic
 import            GH.Parser
 import            GH.Queries
 import            GH.StateTransition
@@ -42,13 +44,6 @@ getIssues MkConfig{..} = do
   return issues
 
 
-{-}
-data Config = MkConfig
-  { cfgRepos    :: [(String, String, Int)]
-  , cfg_gh_key  :: String
-  , cfg_zh_key  :: String
-  -}
-
 getIssuesForOneRepo :: String -> String -> (String, String, Int) -> IO (String, [Issue])
 getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
   issues <- getGHIssuesForRepo user repo repoId
@@ -56,7 +51,17 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
   -- get rid of PR's
   let issues2 = L.filter (not . ghiIsPR . iGHIssue) issues1
   let issues3 = L.map computeStateTransitions issues2
-  return (repo, issues3)
+
+  -- get Issue -> Epic Map
+  epicMap <- makeEpicMap zhKey repoId
+
+  -- update epic
+  let issues4 = L.map (\issue@MkIssue{..} -> let
+                          p = M.lookup (ghiNumber iGHIssue) epicMap
+                          in issue { iZHIssue = iZHIssue {zhiParentEpic = p}})
+                      issues3
+
+  return (repo, issues4)
   where
   getGHIssuesForRepo user repo repoId = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo

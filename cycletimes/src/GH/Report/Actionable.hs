@@ -58,6 +58,7 @@ defaultActionableIssueHeader = header
   , "Backlog", "InProgress", "Review", "Done"
   , "Repo"
   , "Is Epic"
+  , "Parent Epic"
   , "Milestone"
   , "Assignee-1"
   , "Assignee-2"
@@ -89,6 +90,7 @@ instance ToNamedRecord ActionableIssueReport where
         , "Done"            .= maybe T.empty intToDateText (getDoneTime transitions)       -- ("20180816" :: String) --
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
+        , "Parent Epic"     .= maybe "" (\n -> T.unpack repo ++ "-" ++ show n) zhiParentEpic
         , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ ")") ghiMilestone
         , "Assignee-1"      .= a0
         , "Assignee-2"      .= a1
