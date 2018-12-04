@@ -61,7 +61,7 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
                           in issue { iZHIssue = iZHIssue {zhiParentEpic = p}})
                       issues3
 
-  -- update issues with chidren
+  -- update issues with children
   let invertedEpicMap = invertMap epicMap
   let issues5 = L.map (\issue@MkIssue{..} ->
                           case M.lookup (ghiNumber iGHIssue) invertedEpicMap of
@@ -72,10 +72,16 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
                                 epicCreationTime  = ghiCreationTime  iGHIssue
                                 maybeEpicProgress = getMinInProgressTimeForEpic stTransitions
                                 maybeEpicDone     = getMaxDoneTimeForEpic stTransitions
+                                maybeBacklogTime  = getMinBacklogTimeForEpic stTransitions
+                                backlogTime =
+                                    case maybeBacklogTime of
+                                    Just t | t < epicCreationTime -> t
+                                    Just t | t >= epicCreationTime -> epicCreationTime
+                                    Nothing -> epicCreationTime
                             case (maybeEpicProgress, maybeEpicDone) of
                               (Nothing,_) -> issue'
-                              (Just ip, Nothing) -> issue' { iStateTransitions = STInProgress epicCreationTime ip }
-                              (Just ip, Just dt) -> issue' { iStateTransitions = STDone epicCreationTime ip dt dt }
+                              (Just ip, Nothing) -> issue' { iStateTransitions = STInProgress backlogTime ip }
+                              (Just ip, Just dt) -> issue' { iStateTransitions = STDone backlogTime ip dt dt }
                           Nothing -> issue
                       )
                       issues4
@@ -144,7 +150,6 @@ getMinInProgressTimeForEpic :: [StateTransitions] -> Maybe UTCTime
 getMinInProgressTimeForEpic sts = case filter (/= Nothing) progressTimes of
   [] -> Nothing
   ipTimes -> pure . minimum $ fromJust <$> ipTimes
-
   where
     progressTimes = getInProgressTime <$> sts
 
@@ -152,6 +157,14 @@ getMaxDoneTimeForEpic :: [StateTransitions] -> Maybe UTCTime
 getMaxDoneTimeForEpic sts = case elem Nothing doneTimes of
   True -> Nothing
   False -> pure . maximum $ fromJust <$> doneTimes
-
   where
-    doneTimes = getDoneTime <$> sts
+    -- take care to filter out Illegal State Transitions otherwise
+    -- this function will return Nothing whenever State Transitions are illegal
+    doneTimes = getDoneTime <$> (L.filter (/= STIllegalStateTransitions) sts)
+
+getMinBacklogTimeForEpic :: [StateTransitions] -> Maybe UTCTime
+getMinBacklogTimeForEpic sts = case filter (/= Nothing) backlogTimes of
+  [] -> Nothing
+  ipTimes -> pure . minimum $ fromJust <$> ipTimes
+  where
+    backlogTimes = getBacklogTime <$> sts
