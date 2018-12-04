@@ -55,13 +55,22 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
   -- get Issue -> Epic Map
   epicMap <- makeEpicMap zhKey repoId
 
-  -- update epic
+  -- update issues with Epic parent.
   let issues4 = L.map (\issue@MkIssue{..} -> let
                           p = M.lookup (ghiNumber iGHIssue) epicMap
                           in issue { iZHIssue = iZHIssue {zhiParentEpic = p}})
                       issues3
 
-  return (repo, issues4)
+  -- update issues with chidren
+  let invertedEpicMap = invertMap epicMap
+  let issues5 = L.map (\issue@MkIssue{..} ->
+                          case M.lookup (ghiNumber iGHIssue) invertedEpicMap of
+                          Just children -> issue { iZHIssue = iZHIssue {zhiChildren = children}}
+                          Nothing -> issue
+                      )
+                      issues4
+
+  return (repo, issues5)
   where
   getGHIssuesForRepo user repo repoId = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo
@@ -114,5 +123,20 @@ computeStateTransitions issue@MkIssue{..} =
   where
   MkGHIssue {..} = iGHIssue
   st = getStateTransitions ghiCreationTime $ getStateEvents iGHIssueEvents iZHIssueEvents
+
+
+invertMap :: M.Map Int Int -> M.Map Int [Int]
+invertMap m =
+  M.foldrWithKey (\k a acc -> M.insertWith (++) a [k] acc) M.empty m
+
+-- foldrWithKey :: (k -> a -> b -> b) -> b -> Map k a -> b
+
+--insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> Map k a -> Map k a Source #
+--insertWith :: Ord k => (a -> a -> a) -> k -> a -> Map k a -> Map k a Source #
+
+
+
+
+
 
 

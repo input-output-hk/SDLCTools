@@ -86,6 +86,7 @@ instance FromJSON ZHIssue where
     pipeline        <- o .: "pipeline"
     zhiState        <- fmap nameToState $ pipeline .: "name"
     let zhiParentEpic = Nothing
+    let zhiChildren = []
     return $ MkZHIssue {..}
 
 instance {-# OVERLAPS #-} FromJSON (Maybe GHIssueEvent) where

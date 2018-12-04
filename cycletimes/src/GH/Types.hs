@@ -69,6 +69,7 @@ data ZHIssue = MkZHIssue
   { zhiState            :: State
   , zhiIsEpic           :: Bool
   , zhiParentEpic       :: Maybe Int
+  , zhiChildren         :: [Int]
   }
   deriving (Show, Eq, Ord)
 
