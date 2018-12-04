@@ -19,7 +19,7 @@ import            Data.Aeson
 import            Data.Aeson.Types
 import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
-import            Data.Maybe (catMaybes)
+import            Data.Maybe (catMaybes, fromJust)
 import qualified  Data.Text as T
 import            Data.Vector      (toList)
 
@@ -65,7 +65,17 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
   let invertedEpicMap = invertMap epicMap
   let issues5 = L.map (\issue@MkIssue{..} ->
                           case M.lookup (ghiNumber iGHIssue) invertedEpicMap of
-                          Just children -> issue { iZHIssue = iZHIssue {zhiChildren = children}}
+                          Just children -> do
+                            let issue' = issue { iZHIssue  = iZHIssue {zhiChildren = children}}
+                                childIssues   = filter ( \ MkIssue{..} -> elem (ghiNumber iGHIssue) children) issues4
+                                stTransitions = (\ MkIssue{..} -> iStateTransitions) <$> childIssues
+                                epicCreationTime  = ghiCreationTime  iGHIssue
+                                maybeEpicProgress = getMinInProgressTimeForEpic stTransitions
+                                maybeEpicDone     = getMaxDoneTimeForEpic stTransitions
+                            case (maybeEpicProgress, maybeEpicDone) of
+                              (Nothing,_) -> issue'
+                              (Just ip, Nothing) -> issue' { iStateTransitions = STInProgress epicCreationTime ip }
+                              (Just ip, Just dt) -> issue' { iStateTransitions = STDone epicCreationTime ip dt dt }
                           Nothing -> issue
                       )
                       issues4
@@ -129,14 +139,19 @@ invertMap :: M.Map Int Int -> M.Map Int [Int]
 invertMap m =
   M.foldrWithKey (\k a acc -> M.insertWith (++) a [k] acc) M.empty m
 
--- foldrWithKey :: (k -> a -> b -> b) -> b -> Map k a -> b
 
---insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> Map k a -> Map k a Source #
---insertWith :: Ord k => (a -> a -> a) -> k -> a -> Map k a -> Map k a Source #
+getMinInProgressTimeForEpic :: [StateTransitions] -> Maybe UTCTime
+getMinInProgressTimeForEpic sts = case filter (/= Nothing) progressTimes of
+  [] -> Nothing
+  ipTimes -> pure . minimum $ fromJust <$> ipTimes
 
+  where
+    progressTimes = getInProgressTime <$> sts
 
+getMaxDoneTimeForEpic :: [StateTransitions] -> Maybe UTCTime
+getMaxDoneTimeForEpic sts = case elem Nothing doneTimes of
+  True -> Nothing
+  False -> pure . maximum $ fromJust <$> doneTimes
 
-
-
-
-
+  where
+    doneTimes = getDoneTime <$> sts
