@@ -41,6 +41,7 @@ import            GH.Parser
 import            GH.Queries
 import            GH.Report.Assignees
 import            GH.Report.Actionable
+import            GH.Report.Milestones
 import            GH.Report.StateTransition
 import            GH.Types
 
@@ -99,6 +100,8 @@ main = do
   -- generate invalid state transition report
       generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") issues
 
+      -- milestone report
+      generateMilestoneReport ("files/" ++ repo ++ "/milestones.csv") issues
 
 
   onlyInProgressIssues issues = L.filter (\i -> let

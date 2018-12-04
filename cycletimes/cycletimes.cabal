@@ -35,6 +35,7 @@ library
       GH.StateTransition
       GH.Report.Actionable
       GH.Report.Assignees
+      GH.Report.Milestones
       GH.Report.StateTransition
       GH.Types
       GH.Epic
