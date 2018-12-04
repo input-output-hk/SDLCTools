@@ -16,6 +16,7 @@ import qualified  Data.ByteString.Char8 as B8
 import qualified  Data.ByteString.Lazy.Char8 as BL8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
+import qualified  Data.Map.Strict as M
 import            Data.Maybe (catMaybes)
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
@@ -45,6 +46,31 @@ import            GH.Report.Milestones
 import            GH.Report.StateTransition
 import            GH.Types
 
+
+
+devMap :: M.Map String String
+devMap = M.fromList
+  [("Anviking", "Johannes Lund")
+  , ("JaredCorduan", "Jared Corduan")
+  , ("KtorZ", "Matthias Benkort")
+  , ("denisshevchenko", "Denis Shevchenko")
+  , ("dnadales", "Damian Nadales")
+  , ("mdimjasevic", "Marko Dimjasevic")
+  , ("nc6", "Nicholas Clarke")
+  , ("parsonsmatt", "Matt Parsons")
+  , ("paweljakubas", "Pawel Jakubas")
+  , ("polinavino", "Polina Vinogradova")
+  , ("uroboros", "Ryan Lemmer")
+  , ("redxaxder", "redxaxder")
+  , ("ruhatch", "Rupert Horlick")
+  , ("Jimbo4350", "Jordan Millar")
+  , ("kantp", "Philipp Kant")
+  , ("mgudemann", "Matthias Güdemann")
+  , ("ksaric", "Kristijan Šarić")
+  , ("HirotoShioi", "Hiroto Shioi")
+  , ("robcohen", "Rob Cohen")
+ -- , ("", "")
+  ]
 
 
 
