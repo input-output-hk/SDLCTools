@@ -107,8 +107,8 @@ main = do
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
-                    "2a0fc05987a276b31b67bac44434a85d860c8fa6"
-                    "21b35df2f2cba42d2fc72a19b41c4bd0c17b76e1b81220ac340dbfd4397704df69368b4b90d014c0"
+                    "gh key"
+                    "zh key"
                     True
                     "files/DevData.csv"
   MkConfig{..} = config
