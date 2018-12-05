@@ -100,15 +100,15 @@ main = do
                   in (s == InProgress || s == InReview) && not isPR) issues
 
   config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
-                    , ("input-output-hk", "ouroboros-network", 149481615)
-                    , ("input-output-hk", "cardano-chain", 149791280)
-                    , ("input-output-hk", "fm-ledger-rules", 150113380)
-                    , ("input-output-hk", "cardano-shell", 154114906)
+--                    , ("input-output-hk", "ouroboros-network", 149481615)
+--                    , ("input-output-hk", "cardano-chain", 149791280)
+--                    , ("input-output-hk", "fm-ledger-rules", 150113380)
+--                    , ("input-output-hk", "cardano-shell", 154114906)
 
 --                    ("jcmincke", "zenhub-prj", 152765249)
                     ]
-                    "key"
-                    "key"
+                    "2a0fc05987a276b31b67bac44434a85d860c8fa6"
+                    "21b35df2f2cba42d2fc72a19b41c4bd0c17b76e1b81220ac340dbfd4397704df69368b4b90d014c0"
                     True
                     "files/DevData.csv"
   MkConfig{..} = config
