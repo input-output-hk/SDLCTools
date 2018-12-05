@@ -17,6 +17,7 @@ import            Data.Time.Calendar
 import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
 import            Data.Time.Format
+import qualified  Data.Csv as CSV
 
 
 toUTCTime :: Int -> UTCTime
@@ -178,4 +179,13 @@ getDoneTime (STInReview _ _ _)        = Nothing
 getDoneTime (STDone _ _ _ t)          = Just t
 getDoneTime STIllegalStateTransitions = Nothing
 
+
+data Developer = MkDeveloper {
+    ghUserName  :: !T.Text
+  , devRealName :: !T.Text
+  }
+  deriving (Show, Eq)
+
+instance CSV.FromNamedRecord Developer where
+  parseNamedRecord dev = MkDeveloper <$> dev CSV..: "ghUserName" <*> dev CSV..: "devRealName"
 

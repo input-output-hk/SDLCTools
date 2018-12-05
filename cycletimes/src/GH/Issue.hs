@@ -21,7 +21,10 @@ import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
 import            Data.Maybe (catMaybes, fromJust)
 import qualified  Data.Text as T
-import            Data.Vector      (toList)
+import qualified  Data.Vector  as V
+import qualified  Data.ByteString.Lazy as LBS
+import            Data.Csv
+import            Data.Monoid ((<>))
 
 import            Data.Time.Calendar
 import            Data.Time.Clock
@@ -40,13 +43,14 @@ import            GH.Types
 
 getIssues :: Config -> IO [(String, [Issue])]
 getIssues MkConfig{..} = do
-  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo) cfg_Repos
+  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo cfg_DevNameFile) cfg_Repos
   return issues
 
 
-getIssuesForOneRepo :: String -> String -> (String, String, Int) -> IO (String, [Issue])
-getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
+getIssuesForOneRepo :: String -> String -> (String, String, Int) -> String -> IO (String, [Issue])
+getIssuesForOneRepo ghKey zhKey (user, repo, repoId) devMapFile = do
   issues <- getGHIssuesForRepo user repo repoId
+  mappings <- getDevNameMappings devMapFile
   let issues1 = L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
   -- get rid of PR's
   let issues2 = L.filter (not . ghiIsPR . iGHIssue) issues1
@@ -85,8 +89,12 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
                           Nothing -> issue
                       )
                       issues4
-
-  return (repo, issues5)
+  let issues6 = L.map ( \issue@MkIssue{..} ->
+                            let userName = ghuUser . ghiUser $ iGHIssue
+                                ghiUser' = (ghiUser iGHIssue) { ghuUser = toRealName mappings userName}
+                                issue'   = issue { iGHIssue = iGHIssue { ghiUser = ghiUser'}}
+                            in issue') issues5
+  return (repo, issues6)
   where
   getGHIssuesForRepo user repo repoId = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo
@@ -168,3 +176,18 @@ getMinBacklogTimeForEpic sts = case filter (/= Nothing) backlogTimes of
   ipTimes -> pure . minimum $ fromJust <$> ipTimes
   where
     backlogTimes = getBacklogTime <$> sts
+
+getDevNameMappings :: String -> IO (M.Map T.Text T.Text )
+getDevNameMappings fname = do
+  csvData <- LBS.readFile fname
+  mappings <- case decodeByName csvData of
+    Left err -> do print ("cannot parse Dev Name Mappings CSV file " <> err <> "Ignoring Dev Name Mappings")
+                   return V.empty
+    Right (_, v) -> V.forM v $ \ d -> pure
+      (ghUserName d, devRealName d)
+  return . M.fromList . V.toList $ mappings
+
+toRealName :: M.Map T.Text T.Text -> T.Text -> T.Text
+toRealName mappings psuedo = case M.lookup psuedo mappings of
+  Nothing -> psuedo
+  Just uname -> uname

@@ -16,7 +16,6 @@ import qualified  Data.ByteString.Char8 as B8
 import qualified  Data.ByteString.Lazy.Char8 as BL8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
-import qualified  Data.Map.Strict as M
 import            Data.Maybe (catMaybes)
 import            Data.Monoid ((<>))
 import qualified  Data.Text as T
@@ -45,41 +44,6 @@ import            GH.Report.Actionable
 import            GH.Report.Milestones
 import            GH.Report.StateTransition
 import            GH.Types
-
-
-
-devMap :: M.Map String String
-devMap = M.fromList
-  [("Anviking", "Johannes Lund")
-  , ("JaredCorduan", "Jared Corduan")
-  , ("KtorZ", "Matthias Benkort")
-  , ("denisshevchenko", "Denis Shevchenko")
-  , ("dnadales", "Damian Nadales")
-  , ("mdimjasevic", "Marko Dimjasevic")
-  , ("nc6", "Nicholas Clarke")
-  , ("parsonsmatt", "Matt Parsons")
-  , ("paweljakubas", "Pawel Jakubas")
-  , ("polinavino", "Polina Vinogradova")
-  , ("uroboros", "Ryan Lemmer")
-  , ("redxaxder", "redxaxder")
-  , ("ruhatch", "Rupert Horlick")
-  , ("Jimbo4350", "Jordan Millar")
-  , ("kantp", "Philipp Kant")
-  , ("mgudemann", "Matthias Güdemann")
-  , ("ksaric", "Kristijan Šarić")
-  , ("HirotoShioi", "Hiroto Shioi")
-  , ("robcohen", "Rob Cohen")
- -- , ("", "")
-  ]
-
-
-
---main1 :: IO ()
---main1 = do
---  (MkCliOptions {..}) <- parseCliArgs
---  resp <- runQuery zhToken repoId issueNum
-----  print resp
---  return ()
 
 
 main :: IO ()
@@ -119,8 +83,8 @@ main = do
   where
 
   goIssuesOneRepo repo issues = do
-      generateAssigneeIssueReport ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
-      generateIssueAssigneeReport ("files/" ++ repo ++ "/assignees.csv") $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
+      generateAssigneeIssueReport  ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
+      generateIssueAssigneeReport  ("files/" ++ repo ++ "/assignees.csv") $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
       generateActionableForIssues ("files/" ++ repo ++ "/actionable.csv") issues
 
   -- generate invalid state transition report
@@ -146,11 +110,12 @@ main = do
                     "key"
                     "key"
                     True
+                    "files/DevData.csv"
+  MkConfig{..} = config
 
 goPrsOneRepo repo pullRequests = do
   makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
   makeReport ("files/" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
-
 
 
 
