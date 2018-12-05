@@ -39,6 +39,7 @@ import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
 import            GH.Types
+import            GH.DevNames
 
 data AssigneeIssueReport = AssigneeIssueReport T.Text Int [T.Text]
 
@@ -52,7 +53,7 @@ generateAssigneeIssueReport filename assignements = do
   rows = L.map toRow $ M.toList assignements
   toRow (assignee, issues) = let
     urls = L.map ghiUrl (S.toList issues) ++ L.repeat ""
-    in AssigneeIssueReport (ghuUser assignee) (S.size issues) urls
+    in AssigneeIssueReport (toRealName $ ghuUser assignee) (S.size issues) urls
 
 
 
@@ -103,7 +104,7 @@ generateIssueAssigneeReport filename assignements = do
   rows = L.map toRow $ M.toList assignements
   toRow (issue, assignees) = let
     assigneeNames = L.map ghuUser (S.toList assignees) ++ L.repeat ""
-    in IssueAssigneeReport (ghiUrl issue) (S.size assignees) assigneeNames
+    in IssueAssigneeReport (ghiUrl issue) (S.size assignees) (toRealName <$> assigneeNames)
 
 
 

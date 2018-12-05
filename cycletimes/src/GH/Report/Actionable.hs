@@ -38,6 +38,7 @@ import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
 import            GH.Types
+import            GH.DevNames
 
 intToDateText :: UTCTime -> T.Text
 intToDateText t = T.pack $ formatTime defaultTimeLocale  "%Y%m%d" t
@@ -97,7 +98,7 @@ instance ToNamedRecord ActionableIssueReport where
         , "Assignee-3"      .= a2
         ]
         where
-        (a0:a1:a2:a3:a4:_) = (L.map ghuUser ghiAssignees ++ L.repeat "")
+        (a0:a1:a2:a3:a4:_) = (L.map (toRealName . ghuUser) ghiAssignees ++ L.repeat "")
         utcTimeToDateString t = formatTime defaultTimeLocale  "%d-%m-%Y" t
 
 
