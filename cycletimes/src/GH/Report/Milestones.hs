@@ -20,25 +20,10 @@ where
 import qualified  Data.ByteString.Lazy as LBS
 import            Data.Csv as CSV
 import qualified  Data.List as L
-import qualified  Data.Text as T
-import            Data.Time.Calendar
-
-
-import            Control.Monad
-import            Control.Applicative
-import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
-import qualified  Data.Text as T
-import qualified  Data.Set as S
-import            Data.Vector      (toList)
 
-import            Data.Time.Calendar
-import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
-import            Data.Time.Format
 
 import            GHC.Exts
-
 import            GH.Types
 
 data MilestoneReport = MilestoneReport (Maybe Issue) (Maybe Issue)
@@ -70,6 +55,7 @@ generateMilestoneReport filename issues = do
   sortFun (MilestoneReport (Just e) _) = let
     (MkIssue MkGHIssue{..} MkZHIssue{..} _ _ _ _) = e
     in Just (zhiState, zhiIsEpic, ghiNumber)
+  sortFun _ = Nothing
 
 
 defaultMilestoneReportHeader :: Header
@@ -84,6 +70,15 @@ defaultMilestoneReportHeader = header
 
 
 instance ToNamedRecord MilestoneReport where
+    toNamedRecord (MilestoneReport Nothing Nothing) = namedRecord
+        [ "Repo"            .= ("Error"::String)
+        , "Epic"            .= ("Error"::String)
+        , "Issue"           .= ("Error"::String)
+        , "State"           .= ("Error"::String)
+        , "Issue Milestone" .= ("Error"::String)
+        , "Epic Milestone"  .= ("Error"::String)
+        ]
+
     toNamedRecord (MilestoneReport Nothing (Just issue)) = namedRecord
         [ "Repo"            .= repo
         , "Epic"            .= (""::String)

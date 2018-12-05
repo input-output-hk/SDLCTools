@@ -25,7 +25,6 @@ data Config = MkConfig
   , cfg_gh_key      :: String
   , cfg_zh_key      :: String
   , cfg_pr          :: Bool     -- ^ Do Pull Request analysis
-  , cfg_DevNameFile :: String   -- ^ Dev pseudo -> Real name mapping file path
   }
   deriving Show
 
@@ -35,7 +34,6 @@ instance FromJSON Config where
         cfg_gh_key      <- o .: "gh_key"
         cfg_zh_key      <- o .: "zh_key"
         cfg_pr          <- o .: "pr"
-        cfg_DevNameFile <- o .: "devNames"
 
         return MkConfig{..}
     parseJSON _ = mzero

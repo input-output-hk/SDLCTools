@@ -34,6 +34,6 @@ devMap = M.fromList
   ]
 
 toRealName :: T.Text -> T.Text
-toRealName psuedo = case M.lookup psuedo devMap of
-  Nothing -> psuedo
+toRealName pseudo = case M.lookup pseudo devMap of
+  Nothing -> pseudo
   Just uname -> uname

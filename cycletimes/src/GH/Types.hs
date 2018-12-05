@@ -5,19 +5,12 @@
 
 module GH.Types where
 
-import            Control.Monad
-import            Control.Applicative
 import            GHC.Generics
-import            Data.Aeson
-import            Data.Aeson.Types
-import qualified  Data.Text as T
-import            Data.Vector      (toList)
 
-import            Data.Time.Calendar
+import qualified  Data.Csv as CSV
+import qualified  Data.Text as T
 import            Data.Time.Clock
 import            Data.Time.Clock.POSIX
-import            Data.Time.Format
-import qualified  Data.Csv as CSV
 
 
 toUTCTime :: Int -> UTCTime

@@ -8,46 +8,35 @@
 module GH.Issue where
 
 
-import Debug.Trace (trace)
+
+--import Debug.Trace (trace)
 
 import            Control.Concurrent
 
-import            Control.Monad
-import            Control.Applicative
-import            GHC.Generics
 import            Data.Aeson
-import            Data.Aeson.Types
 import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
 import            Data.Maybe (catMaybes, fromJust)
 import qualified  Data.Text as T
-import            Data.Csv
-import            Data.Monoid ((<>))
 
-import            Data.Time.Calendar
 import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
-import            Data.Time.Format
 
 import            GH.Config
 import            GH.Epic
-import            GH.Parser
 import            GH.Queries
 import            GH.StateTransition
 import            GH.Types
 
 
-
-
 getIssues :: Config -> IO [(String, [Issue])]
 getIssues MkConfig{..} = do
-  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo cfg_DevNameFile) cfg_Repos
+  issues <- mapM (\repo -> getIssuesForOneRepo cfg_gh_key cfg_zh_key repo) cfg_Repos
   return issues
 
 
-getIssuesForOneRepo :: String -> String -> (String, String, Int) -> String -> IO (String, [Issue])
-getIssuesForOneRepo ghKey zhKey (user, repo, repoId) devMapFile = do
-  issues <- getGHIssuesForRepo user repo repoId
+getIssuesForOneRepo :: String -> String -> (String, String, Int) -> IO (String, [Issue])
+getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
+  issues <- getGHIssuesForRepo
   let issues1 = L.map (\(r, ghi, ghEvts, zhi, zhEvts) -> MkIssue ghi zhi ghEvts zhEvts (T.pack r) STIllegalStateTransitions) issues
   -- get rid of PR's
   let issues2 = L.filter (not . ghiIsPR . iGHIssue) issues1
@@ -68,7 +57,7 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) devMapFile = do
                           case M.lookup (ghiNumber iGHIssue) invertedEpicMap of
                           Just children -> do
                             let issue' = issue { iZHIssue  = iZHIssue {zhiChildren = children}}
-                                childIssues   = filter ( \ MkIssue{..} -> elem (ghiNumber iGHIssue) children) issues4
+                                childIssues   = filter ( \MkIssue{..} -> elem (ghiNumber iGHIssue) children) issues4
                                 stTransitions = (\ MkIssue{..} -> iStateTransitions) <$> childIssues
                                 epicCreationTime  = ghiCreationTime  iGHIssue
                                 maybeEpicProgress = getMinInProgressTimeForEpic stTransitions
@@ -77,8 +66,8 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) devMapFile = do
                                 backlogTime =
                                     case maybeBacklogTime of
                                     Just t | t < epicCreationTime -> t
-                                    Just t | t >= epicCreationTime -> epicCreationTime
-                                    Nothing -> epicCreationTime
+                                    Just _                        -> epicCreationTime
+                                    Nothing                       -> epicCreationTime
                             case (maybeEpicProgress, maybeEpicDone) of
                               (Nothing,_) -> issue'
                               (Just ip, Nothing) -> issue' { iStateTransitions = STInProgress backlogTime ip }
@@ -88,48 +77,48 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) devMapFile = do
                       issues4
   return (repo, issues5)
   where
-  getGHIssuesForRepo user repo repoId = do
+  getGHIssuesForRepo = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo
-    let ghIssues = L.concat $ L.map (\json ->
-                    case eitherDecode json of
+    let ghIssues = L.concat $ L.map (\jsonBS ->
+                    case eitherDecode jsonBS of
                       Right issues -> issues
                       Left e -> error e) jsons
     mapM proc ghIssues
     where
     proc ghIssue = do
-      print ("getting data for: ", ghiNumber ghIssue)
+      print ("getting data for: "::String, ghiNumber ghIssue)
       -- poor man rate control
       threadDelay 150000
 
-      zhIssue <- getZHIssueForRepo repo repoId ghIssue
-      zhIssueEvents <- getZHIssueEventsForRepo repo repoId ghIssue
-      ghIssueEvents <- getGHIssueEventsForRepo user repo ghIssue
+      zhIssue <- getZHIssueForRepo zhKey repoId ghIssue
+      zhIssueEvents <- getZHIssueEventsForRepo zhKey repoId ghIssue
+      ghIssueEvents <- getGHIssueEventsForRepo ghKey user repo ghIssue
 
       return (repo, ghIssue, ghIssueEvents, zhIssue, zhIssueEvents)
 
-  getGHIssueEventsForRepo user repo ghIssue@MkGHIssue{..} = do
-    json <- getIssueEventsFromGHRepo ghKey user repo ghiNumber
-    let (ghEvtsE :: Either String [Maybe GHIssueEvent]) = eitherDecode json
-    case ghEvtsE of
-      Right ghEvts -> return $ catMaybes ghEvts
-      Left e -> fail e
+getGHIssueEventsForRepo :: String -> String -> String -> GHIssue -> IO [GHIssueEvent]
+getGHIssueEventsForRepo ghKey user repo MkGHIssue{..} = do
+  jsonBS <- getIssueEventsFromGHRepo ghKey user repo ghiNumber
+  let (ghEvtsE :: Either String [Maybe GHIssueEvent]) = eitherDecode jsonBS
+  case ghEvtsE of
+    Right ghEvts -> return $ catMaybes ghEvts
+    Left e -> fail e
 
-  getZHIssueForRepo repo repoId ghIssue@MkGHIssue{..} = do
-    json <- getSingleIssueFromZHRepo zhKey repoId ghiNumber
---    print "====================="
---    print json
+getZHIssueForRepo :: String -> Int -> GHIssue -> IO ZHIssue
+getZHIssueForRepo zhKey repoId MkGHIssue{..} = do
+  jsonBS <- getSingleIssueFromZHRepo zhKey repoId ghiNumber
+  let (zhIssueE :: Either String ZHIssue) = eitherDecode jsonBS
+  case zhIssueE of
+    Right zhIssue -> return zhIssue
+    Left e -> fail e
 
-    let (zhIssueE :: Either String ZHIssue) = eitherDecode json
-    case zhIssueE of
-      Right zhIssue -> return zhIssue
-      Left e -> fail e
-
-  getZHIssueEventsForRepo repo repoId ghIssue@MkGHIssue{..} = do
-    json <- getSingleIssueEventsFromZHRepo zhKey repoId ghiNumber
-    let (zhEvtsE :: Either String [Maybe ZHIssueEvent]) = eitherDecode json
-    case zhEvtsE of
-      Right zhEvts -> return $ catMaybes zhEvts
-      Left e -> fail e
+getZHIssueEventsForRepo :: String -> Int -> GHIssue -> IO [ZHIssueEvent]
+getZHIssueEventsForRepo zhKey repoId MkGHIssue{..} = do
+  jsonBS <- getSingleIssueEventsFromZHRepo zhKey repoId ghiNumber
+  let (zhEvtsE :: Either String [Maybe ZHIssueEvent]) = eitherDecode jsonBS
+  case zhEvtsE of
+    Right zhEvts -> return $ catMaybes zhEvts
+    Left e -> fail e
 
 
 

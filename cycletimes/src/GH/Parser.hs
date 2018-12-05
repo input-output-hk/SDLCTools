@@ -8,56 +8,24 @@
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
+
 module GH.Parser
 where
 
-import Debug.Trace (trace)
-import            Control.Applicative
+--import Debug.Trace (trace)
+
 import            Control.Monad (forM)
+
 import            Data.Aeson
 import            Data.Aeson.Types (Parser)
-import qualified  Data.Text as T
 import qualified  Data.HashMap.Strict as M
-
-import            Data.Time.Calendar
-import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
+import qualified  Data.Text as T
 import            Data.Time.Format
 
 
 import            GH.Types
 
-
-{-
-
-data GHUser = MkGHUser
-  { ghiUser     :: T.Text
-    ghiUserId   :: T.Text
-  }
-
-
-data GHIssue = MkGHIssue
-  { ghiId               :: Int
-  , ghiNumber           :: Int
-  , ghiTitle            :: T.Text
-  , ghiUser             :: GHUser
-  , ghiCreationTime     :: UTCTime
-  , ghiMainAssignee     :: GHUser
-  , ghiAssignees        :: [GHUser]
-  }
-
-data GHIssueEvent =
-  GHCloseEvent UTCTime
-  |GHReOpenEvent UTCTime
-
-data ZHIssue = MkZHIssue
-  { zhiState            :: State
-    zhiIsEpic           :: Bool
-  }
-  deriving (Show, Eq, Ord)
-
--}
-
+parseUTCTime :: ParseTime t => String -> t
 parseUTCTime t = parseTimeOrError  True defaultTimeLocale  "%Y-%m-%dT%H:%M:%S%QZ" t
 
 
@@ -128,7 +96,6 @@ instance FromJSON GHIssue where
     let ghiCreationTime = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack creationTime)
     let ghiIsPR = M.member "pull_request" o
     ghiMilestone    <- o .:? "milestone" :: Parser (Maybe GHMilestone)
-    let ghiRepoName = T.empty
     return $ MkGHIssue {..}
 
 

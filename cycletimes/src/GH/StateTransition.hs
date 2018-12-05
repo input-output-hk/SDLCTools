@@ -13,12 +13,11 @@ where
 
 import qualified  Data.List as L
 import qualified  Data.Text as T
-import            Data.Time.Calendar
 import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
-import           GH.Types
+
+import            GH.Types
 
 
 -- | Given the creation time and a list of StateChange Events returns the
@@ -46,8 +45,8 @@ transitionStep (STInReview tb tp tr) (StateEvent _  Backlog _)     = STInReview 
 transitionStep (STInReview tb tp tr) (StateEvent _  InProgress _)  = STInReview tb tp tr
 transitionStep (STInReview tb tp tr) (StateEvent _  InReview _)    = STInReview tb tp tr
 transitionStep (STInReview tb tp tr) (StateEvent _  Done td)       = STDone tb tp tr td
-transitionStep (STDone tb tp tr td)  (StateEvent _ InProgress _)       = STInReview tb tp tr
-transitionStep (STDone tb tp tr td)  (StateEvent _ InReview _)         = STInReview tb tp tr
+transitionStep (STDone tb tp tr _)   (StateEvent _ InProgress _)       = STInReview tb tp tr
+transitionStep (STDone tb tp tr _)   (StateEvent _ InReview _)         = STInReview tb tp tr
 transitionStep (STDone tb tp tr _)   (StateEvent _ Done td)            = STDone tb tp tr td
 transitionStep _ _ = STIllegalStateTransitions
 
@@ -78,7 +77,7 @@ getStateEvents ghs zhs =
   where
   evts = (L.sort $ (GHE <$> ghs) ++ (ZHE <$> zhs))
   go _ _ acc [] = reverse acc
-  go _ currentState acc (ZHE (ZHEvtTransferState si sf t):rest) =
+  go _ currentState acc (ZHE (ZHEvtTransferState _ sf t):rest) =
     go currentState sf (StateEvent currentState sf t : acc) rest
 
   go previousState currentState acc (GHE (GHEvtReOpenEvent t):rest) =

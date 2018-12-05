@@ -7,6 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 
 module GH.Queries
@@ -14,22 +15,15 @@ where
 
 -- import Debug.Trace (trace)
 
-
-
-import qualified  Data.ByteString as BS
 import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
-import qualified  Data.List as L
 import qualified  Data.Map.Strict as M
 import            Data.Monoid ((<>))
-import qualified  Data.Text as T
 
-import            Network.HTTP.Simple as HTTP
 import            Network.HTTP.Link.Parser
 import            Network.HTTP.Link.Types
+import            Network.HTTP.Simple as HTTP
 import            Network.HTTP.Types.Header
-import            Network.URI
-
 
 
 deriving instance Ord LinkParam
@@ -38,11 +32,11 @@ getNextPage :: ResponseHeaders -> Maybe String
 getNextPage headers = do
   header <- M.lookup hLink (M.fromList headers)
   links <- parseLinkHeaderBS header
-  let map = M.fromList $ do
+  let uriMap = M.fromList $ do
                 Link uri params <- links
                 param <- params
                 return (param, uri)
-  uri <- M.lookup (Rel, "next") map
+  uri <- M.lookup (Rel, "next") uriMap
   return $ show uri
   where
   hLink = "Link"
@@ -57,7 +51,6 @@ getSingleIssueFromGHRepo token user repo issue_number = do
                               ]
           $ req'
   response <- httpLBS req
-  let headers = getResponseHeaders response
   let responseBody = getResponseBody response
   return responseBody
 

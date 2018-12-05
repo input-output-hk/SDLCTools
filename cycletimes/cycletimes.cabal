@@ -63,6 +63,8 @@ library
 
     , GHStats
   default-language: Haskell2010
+  ghc-options:         -Wall
+
 
 executable cycletimes-exe
   main-is: Main.hs
@@ -88,6 +90,8 @@ executable cycletimes-exe
 
     , GHStats
   default-language: Haskell2010
+  ghc-options:         -Wall
+
 
 test-suite cycletimes-test
   type: exitcode-stdio-1.0

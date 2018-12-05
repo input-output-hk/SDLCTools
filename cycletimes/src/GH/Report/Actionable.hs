@@ -21,20 +21,7 @@ import qualified  Data.ByteString.Lazy as LBS
 import            Data.Csv as CSV
 import qualified  Data.List as L
 import qualified  Data.Text as T
-import            Data.Time.Calendar
-
-
-import            Control.Monad
-import            Control.Applicative
-import qualified  Data.List as L
-import qualified  Data.Map.Strict as M
-import qualified  Data.Text as T
-import qualified  Data.Set as S
-import            Data.Vector      (toList)
-
-import            Data.Time.Calendar
 import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
 import            Data.Time.Format
 
 import            GH.Types
@@ -98,7 +85,7 @@ instance ToNamedRecord ActionableIssueReport where
         , "Assignee-3"      .= a2
         ]
         where
-        (a0:a1:a2:a3:a4:_) = (L.map (toRealName . ghuUser) ghiAssignees ++ L.repeat "")
+        (a0:a1:a2:_) = (L.map (toRealName . ghuUser) ghiAssignees ++ L.repeat "")
         utcTimeToDateString t = formatTime defaultTimeLocale  "%d-%m-%Y" t
 
 

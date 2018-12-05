@@ -11,34 +11,18 @@ module Main where
 
 import            Control.Monad
 
-import            Data.Aeson
-import qualified  Data.ByteString.Char8 as B8
-import qualified  Data.ByteString.Lazy.Char8 as BL8
-import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.List as L
 import            Data.Maybe (catMaybes)
-import            Data.Monoid ((<>))
-import qualified  Data.Text as T
-import            Data.Time.Calendar
-import            Data.Time.Clock
-import            Data.Time.Clock.POSIX
-import            Data.Time.Format
 
-import            Network.HTTP.Simple
-import            Network.HTTP.Link.Parser as P
-
-import            System.FilePath.Posix
 
 import            PR.Extract
 import            PR.Pr
 import            PR.Report
+import            PR.Types
 
 import            GH.Assignee
 import            GH.Config
 import            GH.Issue
-import            GH.Misc
-import            GH.Parser
-import            GH.Queries
 import            GH.Report.Assignees
 import            GH.Report.Actionable
 import            GH.Report.Milestones
@@ -71,14 +55,12 @@ main = do
       ) pullRequestsPerRepo
 
     -- consolidated view
-
     let allPullRequests = do
           (_, pullRequests) <- pullRequestsPerRepo
           pullRequest <- pullRequests
           return pullRequest
 
     goPrsOneRepo "global" allPullRequests
-
 
   where
 
@@ -100,19 +82,16 @@ main = do
                   in (s == InProgress || s == InReview) && not isPR) issues
 
   config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
---                    , ("input-output-hk", "ouroboros-network", 149481615)
---                    , ("input-output-hk", "cardano-chain", 149791280)
---                    , ("input-output-hk", "fm-ledger-rules", 150113380)
---                    , ("input-output-hk", "cardano-shell", 154114906)
-
---                    ("jcmincke", "zenhub-prj", 152765249)
+                    , ("input-output-hk", "ouroboros-network", 149481615)
+                    , ("input-output-hk", "cardano-chain", 149791280)
+                    , ("input-output-hk", "fm-ledger-rules", 150113380)
+                    , ("input-output-hk", "cardano-shell", 154114906)
                     ]
-                    "gh key"
-                    "zh key"
+                    "key"
+                    "key"
                     True
-                    "files/DevData.csv"
-  MkConfig{..} = config
 
+goPrsOneRepo :: [Char] -> [PullRequest] -> IO ()
 goPrsOneRepo repo pullRequests = do
   makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
   makeReport ("files/" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
