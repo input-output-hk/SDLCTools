@@ -75,6 +75,7 @@ executable cycletimes-exe
     , base >=4.7 && <5
     , bytestring
     , cassava
+    , containers
     , cycletimes
     , filepath
     , http-conduit
