@@ -137,5 +137,4 @@ getAllEpicsFromZHRepo token repoId = do
   print (repoId, responseBody)
   return responseBody
 
---https://api.github.com/repos/jcmincke/zenhub-prj/issues/6/events > gh-events-jc.json
 

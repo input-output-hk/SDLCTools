@@ -56,18 +56,7 @@ defaultActionableIssueHeader = header
 
 data ActionableIssueReport = ActionableIssueReport Issue
 
-{-}
 
-data Issue = MkIssue
-  { iGHIssue            :: GHIssue
-  , iZHIssue            :: ZHIssue
-  , iGHIssueEvents      :: [GHIssueEvent]
-  , iZHIssueEvents      :: [ZHIssueEvent]
-  , iRepoName           :: T.Text
-  , iStateTransitions   :: StateTransitions
-  }
-  deriving (Show, Eq, Ord)
--}
 
 instance ToNamedRecord ActionableIssueReport where
     toNamedRecord (ActionableIssueReport (MkIssue MkGHIssue{..} MkZHIssue{..} _ _ repo transitions)) = namedRecord
