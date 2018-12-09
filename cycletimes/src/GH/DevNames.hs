@@ -32,6 +32,11 @@ devMap = M.fromList
   , ("HirotoShioi", "Hiroto Shioi")
   , ("robcohen", "Rob Cohen")
   , ("coot", "Marcin Szamotulski")
+  , ("akegalj", "Ante Kegalj")
+  , ("CodiePP", "Alexander Diemand")
+  , ("365andreas", "Andreas Tryantafyllos")
+
+
   ]
 
 toRealName :: T.Text -> T.Text

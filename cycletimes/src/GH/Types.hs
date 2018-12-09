@@ -110,6 +110,7 @@ data State =
   |InProgress
   |InReview
   |Done
+  |Neutral
   deriving (Eq, Show, Generic, Ord)
 
 type UserId = Int
@@ -128,6 +129,7 @@ nameToState "Retrospective"   = Done
 nameToState "Epics"           = Backlog
 nameToState "Proposed"        = Backlog
 nameToState "Accepted"        = Backlog
+nameToState "Waiting"         = Neutral
 nameToState e = error (T.unpack e)
 
 

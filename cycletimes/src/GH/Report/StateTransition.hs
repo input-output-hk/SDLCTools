@@ -20,13 +20,18 @@ import qualified  Data.List as L
 import            GH.StateTransition
 import            GH.Types
 
-generateStateTransitionReport :: String -> [Issue] -> IO ()
-generateStateTransitionReport filename issues = do
+generateStateTransitionReport :: String -> String -> [Issue] -> IO ()
+generateStateTransitionReport illegalTransitionsFilename legalTransitionsFilename issues = do
   let issues' =  L.filter hasIllegalStateTransitions issues
-  writeFile filename "Illegal Transitions\n"
-  mapM_ go issues'
+  writeFile illegalTransitionsFilename "Illegal Transitions\n"
+  mapM_ (go illegalTransitionsFilename) issues'
+
+  let issues'' =  L.filter (not . hasIllegalStateTransitions) issues
+  writeFile legalTransitionsFilename "Legal Transitions\n"
+  mapM_ (go legalTransitionsFilename) issues''
+
   where
-  go issue = do
+  go filename issue = do
     appendFile filename "\n"
     mapM_ (\s -> do
         appendFile filename s

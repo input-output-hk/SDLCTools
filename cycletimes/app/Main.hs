@@ -70,22 +70,22 @@ main = do
       generateActionableForIssues ("files/" ++ repo ++ "/actionable.csv") issues
 
   -- generate invalid state transition report
-      generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") issues
+      generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") ("files/" ++ repo ++ "/valid state transitions.txt") issues
 
       -- milestone report
       generateMilestoneReport ("files/" ++ repo ++ "/milestones.csv") issues
-
 
   onlyInProgressIssues issues = L.filter (\i -> let
                   s = (zhiState $ iZHIssue i)
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
 
-  config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
-                    , ("input-output-hk", "ouroboros-network", 149481615)
-                    , ("input-output-hk", "cardano-chain", 149791280)
-                    , ("input-output-hk", "fm-ledger-rules", 150113380)
-                    , ("input-output-hk", "cardano-shell", 154114906)
+  config = MkConfig [--("input-output-hk", "cardano-wallet", 154148239)
+                    --, ("input-output-hk", "ouroboros-network", 149481615)
+                    --, ("input-output-hk", "cardano-chain", 149791280)
+                    --, ("input-output-hk", "fm-ledger-rules", 150113380)
+                    --, ("input-output-hk", "cardano-shell", 154114906)
+                     ("input-output-hk", "iohk-monitoring-framework", 159627884)
                     ]
                     "key"
                     "key"

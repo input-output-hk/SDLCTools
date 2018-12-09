@@ -37,17 +37,25 @@ transitionStep :: StateTransitions -> StateEvent -> StateTransitions
 transitionStep (STBacklog tb)        (StateEvent _ Backlog _)       = STBacklog tb
 transitionStep (STBacklog tb)        (StateEvent _ InProgress tp)   = STInProgress tb tp
 transitionStep (STBacklog tb)        (StateEvent _ InReview tr)     = STInReview tb tr tr
-transitionStep (STInProgress tb tp)  (StateEvent _ Backlog _)    = STInProgress tb tp
-transitionStep (STInProgress tb tp)  (StateEvent _ InProgress _) = STInProgress tb tp
-transitionStep (STInProgress tb tp)  (StateEvent _ InReview tr)  = STInReview tb tp tr
-transitionStep (STInProgress tb tp)  (StateEvent _ Done td)      = STDone tb tp td td
-transitionStep (STInReview tb tp tr) (StateEvent _  Backlog _)     = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent _  InProgress _)  = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent _  InReview _)    = STInReview tb tp tr
-transitionStep (STInReview tb tp tr) (StateEvent _  Done td)       = STDone tb tp tr td
-transitionStep (STDone tb tp tr _)   (StateEvent _ InProgress _)       = STInReview tb tp tr
-transitionStep (STDone tb tp tr _)   (StateEvent _ InReview _)         = STInReview tb tp tr
-transitionStep (STDone tb tp tr _)   (StateEvent _ Done td)            = STDone tb tp tr td
+transitionStep (STBacklog tb)        (StateEvent _ Neutral _)       = STBacklog tb
+
+transitionStep (STInProgress tb tp)  (StateEvent _ Backlog _)       = STInProgress tb tp
+transitionStep (STInProgress tb tp)  (StateEvent _ InProgress _)    = STInProgress tb tp
+transitionStep (STInProgress tb tp)  (StateEvent _ InReview tr)     = STInReview tb tp tr
+transitionStep (STInProgress tb tp)  (StateEvent _ Done td)         = STDone tb tp td td
+transitionStep (STInProgress tb tp)  (StateEvent _ Neutral _)       = STInProgress tb tp
+
+transitionStep (STInReview tb tp tr) (StateEvent _  Backlog _)      = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  InProgress _)   = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  InReview _)     = STInReview tb tp tr
+transitionStep (STInReview tb tp tr) (StateEvent _  Done td)        = STDone tb tp tr td
+transitionStep (STInReview tb tp tr) (StateEvent _  Neutral _)      = STInReview tb tp tr
+
+transitionStep (STDone tb tp tr _)   (StateEvent _ InProgress _)    = STInReview tb tp tr
+transitionStep (STDone tb tp tr _)   (StateEvent _ InReview _)      = STInReview tb tp tr
+transitionStep (STDone tb tp tr _)   (StateEvent _ Done td)         = STDone tb tp tr td
+transitionStep (STDone tb tp tr _)   (StateEvent _ Neutral _)       = STInReview tb tp tr
+
 transitionStep _ _ = STIllegalStateTransitions
 
 
