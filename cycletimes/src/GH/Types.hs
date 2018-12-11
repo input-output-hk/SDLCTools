@@ -38,6 +38,7 @@ data GHUser = MkGHUser
 data GHMilestone = MkGHMilestone
   {
     ghmNumber   :: Int
+  , ghmTitle    :: T.Text
   , ghmDueDate  :: UTCTime
   }
   deriving (Show, Eq, Ord)
@@ -64,6 +65,8 @@ data ZHIssue = MkZHIssue
   , zhiIsEpic           :: Bool
   , zhiParentEpic       :: Maybe Int
   , zhiChildren         :: [Int]
+  , zhiRelease          :: Maybe ZHRelease    -- ^ if an issue is in a release
+  , zhiInheritedRelease :: Maybe ZHRelease    -- ^ release inherited from the parent epic.
   }
   deriving (Show, Eq, Ord)
 
@@ -95,6 +98,24 @@ instance Ord ZHIssueEvent where
   compare ze1 ze2 = compare (getTime ze1) (getTime ze2)
     where
       getTime (ZHEvtTransferState _ _ t) = t
+
+
+
+
+data ZHRelease = MkZHRelease
+  { zhrId               :: T.Text
+  , zhrTitle            :: T.Text
+  , zhrEndDate          :: UTCTime
+  }
+  deriving (Show, Eq, Ord)
+
+
+
+data ZHIssueInRelease = MkZHIssueInRelease
+  { zhirIssueId         :: Int
+  }
+  deriving (Show, Eq, Ord)
+
 
 data StateEvent = StateEvent State State TimeStamp
   deriving (Eq, Show, Generic)

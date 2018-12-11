@@ -9,9 +9,10 @@ module GH.Issue where
 
 
 
---import Debug.Trace (trace)
+-- import Debug.Trace (trace)
 
 import            Control.Concurrent
+import            Control.Monad (foldM)
 
 import            Data.Aeson
 import qualified  Data.List as L
@@ -75,7 +76,11 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
                           Nothing -> issue
                       )
                       issues4
-  return (repo, issues5)
+  -- reconcile issue and release
+  issueInReleaseMap <- getZHReleaseForIssues zhKey repoId
+  let issues6 = updateIssuesWithReleaseForRepo issueInReleaseMap issues5
+
+  return (repo, issues6)
   where
   getGHIssuesForRepo = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo
@@ -95,6 +100,39 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
       ghIssueEvents <- getGHIssueEventsForRepo ghKey user repo ghIssue
 
       return (repo, ghIssue, ghIssueEvents, zhIssue, zhIssueEvents)
+
+-- getZHReleaseForIssues :: String -> Int -> IO (M.Map Int ZHRelease)
+
+updateIssuesWithReleaseForRepo :: M.Map Int ZHRelease -> [Issue] -> [Issue]
+updateIssuesWithReleaseForRepo issueInReleaseMap issues =
+  L.map proc issues
+  where
+  proc issue@MkIssue{..} = let
+    MkGHIssue{..} = iGHIssue
+    issue1 = updateRelease (M.lookup ghiNumber issueInReleaseMap) issue
+    issue2 = updateInheritedRelease ((M.lookup ghiNumber issueMap) >>= (\p -> M.lookup p issueInReleaseMap)) issue1
+    in
+    issue2
+
+  updateRelease releaseM issue@MkIssue{..} = let
+    MkZHIssue{..} = iZHIssue
+    in
+    issue {iZHIssue = iZHIssue {zhiRelease = releaseM}}
+
+  updateInheritedRelease releaseM issue@MkIssue{..} = let
+    MkZHIssue{..} = iZHIssue
+    in
+    issue {iZHIssue = iZHIssue {zhiInheritedRelease = releaseM}}
+
+  issueMap =
+    L.foldl' foldProc M.empty issues
+    where
+    foldProc acc MkIssue{..} = let
+      MkZHIssue{..} = iZHIssue
+      MkGHIssue{..} = iGHIssue
+      in  case zhiParentEpic of
+          Just epicNumber -> M.insert ghiNumber epicNumber acc
+          Nothing -> acc
 
 getGHIssueEventsForRepo :: String -> String -> String -> GHIssue -> IO [GHIssueEvent]
 getGHIssueEventsForRepo ghKey user repo MkGHIssue{..} = do
@@ -120,6 +158,25 @@ getZHIssueEventsForRepo zhKey repoId MkGHIssue{..} = do
     Right zhEvts -> return $ catMaybes zhEvts
     Left e -> fail e
 
+
+
+
+getZHReleaseForIssues :: String -> Int -> IO (M.Map Int ZHRelease)
+getZHReleaseForIssues zhKey repoId = do
+  relJsonBS <- getReleaseFromZHRepo zhKey repoId
+  let (zhReleasesE :: Either String [ZHRelease]) = eitherDecode relJsonBS
+  case zhReleasesE of
+    Right zhReleases -> do
+      foldM foldProc M.empty zhReleases
+    Left e -> fail e
+  where
+  foldProc acc release@MkZHRelease{..} = do
+    jsonBS <- getIssuesInReleaseFromZH zhKey zhrId
+    let (zhIssuesE :: Either String [ZHIssueInRelease]) = eitherDecode jsonBS
+    case zhIssuesE of
+      Right zhIssues ->
+        return $ L.foldl' (\acc' (MkZHIssueInRelease i) -> M.insert i release acc') acc zhIssues
+      Left e -> fail e
 
 
 computeStateTransitions :: Issue -> Issue

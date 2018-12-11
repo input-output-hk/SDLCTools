@@ -55,6 +55,8 @@ instance FromJSON ZHIssue where
     zhiState        <- fmap nameToState $ pipeline .: "name"
     let zhiParentEpic = Nothing
     let zhiChildren = []
+    let zhiRelease = Nothing
+    let zhiInheritedRelease = Nothing
     return $ MkZHIssue {..}
 
 instance {-# OVERLAPS #-} FromJSON (Maybe GHIssueEvent) where
@@ -74,14 +76,13 @@ instance FromJSON GHUser where
     ghuUserId    <- o .: "id" :: Parser Int
     return $ MkGHUser {..}
 
-
 instance FromJSON GHMilestone where
   parseJSON = withObject "User" $ \o -> do
     ghmNumber  <- o .: "number" :: Parser Int
+    ghmTitle   <- o .: "title"  :: Parser T.Text
     dueDate    <- o .: "due_on" :: Parser T.Text
     let ghmDueDate = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack dueDate)
     return $ MkGHMilestone {..}
-
 
 instance FromJSON GHIssue where
   parseJSON = withObject "Issue" $ \o -> do
@@ -97,8 +98,6 @@ instance FromJSON GHIssue where
     let ghiIsPR = M.member "pull_request" o
     ghiMilestone    <- o .:? "milestone" :: Parser (Maybe GHMilestone)
     return $ MkGHIssue {..}
-
-
 
 instance FromJSON EpicChildren where
   parseJSON = withObject "EpicChildren" $ \o -> do
@@ -116,3 +115,32 @@ instance FromJSON AllEpics where
       issueNum <- i .: "issue_number" :: Parser Int
       return issueNum
     return $ AllEpics epicIssues
+
+
+{-
+[{"release_id":"5be5bf0de8e9d45fbb5b5e64",
+"title":"Wallet Evolution","description":"All work required to decouple the wallet with BIP-44 and offline transaction signing."
+,"start_date":"2018-10-29T12:00:00.000Z"
+,"desired_end_date":"2018-12-31T12:00:00.000Z"
+,"created_at":"2018-11-09T17:08:29.997Z"
+,"closed_at":null,"state":"open"}]
+-}
+
+
+instance FromJSON ZHRelease where
+  parseJSON = withObject "Release" $ \o -> do
+    zhrId       <- o .: "release_id" :: Parser T.Text
+    zhrTitle    <- o .: "title" :: Parser T.Text
+    endDate     <- o .: "desired_end_date" :: Parser T.Text
+    let zhrEndDate = parseUTCTime (T.unpack endDate)
+    return $ MkZHRelease{..}
+
+
+-- {"repo_id":154148239,"issue_number":1}
+
+
+instance FromJSON ZHIssueInRelease where
+  parseJSON = withObject "Issue in release" $ \o -> do
+    zhirIssueId  <- o .: "issue_number" :: Parser Int
+    return $ MkZHIssueInRelease{..}
+

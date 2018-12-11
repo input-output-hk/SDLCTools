@@ -26,8 +26,15 @@ import            GH.Issue
 import            GH.Report.Assignees
 import            GH.Report.Actionable
 import            GH.Report.Milestones
+import            GH.Report.Release
 import            GH.Report.StateTransition
 import            GH.Types
+
+import            Data.Time.Clock
+import            Data.Time.Format
+
+d::UTCTime
+d = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" "2018-12-31T12:00:00Z"
 
 
 main :: IO ()
@@ -68,6 +75,7 @@ main = do
       generateAssigneeIssueReport  ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
       generateIssueAssigneeReport  ("files/" ++ repo ++ "/assignees.csv") $ (issueMap $ map iGHIssue (onlyInProgressIssues issues))
       generateActionableForIssues ("files/" ++ repo ++ "/actionable.csv") issues
+      generateReleaseReport ("files/" ++ repo ++ "/releases.txt") issues
 
   -- generate invalid state transition report
       generateStateTransitionReport ("files/" ++ repo ++ "/invalid state transitions.txt") ("files/" ++ repo ++ "/valid state transitions.txt") issues
@@ -80,12 +88,12 @@ main = do
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
 
-  config = MkConfig [--("input-output-hk", "cardano-wallet", 154148239)
-                    --, ("input-output-hk", "ouroboros-network", 149481615)
-                    --, ("input-output-hk", "cardano-chain", 149791280)
-                    --, ("input-output-hk", "fm-ledger-rules", 150113380)
-                    --, ("input-output-hk", "cardano-shell", 154114906)
-                     ("input-output-hk", "iohk-monitoring-framework", 159627884)
+  config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
+                    , ("input-output-hk", "ouroboros-network", 149481615)
+                    , ("input-output-hk", "cardano-chain", 149791280)
+                    , ("input-output-hk", "fm-ledger-rules", 150113380)
+                    , ("input-output-hk", "cardano-shell", 154114906)
+                    , ("input-output-hk", "iohk-monitoring-framework", 159627884)
                     ]
                     "key"
                     "key"
@@ -93,7 +101,7 @@ main = do
 
 goPrsOneRepo :: [Char] -> [PullRequest] -> IO ()
 goPrsOneRepo repo pullRequests = do
-  makeReport ("files/" ++ repo ++"/PRAnalysis.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
+  makeReport ("files/" ++ repo ++"/PRActionable.csv") $ (catMaybes $ map (\pr -> mkPRAnalysis pr Nothing) pullRequests)
   makeReport ("files/" ++ repo ++"/PRCDetails.csv") $ (concat . catMaybes $ mkPRCDetails <$> pullRequests)
 
 

@@ -19,6 +19,7 @@ import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.Map.Strict as M
 import            Data.Monoid ((<>))
+import qualified  Data.Text as T
 
 import            Network.HTTP.Link.Parser
 import            Network.HTTP.Link.Types
@@ -60,7 +61,7 @@ getAllIssuesFromGHRepo token user repo = do
   go [] initialRequest
   where
   go jsons url = do
-    print url
+--    print url
     req' <- parseRequest url
     let authorization = "token " ++ token
     let req = setRequestHeaders [ ("Authorization", BS8.pack authorization)
@@ -99,7 +100,7 @@ getSingleIssueFromZHRepo token repoId issueNumber = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  print (repoId, issueNumber, responseBody)
+--  print (repoId, issueNumber, responseBody)
   return responseBody
 
 getSingleIssueEventsFromZHRepo :: String  -> Int -> Int -> IO LBS.ByteString
@@ -111,7 +112,7 @@ getSingleIssueEventsFromZHRepo token repoId issueNumber = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  print (issueNumber, responseBody)
+--  print (issueNumber, responseBody)
   return responseBody
 
 
@@ -123,7 +124,7 @@ getSingleEpicFromZHRepo token repoId epicId = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  print (epicId, responseBody)
+--  print (epicId, responseBody)
   return responseBody
 
 getAllEpicsFromZHRepo :: String -> Int -> IO LBS.ByteString
@@ -134,7 +135,31 @@ getAllEpicsFromZHRepo token repoId = do
           $ req'
   response <- httpLBS req
   let responseBody = getResponseBody response
-  print (repoId, responseBody)
+--  print (repoId, responseBody)
   return responseBody
+
+
+getReleaseFromZHRepo :: String -> Int -> IO LBS.ByteString
+getReleaseFromZHRepo token repoId = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/reports/releases"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  return responseBody
+
+
+getIssuesInReleaseFromZH :: String -> T.Text -> IO LBS.ByteString
+getIssuesInReleaseFromZH token releaseId = do
+  req' <- parseRequest $ "GET https://api.zenhub.io/p1/reports/release/" <> T.unpack releaseId <> "/issues"
+  let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
+                              ]
+          $ req'
+  response <- httpLBS req
+  let responseBody = getResponseBody response
+  return responseBody
+
+
 
 

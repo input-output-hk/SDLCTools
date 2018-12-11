@@ -46,8 +46,9 @@ defaultActionableIssueHeader = header
   , "Backlog", "InProgress", "Review", "Done"
   , "Repo"
   , "Is Epic"
-  , "Parent Epic"
   , "Milestone"
+  , "Release"
+  , "Parent Epic"
   , "Assignee-1"
   , "Assignee-2"
   , "Assignee-3"
@@ -68,7 +69,8 @@ instance ToNamedRecord ActionableIssueReport where
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
         , "Parent Epic"     .= maybe "" (\n -> T.unpack repo ++ "-" ++ show n) zhiParentEpic
-        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ ")") ghiMilestone
+        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ "):" ++ T.unpack ghmTitle) ghiMilestone
+        , "Release"         .= maybe "" (\MkZHRelease{..} -> T.unpack zhrTitle ++ " (" ++ utcTimeToDateString zhrEndDate ++ "): " ++ T.unpack repo) releaseM
         , "Assignee-1"      .= a0
         , "Assignee-2"      .= a1
         , "Assignee-3"      .= a2
@@ -76,6 +78,12 @@ instance ToNamedRecord ActionableIssueReport where
         where
         (a0:a1:a2:_) = (L.map (toRealName . ghuUser) ghiAssignees ++ L.repeat "")
         utcTimeToDateString t = formatTime defaultTimeLocale  "%d-%m-%Y" t
+        releaseM =
+          case (zhiRelease, zhiRelease) of
+            (Just r, _)  -> Just r
+            (_, Just r)  -> Just r
+            _ -> Nothing
+
 
 
 
