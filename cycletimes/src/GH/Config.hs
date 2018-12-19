@@ -41,8 +41,8 @@ instance FromJSON Config where
 readConfig :: String -> IO Config
 readConfig filename = do
   ymlData <- BS.readFile filename
-  let mconfig = Data.Yaml.decode ymlData :: Maybe Config
+  let mconfig = Data.Yaml.decodeEither ymlData :: Either String Config
   case mconfig of
-    Just cfg -> return cfg
-    Nothing -> error "Can't parse Config from YAML/JSON"
+    Right cfg -> return cfg
+    Left e -> error ("Can't parse Config from YAML/JSON: " ++ e)
 

@@ -15,7 +15,6 @@ import           Data.Monoid ((<>))
 import           Data.List.Utils (replace)
 import qualified Data.Text as T
 import           Network.HTTP.Simple
-import           System.FilePath.Posix
 import           Control.Monad
 
 import           Paths_GHStats

@@ -73,7 +73,6 @@ executable GHStats-exe
     , optparse-applicative
     , regex-tdfa
     , text
-    , text-format
     , unordered-containers
     , meas
   other-modules:

@@ -84,24 +84,28 @@ getIssuesForOneRepo ghKey zhKey (user, repo, repoId) = do
   where
   getGHIssuesForRepo = do
     jsons <- getAllIssuesFromGHRepo ghKey user repo
-    let ghIssues = L.concat $ L.map (\jsonBS ->
+    let ghIssues1 = L.concat $ L.map (\jsonBS ->
                     case eitherDecode jsonBS of
                       Right issues -> issues
                       Left e -> error e) jsons
-    mapM proc ghIssues
+    mapM proc ghIssues1
     where
     proc ghIssue = do
       print ("getting data for: "::String, ghiNumber ghIssue)
       -- poor man rate control
       threadDelay 150000
+      -- update milestone with repo name
+      let milestone = do
+            ml <- ghiMilestone ghIssue
+            return $ ml {ghmRepoName = T.pack repo}
+      let ghIssue' = ghIssue {ghiMilestone = milestone}
 
-      zhIssue <- getZHIssueForRepo zhKey repoId ghIssue
-      zhIssueEvents <- getZHIssueEventsForRepo zhKey repoId ghIssue
-      ghIssueEvents <- getGHIssueEventsForRepo ghKey user repo ghIssue
+      zhIssue <- getZHIssueForRepo zhKey repoId ghIssue'
+      zhIssueEvents <- getZHIssueEventsForRepo zhKey repoId ghIssue'
+      ghIssueEvents <- getGHIssueEventsForRepo ghKey user repo ghIssue'
 
-      return (repo, ghIssue, ghIssueEvents, zhIssue, zhIssueEvents)
+      return (repo, ghIssue', ghIssueEvents, zhIssue, zhIssueEvents)
 
--- getZHReleaseForIssues :: String -> Int -> IO (M.Map Int ZHRelease)
 
 updateIssuesWithReleaseForRepo :: M.Map Int ZHRelease -> [Issue] -> [Issue]
 updateIssuesWithReleaseForRepo issueInReleaseMap issues =

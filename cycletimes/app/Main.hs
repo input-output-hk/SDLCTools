@@ -25,6 +25,8 @@ import            GH.Config
 import            GH.Issue
 import            GH.Report.Assignees
 import            GH.Report.Actionable
+import            GH.Report.Confluence.Milestones
+import            GH.Report.Estimate
 import            GH.Report.Milestones
 import            GH.Report.Release
 import            GH.Report.StateTransition
@@ -82,6 +84,14 @@ main = do
 
       -- milestone report
       generateMilestoneReport ("files/" ++ repo ++ "/milestones.csv") issues
+
+      -- Estimate report
+      generateEstimateForIssues ("files/" ++ repo ++ "/estimates.csv") issues
+
+
+      -- Generate Confluence Milestone report
+
+      generateMilestoneConfluenceReport ("files/" ++ repo ++ "/confluence-milestone.md") issues
 
   onlyInProgressIssues issues = L.filter (\i -> let
                   s = (zhiState $ iZHIssue i)

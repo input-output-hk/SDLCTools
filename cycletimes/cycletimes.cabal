@@ -29,13 +29,17 @@ library
       GH.Assignee
       GH.Config
       GH.Issue
+      GH.Milestones
       GH.Misc
       GH.Parser
       GH.Queries
       GH.StateTransition
       GH.Report.Actionable
       GH.Report.Assignees
+      GH.Report.Confluence.Milestones
+      GH.Report.Estimate
       GH.Report.Milestones
+      GH.Report.Release
       GH.Report.StateTransition
       GH.Types
       GH.Epic

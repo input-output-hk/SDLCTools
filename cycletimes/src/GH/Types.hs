@@ -39,7 +39,8 @@ data GHMilestone = MkGHMilestone
   {
     ghmNumber   :: Int
   , ghmTitle    :: T.Text
-  , ghmDueDate  :: UTCTime
+  , ghmDueDate  :: UTCTime   -- TODO : always present?, check GH API
+  , ghmRepoName :: T.Text
   }
   deriving (Show, Eq, Ord)
 
@@ -65,6 +66,7 @@ data ZHIssue = MkZHIssue
   , zhiIsEpic           :: Bool
   , zhiParentEpic       :: Maybe Int
   , zhiChildren         :: [Int]
+  , zhiEstimate         :: Maybe Int
   , zhiRelease          :: Maybe ZHRelease    -- ^ if an issue is in a release
   , zhiInheritedRelease :: Maybe ZHRelease    -- ^ release inherited from the parent epic.
   }

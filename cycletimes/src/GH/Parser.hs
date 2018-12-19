@@ -44,15 +44,21 @@ instance {-# OVERLAPS #-} FromJSON (Maybe ZHIssueEvent) where
               toState <- nameToState <$> (toPipeLine .: "name" :: Parser T.Text)
               return $ Just $ ZHEvtTransferState fromState toState timeStamp
 
-        transferState  -- <|> setState
+        transferState
 
-      _ -> return Nothing -- ZHNoEvent
+      _ -> return Nothing
 
 instance FromJSON ZHIssue where
   parseJSON = withObject "ZH Issue" $ \o -> do
     zhiIsEpic       <- o .: "is_epic"
     pipeline        <- o .: "pipeline"
     zhiState        <- fmap nameToState $ pipeline .: "name"
+    estimateM       <- o .:? "estimate" -- :: Parser (Maybe Object)
+    zhiEstimate     <- case estimateM of
+                        Just estimate -> do
+                          e <- (estimate .: "value")
+                          return e
+                        Nothing -> return Nothing
     let zhiParentEpic = Nothing
     let zhiChildren = []
     let zhiRelease = Nothing
@@ -81,6 +87,7 @@ instance FromJSON GHMilestone where
     ghmNumber  <- o .: "number" :: Parser Int
     ghmTitle   <- o .: "title"  :: Parser T.Text
     dueDate    <- o .: "due_on" :: Parser T.Text
+    let ghmRepoName = T.empty
     let ghmDueDate = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack dueDate)
     return $ MkGHMilestone {..}
 
