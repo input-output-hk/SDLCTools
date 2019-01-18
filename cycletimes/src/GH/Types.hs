@@ -39,7 +39,7 @@ data GHMilestone = MkGHMilestone
   {
     ghmNumber   :: Int
   , ghmTitle    :: T.Text
-  , ghmDueDate  :: UTCTime   -- TODO : always present?, check GH API
+  , ghmDueDate  :: Maybe UTCTime
   , ghmRepoName :: T.Text
   }
   deriving (Show, Eq, Ord)
@@ -144,6 +144,7 @@ nameToState :: T.Text -> State
 nameToState "New Issues"      = Backlog
 nameToState "Backlog"         = Backlog
 nameToState "In Progress"     = InProgress
+nameToState "QA"              = InReview
 nameToState "Review/QA"       = InReview
 nameToState "Review"          = InReview
 nameToState "Done"            = Done

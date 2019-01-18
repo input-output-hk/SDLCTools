@@ -15,6 +15,8 @@ where
 
 -- import Debug.Trace (trace)
 
+import            Control.Concurrent
+
 import qualified  Data.ByteString.Char8 as BS8
 import qualified  Data.ByteString.Lazy as LBS
 import qualified  Data.Map.Strict as M
@@ -118,6 +120,8 @@ getSingleIssueEventsFromZHRepo token repoId issueNumber = do
 
 getSingleEpicFromZHRepo :: String -> Int -> Int -> IO LBS.ByteString
 getSingleEpicFromZHRepo token repoId epicId = do
+  threadDelay 1000000
+
   req' <- parseRequest $ "GET https://api.zenhub.io/p1/repositories/" <> show repoId <> "/epics/"  <> show epicId
   let req = setRequestHeaders [ ("X-Authentication-Token", BS8.pack token)
                               ]

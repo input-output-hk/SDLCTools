@@ -28,7 +28,9 @@ makeEpicMap token repoId = do
         resp <- getSingleEpicFromZHRepo token repoId eId
         let epicChildren = eitherDecode resp :: Either String EpicChildren
         case epicChildren of
-          Left _ -> error "Cannot Parse Epic Data Response"
+          Left _ -> do
+            print resp
+            error "Cannot Parse Epic Data Response"
           Right (EpicChildren childs) -> return childs
       let children = concat childIssues
           parents  = concat $ zipWith (\ c e-> replicate (length c) e) childIssues epics'

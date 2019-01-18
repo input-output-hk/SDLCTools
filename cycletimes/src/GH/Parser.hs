@@ -86,9 +86,9 @@ instance FromJSON GHMilestone where
   parseJSON = withObject "User" $ \o -> do
     ghmNumber  <- o .: "number" :: Parser Int
     ghmTitle   <- o .: "title"  :: Parser T.Text
-    dueDate    <- o .: "due_on" :: Parser T.Text
+    dueDate    <- o .:? "due_on" :: Parser (Maybe T.Text)
     let ghmRepoName = T.empty
-    let ghmDueDate = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack dueDate)
+    let ghmDueDate = fmap (\d -> parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack d)) dueDate
     return $ MkGHMilestone {..}
 
 instance FromJSON GHIssue where

@@ -57,8 +57,8 @@ row MkMilestone{..} =
   l = [ ""
       , "**"++T.unpack mlRepo++"**", T.unpack mlName, show mlNbIssues
       , show mlNbInBacklog, show mlNbInWip, show mlNbDone
-      , maybe " " utctimeToString mlStartTime
-      , maybe " " utctimeToString mlDueTime
+      , maybe "No Started" utctimeToString mlStartTime
+      , maybe "No Due Date" utctimeToString mlDueTime
       , maybe " " utctimeToString mlDoneTime
       , "\n" ]
 

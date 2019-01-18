@@ -51,7 +51,7 @@ extractMilestones issues =
     (t, b, w, d) = getNbIssueInState issues'
     (st, et) = getStartEndDate issues'
     et' = if (t==d) then et else Nothing
-    in MkMilestone ghmRepoName ghmTitle t b w d st (Just ghmDueDate) et'
+    in MkMilestone ghmRepoName ghmTitle t b w d st ghmDueDate et'
   hasMilestone ml issue = (ghiMilestone $ iGHIssue issue) == Just ml
 
 

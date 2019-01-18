@@ -69,7 +69,7 @@ instance ToNamedRecord ActionableIssueReport where
         , "Repo"            .= repo
         , "Is Epic"         .= show zhiIsEpic
         , "Parent Epic"     .= maybe "" (\n -> T.unpack repo ++ "-" ++ show n) zhiParentEpic
-        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ utcTimeToDateString ghmDueDate ++ "):" ++ T.unpack ghmTitle) ghiMilestone
+        , "Milestone"       .= maybe "" (\MkGHMilestone{..} -> T.unpack repo ++ "-" ++ show ghmNumber ++ " (" ++ maybe "n/a" utcTimeToDateString ghmDueDate ++ "):" ++ T.unpack ghmTitle) ghiMilestone
         , "Release"         .= maybe "" (\MkZHRelease{..} -> T.unpack zhrTitle ++ " (" ++ utcTimeToDateString zhrEndDate ++ "): " ++ T.unpack repo) releaseM
         , "Assignee-1"      .= a0
         , "Assignee-2"      .= a1
