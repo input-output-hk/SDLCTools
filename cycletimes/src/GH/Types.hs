@@ -154,6 +154,7 @@ nameToState "Epics"           = Backlog
 nameToState "Proposed"        = Backlog
 nameToState "Accepted"        = Backlog
 nameToState "Waiting"         = Neutral
+nameToState "Selected"        = Backlog
 nameToState e = error (T.unpack e)
 
 

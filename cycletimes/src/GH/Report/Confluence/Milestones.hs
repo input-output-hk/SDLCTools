@@ -12,10 +12,11 @@
 module GH.Report.Confluence.Milestones
 (
   generateMilestoneConfluenceReport
+  , generateMilestoneWeeklyReport
 )
 where
 
--- import            Debug.Trace (trace)
+import            Debug.Trace (trace)
 
 import qualified  Data.List as L
 import qualified  Data.Text as T
@@ -39,27 +40,66 @@ generateMilestoneConfluenceReport filename issues = do
   mapM_ (appendFile filename) markupLines
   where
   milestones = sortWith (\MkMilestone{..} -> (mlRepo, mlDueTime)) $ extractMilestones issues
-  markupLines = header ++ L.map row milestones
+  markupLines = headerConfluence ++ L.map rowConfluence milestones
 
 
 
 
-header :: [String]
-header =
-  [ "h2. Milestones Dates\n"
-  , "||Repo||MileStone||Nb Issues ||Backlog||WIP ||Done|| Date Started|| Due Date|| Date Completed||\n"
+headerConfluence :: [String]
+headerConfluence =
+  [ "||Repo||MileStone||Nb Issues ||Backlog||WIP ||Done|| % Completed ||Date Started|| Planned Due Date|| Actual Date Completed||\n"
   ]
 
-row :: Milestone -> String
-row MkMilestone{..} =
+rowConfluence :: Milestone -> String
+rowConfluence MkMilestone{..} =
   L.concat $ L.intersperse "|" l
   where
   l = [ ""
-      , "**"++T.unpack mlRepo++"**", T.unpack mlName, show mlNbIssues
-      , show mlNbInBacklog, show mlNbInWip, show mlNbDone
+      , T.unpack mlRepo, T.unpack mlName, show mlNbIssues
+      , show mlNbInBacklog, show mlNbInWip, show mlNbDone, show (ceiling (fromIntegral mlNbDone / fromIntegral mlNbIssues * 100.0))
       , maybe "No Started" utctimeToString mlStartTime
       , maybe "No Due Date" utctimeToString mlDueTime
       , maybe " " utctimeToString mlDoneTime
+      , "\n" ]
+
+
+
+generateMilestoneWeeklyReport :: String -> [Issue] -> IO ()
+generateMilestoneWeeklyReport filename issues = do
+  writeFile filename ""
+  mapM_ (appendFile filename) markupLines
+  where
+  milestones = sortWith (\MkMilestone{..} -> (mlRepo, mlDueTime)) $ extractMilestones issues
+  markupLines = headerWeekly ++ L.map rowWeekly milestones
+
+
+
+toWorkStream :: String -> String
+toWorkStream "cardano-chain"              = "Ledger Handover"
+toWorkStream "cardano-wallet"             = "Wallet Backend"
+toWorkStream "fm-ledger-rules"            = "Ledger Delegation"
+toWorkStream "ouroboros-network"          = "Network & Consensus"
+toWorkStream "iohk-monitoring-framework"  = "Monitoring & Performance"
+toWorkStream "cardano-shell"              = "Integration Shell"
+
+
+
+headerWeekly :: [String]
+headerWeekly =
+  [ "||Milestone|| % Completed ||Date Started|| Planned Due Date|| Actual Date Completed||Status Update||\n"
+  ]
+
+rowWeekly :: Milestone -> String
+rowWeekly MkMilestone{..} =
+  L.concat $ L.intersperse "|" l
+  where
+  l = [ ""
+--       ,toWorkStream $ T.unpack mlRepo
+      , T.unpack mlName, (show (ceiling (fromIntegral mlNbDone / fromIntegral mlNbIssues * 100.0))++"%")
+      , maybe "No Started" utctimeToString mlStartTime
+      , maybe "No Due Date" utctimeToString mlDueTime
+      , maybe " " utctimeToString mlDoneTime
+      , " "
       , "\n" ]
 
 

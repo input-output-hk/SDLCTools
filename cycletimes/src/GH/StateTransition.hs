@@ -79,7 +79,7 @@ getStateEvents ghs zhs =
   case evts of
   [] -> []
   ZHE (ZHEvtTransferState Backlog sf t):rest -> go Backlog sf [StateEvent Backlog sf t] rest
-  ZHE (ZHEvtTransferState _ _ _):_ -> error "Initial State is not Backlog on the 1st ZH transition"
+  ZHE e@(ZHEvtTransferState _ _ _):_ -> [] --error ("Initial State is not Backlog on the 1st ZH transition " ++ show e)
   GHE (GHEvtCloseEvent t):rest -> go Backlog Done [StateEvent Backlog Done t] rest
   GHE (GHEvtReOpenEvent _):_ -> error "Reopening non closed issue"
   where
