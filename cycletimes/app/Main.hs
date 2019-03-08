@@ -23,6 +23,7 @@ import            PR.Types
 import            GH.Assignee
 import            GH.Config
 import            GH.Issue
+import            GH.Milestones
 import            GH.Report.Assignees
 import            GH.Report.Actionable
 import            GH.Report.Confluence.Milestones
@@ -35,12 +36,27 @@ import            GH.Types
 import            Data.Time.Clock
 import            Data.Time.Format
 
+
 d::UTCTime
 d = parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" "2018-12-31T12:00:00Z"
 
 
 main :: IO ()
 main = do
+
+  milestonesPerRepos <- getMileStones config
+
+  mapM_ (\(repo, issues) -> do
+    goMileStonesOneRepo repo issues
+    ) milestonesPerRepos
+
+  let allMileStones = do
+       (_, milestones) <- milestonesPerRepos
+       milestone <- milestones
+       return milestone
+
+  goMileStonesOneRepo "global" allMileStones
+
   issuesPerRepos <- getIssues config
   mapM_ (\(repo, issues) -> do
     goIssuesOneRepo repo issues
@@ -53,6 +69,7 @@ main = do
        return issue
 
   goIssuesOneRepo "global" allIssues
+
 
 
   -- Pull Request
@@ -72,6 +89,8 @@ main = do
     goPrsOneRepo "global" allPullRequests
 
   where
+  goMileStonesOneRepo repo milestones = do
+     generateMilestoneWeeklyReport ("files/" ++ repo ++ "/deck-milestone.md") milestones
 
   goIssuesOneRepo repo issues = do
       generateAssigneeIssueReport  ("files/" ++ repo ++ "/assignements.csv") $ (assigneeMap $ map iGHIssue (onlyInProgressIssues issues))
@@ -93,16 +112,19 @@ main = do
 
       generateMilestoneConfluenceReport ("files/" ++ repo ++ "/confluence-milestone.md") issues
 
+
   onlyInProgressIssues issues = L.filter (\i -> let
                   s = (zhiState $ iZHIssue i)
                   isPR = ghiIsPR $ iGHIssue i
                   in (s == InProgress || s == InReview) && not isPR) issues
 
-  config = MkConfig [("input-output-hk", "cardano-wallet", 154148239)
-                    , ("input-output-hk", "ouroboros-network", 149481615)
-                    , ("input-output-hk", "cardano-chain", 149791280)
-                    , ("input-output-hk", "fm-ledger-rules", 150113380)
-                    , ("input-output-hk", "cardano-shell", 154114906)
+  config = MkConfig [
+                      ("input-output-hk", "cardano-wallet", 173286031)
+                     --, ("input-output-hk", "cardano-wallet-legacy", 154148239)
+                     , ("input-output-hk", "ouroboros-network", 149481615)
+                     , ("input-output-hk", "cardano-chain", 149791280)
+                     , ("input-output-hk", "fm-ledger-rules", 150113380)
+                     , ("input-output-hk", "cardano-shell", 154114906)
                     , ("input-output-hk", "iohk-monitoring-framework", 159627884)
                     ]
                     "key"

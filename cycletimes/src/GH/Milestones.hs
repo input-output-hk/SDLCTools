@@ -9,6 +9,8 @@ module GH.Milestones
 (
   extractMilestones
   , Milestone(..)
+  , getMileStonesForOneRepo
+  , getMileStones
 )
 where
 
@@ -16,7 +18,7 @@ where
 
 -- import Debug.Trace (trace)
 
-
+import            Data.Aeson
 import qualified  Data.List as L
 import            Data.Maybe (mapMaybe)
 import qualified  Data.Set as S
@@ -24,8 +26,26 @@ import qualified  Data.Text as T
 
 import            Data.Time.Clock
 
+import            GH.Config
+import            GH.Parser
+import            GH.Queries
 import            GH.Types
 
+
+getMileStones :: Config -> IO [(String, [GHMilestone])]
+getMileStones MkConfig{..} = do
+  milestones <- mapM (\repo -> getMileStonesForOneRepo cfg_gh_key repo) cfg_Repos
+  return milestones
+
+
+getMileStonesForOneRepo :: String -> (String, String, Int) -> IO (String, [GHMilestone])
+getMileStonesForOneRepo ghKey (user, repo, repoId) = do
+  jsons <- getAllMileStonesFromGHRepo ghKey user repo
+  let milestones = L.concat $ L.map (\jsonBS ->
+          case eitherDecode jsonBS of
+            Right ms -> ms
+            Left e -> error e) jsons
+  return (repo, milestones)
 
 data Milestone = MkMilestone
   { mlRepo      :: T.Text

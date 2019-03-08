@@ -148,11 +148,15 @@ getGHIssueEventsForRepo ghKey user repo MkGHIssue{..} = do
 
 getZHIssueForRepo :: String -> Int -> GHIssue -> IO ZHIssue
 getZHIssueForRepo zhKey repoId MkGHIssue{..} = do
-  jsonBS <- getSingleIssueFromZHRepo zhKey repoId ghiNumber
-  let (zhIssueE :: Either String ZHIssue) = eitherDecode jsonBS
-  case zhIssueE of
-    Right zhIssue -> return zhIssue
-    Left e -> fail e
+  mJsonBS <- getSingleIssueFromZHRepo zhKey repoId ghiNumber
+
+  case mJsonBS of
+    Just jsonBS -> do
+      let (zhIssueE :: Either String ZHIssue) = eitherDecode jsonBS
+      case zhIssueE of
+        Right zhIssue -> return zhIssue
+        Left e -> fail e
+    Nothing -> return $ MkZHIssue Backlog False Nothing [] Nothing Nothing Nothing
 
 getZHIssueEventsForRepo :: String -> Int -> GHIssue -> IO [ZHIssueEvent]
 getZHIssueEventsForRepo zhKey repoId MkGHIssue{..} = do

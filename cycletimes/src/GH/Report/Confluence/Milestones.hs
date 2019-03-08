@@ -34,6 +34,8 @@ utctimeToString t = formatTime defaultTimeLocale  "%d/%m/%Y" t
 
 
 
+
+
 generateMilestoneConfluenceReport :: String -> [Issue] -> IO ()
 generateMilestoneConfluenceReport filename issues = do
   writeFile filename ""
@@ -41,8 +43,6 @@ generateMilestoneConfluenceReport filename issues = do
   where
   milestones = sortWith (\MkMilestone{..} -> (mlRepo, mlDueTime)) $ extractMilestones issues
   markupLines = headerConfluence ++ L.map rowConfluence milestones
-
-
 
 
 headerConfluence :: [String]
@@ -64,13 +64,14 @@ rowConfluence MkMilestone{..} =
 
 
 
-generateMilestoneWeeklyReport :: String -> [Issue] -> IO ()
-generateMilestoneWeeklyReport filename issues = do
+
+generateMilestoneWeeklyReport :: String -> [GHMilestone] -> IO ()
+generateMilestoneWeeklyReport filename milestones = do
   writeFile filename ""
   mapM_ (appendFile filename) markupLines
   where
-  milestones = sortWith (\MkMilestone{..} -> (mlRepo, mlDueTime)) $ extractMilestones issues
-  markupLines = headerWeekly ++ L.map rowWeekly milestones
+  sortedMilestones = sortWith (\MkGHMilestone{..} -> (ghmRepoName, ghmDueDate)) $ milestones
+  markupLines = headerWeekly ++ L.map rowWeekly sortedMilestones
 
 
 
@@ -86,21 +87,20 @@ toWorkStream "cardano-shell"              = "Integration Shell"
 
 headerWeekly :: [String]
 headerWeekly =
-  [ "||Milestone|| % Completed ||Date Started|| Planned Due Date|| Actual Date Completed||Status Update||\n"
+  [ "||Milestone|| % Completed || Planned Due Date|| Actual Date Completed||Status Update||\n"
   ]
 
-rowWeekly :: Milestone -> String
-rowWeekly MkMilestone{..} =
+rowWeekly :: GHMilestone -> String
+rowWeekly MkGHMilestone{..} =
   L.concat $ L.intersperse "|" l
   where
-  l = [ ""
---       ,toWorkStream $ T.unpack mlRepo
-      , T.unpack mlName, (show (ceiling (fromIntegral mlNbDone / fromIntegral mlNbIssues * 100.0))++"%")
-      , maybe "No Started" utctimeToString mlStartTime
-      , maybe "No Due Date" utctimeToString mlDueTime
-      , maybe " " utctimeToString mlDoneTime
+  l = [ " "
+      , T.unpack ghmTitle
+      , if nb == 0 then " " else (show (ceiling (fromIntegral ghmClosedIssues / fromIntegral nb * 100.0)) ++ "%")
+      , maybe "No Due Date" utctimeToString ghmDueDate
+      , maybe " " utctimeToString ghmCloseAt
       , " "
       , "\n" ]
-
+  nb = ghmOpenIssues + ghmClosedIssues
 
 

@@ -23,7 +23,7 @@ devMap = M.fromList
   , ("paweljakubas", "Pawel Jakubas")
   , ("polinavino", "Polina Vinogradova")
   , ("uroboros", "Ryan Lemmer")
-  , ("redxaxder", "redxaxder")
+  , ("redxaxder", "Alex Bialy")
   , ("ruhatch", "Rupert Horlick")
   , ("Jimbo4350", "Jordan Millar")
   , ("kantp", "Philipp Kant")
@@ -35,7 +35,10 @@ devMap = M.fromList
   , ("akegalj", "Ante Kegalj")
   , ("CodiePP", "Alexander Diemand")
   , ("365andreas", "Andreas Tryantafyllos")
-
+  , ("mrBliss", "Thomas Winant")
+  , ("piotr-iohk", "Piotr (QA)")
+  , ("karknu", "Karl Knutsson")
+  , ("kderme", "Kostas Dermentzis")
 
   ]
 

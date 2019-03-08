@@ -84,11 +84,15 @@ instance FromJSON GHUser where
 
 instance FromJSON GHMilestone where
   parseJSON = withObject "User" $ \o -> do
-    ghmNumber  <- o .: "number" :: Parser Int
-    ghmTitle   <- o .: "title"  :: Parser T.Text
-    dueDate    <- o .:? "due_on" :: Parser (Maybe T.Text)
+    ghmNumber       <- o .: "number" :: Parser Int
+    ghmTitle        <- o .: "title"  :: Parser T.Text
+    dueDate         <- o .:? "due_on" :: Parser (Maybe T.Text)
+    ghmOpenIssues   <- o .: "open_issues"  :: Parser Int
+    ghmClosedIssues <- o .: "closed_issues"  :: Parser Int
+    closeAt         <- o .:? "closed_at" :: Parser (Maybe T.Text)
     let ghmRepoName = T.empty
     let ghmDueDate = fmap (\d -> parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack d)) dueDate
+    let ghmCloseAt = fmap (\d -> parseTimeOrError  True defaultTimeLocale "%Y-%m-%dT%TZ" (T.unpack d)) closeAt
     return $ MkGHMilestone {..}
 
 instance FromJSON GHIssue where

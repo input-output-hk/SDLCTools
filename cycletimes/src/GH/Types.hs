@@ -37,10 +37,13 @@ data GHUser = MkGHUser
 
 data GHMilestone = MkGHMilestone
   {
-    ghmNumber   :: Int
-  , ghmTitle    :: T.Text
-  , ghmDueDate  :: Maybe UTCTime
-  , ghmRepoName :: T.Text
+    ghmNumber       :: Int
+  , ghmTitle        :: T.Text
+  , ghmDueDate      :: Maybe UTCTime
+  , ghmRepoName     :: T.Text
+  , ghmOpenIssues   :: Int
+  , ghmClosedIssues :: Int
+  , ghmCloseAt      :: Maybe UTCTime
   }
   deriving (Show, Eq, Ord)
 
